@@ -3,17 +3,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'dart:typed_data';
 import 'dart:math';
+import 'dart:io';
+import 'bluetooth.dart';
 
 void main() {
   runApp(const MyApp());
-}
-
-class SensorData {
-  double illumination = 0;
-  double humidity = 0;
-  double temperature = 0;
-  double voltage = 0;
-  int soilHumidityValue = 0;
 }
 
 class MyApp extends StatelessWidget {
@@ -34,164 +28,119 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key}) : super(key: key);
 
-  final String title = "Gaia Plant app";
-  String device_id = '';
-  int current_num = 0;
-  SensorData data = SensorData();
-  String state = "idle";
 
+
+
+  
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  void scan() {
+
+
+  var characteristics = {
+    "9A1A0001-76E2-4C05-AA14-81629336ACB8": 0.0,
+    "9A1A0002-76E2-4C05-AA14-81629336ACB8": 0.0,
+    "9A1A0003-76E2-4C05-AA14-81629336ACB8": 0.0,
+    "9A1A0004-76E2-4C05-AA14-81629336ACB8": 0.0,
+    "9A1A0005-76E2-4C05-AA14-81629336ACB8": 0.0,
+    "9A1A0006-76E2-4C05-AA14-81629336ACB8": 0.0
+  };
+
+  Bluetooth? bluetooth;
+
+  _MyHomePageState() {
+    bluetooth = new Bluetooth((_characteristics){
+      print('water: ${_characteristics["9A1A0005-76E2-4C05-AA14-81629336ACB8"]}, light: ${_characteristics["9A1A0001-76E2-4C05-AA14-81629336ACB8"]}');
       setState((){
-	widget.state = "scanning";
+        this.characteristics = _characteristics;
       });
-    final flutterReactiveBle = FlutterReactiveBle();
-
-    flutterReactiveBle
-      .scanForDevices(withServices: [/*Uuid.parse('9A1A0001-B5A3-F393-E0A9-E50E24DCCA9E')*/], scanMode: ScanMode.lowPower)
-      .listen((device) {
-      if(widget.device_id != '')
-        return;
-        
-      print('Found device with id ${device.id}!');
-
-      if(device.name == 'UART Service') {
-        widget.device_id = device.id;
-        print('Found correct device with id ${device.id}!');
-
-	setState((){
-		widget.state = "connecting...";
-	});
-
-        flutterReactiveBle.connectToDevice(
-          id: device.id,
-          connectionTimeout: const Duration(seconds: 120),
-        ).listen((connectionState) {
-          // Handle connection state updates
-          print('Connection state: $connectionState');
-
-          if(connectionState.connectionState == DeviceConnectionState.connecting) {
-		print("connecting..");
-          } else if(connectionState.connectionState == DeviceConnectionState.connected) {
-		print("connected!");
-	setState((){
-		widget.state = "connected!";
-	});
-
-		final characteristic = QualifiedCharacteristic(serviceId: Uuid.parse('9A1A0001-B5A3-F393-E0A9-E50E24DCCA9E'), characteristicId: Uuid.parse('9A1A0003-B5A3-F393-E0A9-E50E24DCCA9E'), deviceId: device.id);
-		flutterReactiveBle
-			.subscribeToCharacteristic(characteristic)
-			.cast<Uint8List>()
-			.listen((response) {
-    			        var floats = response.buffer.asFloat64List();
-    			        var ints = response.buffer.asInt64List();
-    			        setState((){
-        			        if     (ints[0] == 0) widget.data.illumination = floats[1];
-        			        else if(ints[0] == 1) widget.data.humidity = floats[1];
-        			        else if(ints[0] == 2) widget.data.temperature = floats[1];
-        			        else if(ints[0] == 3) widget.data.voltage = floats[1];
-        			        else if(ints[0] == 4) widget.data.soilHumidityValue = ints[1];
-    			        });
-			}, onError: (e) {
-    				print(e);
-	setState((){
-		widget.state = "idle";
-	});
-			});
-		
-          } else {
-              widget.device_id = '';
-              setState((){
-		widget.state = "idle";
-              });
-          }
-
-        }, onError: (Object error) {
-          // Handle a possible error
-          print('Error: $error');
-              setState((){
-		widget.state = "idle";
-              });
-        });
-
-      }
-    }, onError: (e) {
-      //code for handling error
-      print('eror');
-      print(e);
-              setState((){
-		widget.state = "idle";
-              });
     });
-
   }
-  
+
   @override
   Widget build(BuildContext context) {
-    var hey = widget.state == "idle" ? scan : null;
-      
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text('Illumination: ${widget.data.illumination}'),
-          Slider(
-		value: max(0, min(300, widget.data.illumination)),
-		max: 300,
-		onChanged: (e) {
-			setState((){});
-		}
-          ),
-          Text('Humidity: ${widget.data.humidity}'),
-          Slider(
-		value: max(0, min(100, widget.data.humidity)),
-		max: 100,
-		onChanged: (e) {
-			setState((){});
-		}
-          ),
-          Text('Temperature: ${widget.data.temperature}'),
-          Slider(
-		value: max(0, min(100, widget.data.temperature)),
-		max: 100,
-		onChanged: (e) {
-			setState((){});
-		}
-          ),
-          Text('Voltage: ${widget.data.voltage}'),
-          Slider(
-		value: max(3700, min(4200, widget.data.voltage)),
-		min: 3700,
-		max: 4200,
-		onChanged: (e) {
-			setState((){});
-		}
-          ),
-          Text('Soil Humidity: ${widget.data.soilHumidityValue}'),
-          Slider(
-		value: max(0, min(100, widget.data.soilHumidityValue.toDouble())),
-		max: 100,
-		onChanged: (e) {
-			setState((){});
-		}
-          ),
-          SizedBox(height: 40),
-          Text('Connection status: ${widget.state}'),
-          ElevatedButton(
-            onPressed: hey,
-            child: const Text('Scan'),
-          ),
 
+
+    const wet = 2600;
+    const dry = 3239;
+    var current = characteristics["9A1A0005-76E2-4C05-AA14-81629336ACB8"] ?? dry;
+    var waterLevel = 100 - ((current - wet) / (dry - wet) * 100); 
+
+    var sun = characteristics["9A1A0001-76E2-4C05-AA14-81629336ACB8"] ?? 0;
+    var message = "Direct sunlight";
+    if(sun < 250) message = "Partial sunlight";
+    if(sun < 100) message = "Non-direct sunlight";
+
+    var bobby = Image.asset('assets/GreenCaracter.png');
+    if(waterLevel < 55) bobby = Image.asset('assets/OrangeCaracter.png'); 
+    if(waterLevel < 10) bobby = Image.asset('assets/RedCaracter.png'); 
+
+    
+    return SafeArea(child: Scaffold(
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Center(child: bobby),
+          Text("Bobbie", style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Color(0xFF5CAF69))),
+          SizedBox(height: 25),
+          Row(
+            children: <Widget>[
+              SizedBox(width: 25),
+              Expanded(child: Card(child: Container(padding: EdgeInsets.symmetric(vertical: 15), child: Column(
+                children: <Widget>[
+                  Icon(Icons.water_drop, color: Colors.blue, size: 60.0),
+                  SizedBox(height: 10),
+                  Text('${waterLevel.round()}%'),
+                ],
+              )))),
+              SizedBox(width: 15),
+              Expanded(child: Card(child: Container(padding: EdgeInsets.symmetric(vertical: 15), child: Column(
+                children: <Widget>[
+                  Icon(Icons.sunny, color: Colors.yellow, size: 60.0),
+                  SizedBox(height: 10),
+                  Text(message),
+                ],
+              )))),
+              SizedBox(width: 25),
+            ],
+          )
+        ],
+      ),
+      bottomNavigationBar: NavigationBar(
+        backgroundColor: Colors.grey[200],
+        onDestinationSelected: (int index) {
+          bluetooth?.scan();
+        },
+        selectedIndex: 0,
+        destinations: const <Widget>[
+          NavigationDestination(
+            icon: Icon(Icons.fiber_manual_record),
+            label: 'Home',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.stop),
+            label: 'FAQ',
+          ),
+          NavigationDestination(
+            selectedIcon: Icon(Icons.bookmark),
+            icon: Icon(Icons.change_history),
+            label: 'Social',
+          ),
         ],
       )),
+
+
+
     );
+
+
+
+
+
+    
   }
 }

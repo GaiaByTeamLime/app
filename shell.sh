@@ -78,7 +78,7 @@ export ANDROID_SDK_ROOT="$PWD/.tools/bin/sdk"
 	.tools/tmp/commandlinetools/cmdline-tools/bin/sdkmanager --sdk_root=".tools/bin/sdk" --install "platform-tools"
 
 [ ! -d ".tools/bin/sdk/platforms/android-$ANDROID_SDK_VERSION" ] && {
-	sdkmanager --sdk_root=".tools/bin/sdk" --install "platforms;android-$ANDROID_SDK_VERSION"
+	.tools/tmp/commandlinetools/cmdline-tools/bin/sdkmanager --sdk_root=".tools/bin/sdk" --install "platforms;android-$ANDROID_SDK_VERSION"
 }
 
 export PATH="$PWD/.tools/bin/sdk/cmdline-tools/latest/bin:$PATH"
