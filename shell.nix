@@ -9,5 +9,5 @@ let my-google-chrome = (writeShellApplication {
 in
 stdenv.mkDerivation {
     name = "gaia";
-    buildInputs = [ git unzip android-tools cmake steam-run my-google-chrome imagemagick ];
+    buildInputs = [ git unzip android-tools cmake steam-run my-google-chrome imagemagick entr killall ];
 }

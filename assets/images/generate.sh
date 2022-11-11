@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 PWD="$PWD/$(dirname ${BASH_SOURCE[0]})"
 
+mkdir "$PWD/"{2x,4x}
+
 cd "$PWD/svgs";
 for image in $(find . -name '*.svg'); do
     NAME=${image%".svg"}

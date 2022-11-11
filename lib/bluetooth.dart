@@ -6,10 +6,11 @@ import 'dart:typed_data';
 import 'dart:math';
 import 'dart:async';
 import 'dart:io';
+
 //      .listen((device) {
 //      if(widget.device_id != '')
 //        return;
-//        
+//
 //      print('Found device with id ${device.id}!');
 //
 //
@@ -52,7 +53,7 @@ import 'dart:io';
 //		widget.state = "idle";
 //	});
 //			});
-//		
+//
 //          } else {
 //              widget.device_id = '';
 //              setState((){
@@ -83,94 +84,86 @@ import 'dart:io';
 enum ConnectionState { Idle, Scanning, Connecting, Connected }
 
 class Bluetooth {
-    	void Function(Map<String, double>)? setState;
-	Bluetooth(void Function(Map<String, double>) setState) {
-    		this.setState = setState;
-	}
-    
-  	final flutterReactiveBle = FlutterReactiveBle();
-	StreamSubscription<DiscoveredDevice>? deviceScanStreamSubscription = null;
-	DiscoveredDevice? connectedDevice = null;
+  void Function(Map<String, double>)? setState;
+  Bluetooth(void Function(Map<String, double>) setState) {
+    this.setState = setState;
+  }
 
-	var connectionState = ConnectionState.Idle;
+  final flutterReactiveBle = FlutterReactiveBle();
+  StreamSubscription<DiscoveredDevice>? deviceScanStreamSubscription = null;
+  DiscoveredDevice? connectedDevice = null;
 
-	void scan() {
-    		print('Starting with scanning...');
-		deviceScanStreamSubscription = flutterReactiveBle
-			.scanForDevices(withServices: [], scanMode: ScanMode.lowPower)
-			.listen(onScan);
-			
-		connectionState = ConnectionState.Scanning;
-	}
+  var connectionState = ConnectionState.Idle;
 
-	void onScan(DiscoveredDevice device) {
-    		print('Found device ${device.id} - ${device.name}');
-		if(device.name == 'Gaia Plant Sensor') {
-        		deviceScanStreamSubscription?.cancel();
-        		connectionState = ConnectionState.Connecting;
-        		connectedDevice = device;
-        		connectToDevice();
-		}
-	}
+  void scan() {
+    print('Starting with scanning...');
+    deviceScanStreamSubscription =
+        flutterReactiveBle.scanForDevices(withServices: [], scanMode: ScanMode.lowPower).listen(onScan);
 
-	void connectToDevice() {
-		if (connectedDevice == null)
-    			return;
-        	var device = connectedDevice!;
-    	
-		flutterReactiveBle
-			.connectToDevice(id: device.id, connectionTimeout: const Duration(seconds: 120))
-			.listen((connection) {
-    			        print('Connection state: ${connection.connectionState}');
-				switch(connection.connectionState) {
-    					case DeviceConnectionState.connecting:
-        					connectionState = ConnectionState.Connecting;
-        					break;
-						
-        				case DeviceConnectionState.connected:
-            					connectionState = ConnectionState.Connected;
-            					registerCharacteristics();
-				}
-			});
-	}
+    connectionState = ConnectionState.Scanning;
+  }
 
-	var characteristics = {
-		"9A1A0001-76E2-4C05-AA14-81629336ACB8": 0.0,
-		"9A1A0002-76E2-4C05-AA14-81629336ACB8": 0.0,
-		"9A1A0003-76E2-4C05-AA14-81629336ACB8": 0.0,
-		"9A1A0004-76E2-4C05-AA14-81629336ACB8": 0.0,
-		"9A1A0005-76E2-4C05-AA14-81629336ACB8": 0.0,
-		"9A1A0006-76E2-4C05-AA14-81629336ACB8": 0.0
-	};
-	
+  void onScan(DiscoveredDevice device) {
+    print('Found device ${device.id} - ${device.name}');
+    if (device.name == 'Gaia Plant Sensor') {
+      deviceScanStreamSubscription?.cancel();
+      connectionState = ConnectionState.Connecting;
+      connectedDevice = device;
+      connectToDevice();
+    }
+  }
 
-	void registerCharacteristics() {
-    		if(connectedDevice == null)
-        		return;
-        	var device = connectedDevice!;
-        	
-		for (final characteristic in characteristics.keys) {
-			print('Adding listener for characteristic ${characteristic}');
-    		
-			final qualifiedCharacteristic = QualifiedCharacteristic(
-    				serviceId: Uuid.parse(characteristic),
-    				characteristicId: Uuid.parse(characteristic),
-    				deviceId: device.id
-    			);
-    			
-			flutterReactiveBle
-				.subscribeToCharacteristic(qualifiedCharacteristic)
-				.cast<Uint8List>()
-				.listen(onUpdate(characteristic));
+  void connectToDevice() {
+    if (connectedDevice == null) return;
+    var device = connectedDevice!;
 
-    		}
-	}
+    flutterReactiveBle
+        .connectToDevice(id: device.id, connectionTimeout: const Duration(seconds: 120))
+        .listen((connection) {
+      print('Connection state: ${connection.connectionState}');
+      switch (connection.connectionState) {
+        case DeviceConnectionState.connecting:
+          connectionState = ConnectionState.Connecting;
+          break;
 
-	void Function(Uint8List) onUpdate(String uuid) {
-    		return (response){
-        		var value = response.buffer.asFloat64List()[0];
-        		characteristics[uuid] = value;
-        		setState?.call(characteristics);
-		};
-	}
+        case DeviceConnectionState.connected:
+          connectionState = ConnectionState.Connected;
+          registerCharacteristics();
+      }
+    });
+  }
+
+  var characteristics = {
+    "9A1A0001-76E2-4C05-AA14-81629336ACB8": 0.0,
+    "9A1A0002-76E2-4C05-AA14-81629336ACB8": 0.0,
+    "9A1A0003-76E2-4C05-AA14-81629336ACB8": 0.0,
+    "9A1A0004-76E2-4C05-AA14-81629336ACB8": 0.0,
+    "9A1A0005-76E2-4C05-AA14-81629336ACB8": 0.0,
+    "9A1A0006-76E2-4C05-AA14-81629336ACB8": 0.0
+  };
+
+  void registerCharacteristics() {
+    if (connectedDevice == null) return;
+    var device = connectedDevice!;
+
+    for (final characteristic in characteristics.keys) {
+      print('Adding listener for characteristic ${characteristic}');
+
+      final qualifiedCharacteristic = QualifiedCharacteristic(
+          serviceId: Uuid.parse(characteristic), characteristicId: Uuid.parse(characteristic), deviceId: device.id);
+
+      flutterReactiveBle
+          .subscribeToCharacteristic(qualifiedCharacteristic)
+          .cast<Uint8List>()
+          .listen(onUpdate(characteristic));
+    }
+  }
+
+  void Function(Uint8List) onUpdate(String uuid) {
+    return (response) {
+      var value = response.buffer.asFloat64List()[0];
+      characteristics[uuid] = value;
+      setState?.call(characteristics);
+    };
+  }
 }
