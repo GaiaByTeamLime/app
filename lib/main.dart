@@ -8,19 +8,28 @@ import 'dart:io';
 import 'bluetooth.dart' as Bluetooth;
 import 'pages/home.dart';
 import 'pages/settings.dart';
+import 'pages/connect.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/services.dart';
 
 void main() async {
-  runApp(const MyApp());
+  runApp(Gaia());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class Gaia extends StatefulWidget {
+  Gaia({Key? key}) : super(key: key);
+
+  @override
+  State<Gaia> createState() => _GaiaState();
+}
+
+class _GaiaState extends State<Gaia> {
+  Bluetooth.Bluetooth bluetooth = Bluetooth.Bluetooth((state) {});
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(FlexColorScheme.themedSystemNavigationBar(context, opacity: 0.0));
+    SystemChrome.setSystemUIOverlayStyle(
+        FlexColorScheme.themedSystemNavigationBar(context, opacity: 0.0));
 
     return MaterialApp(
       title: 'Gaia',
@@ -74,10 +83,11 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Roboto',
       ),
       themeMode: ThemeMode.system,
-      initialRoute: '/',
+      initialRoute: '/connect',
       routes: {
         '/': (context) => HomePage(),
         '/settings': (context) => SettingsPage(),
+        '/connect': (context) => ConnectPage(bluetooth),
       },
     );
   }

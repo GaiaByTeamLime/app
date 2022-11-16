@@ -31,7 +31,8 @@ class _HomePageState extends State<HomePage> {
     if (sun < 100) message = "Non-direct sunlight";
 
     var bobby = Image.asset('assets/images/GreenCaracter.png');
-    if (waterLevel < 55) bobby = Image.asset('assets/images/OrangeCaracter.png');
+    if (waterLevel < 55)
+      bobby = Image.asset('assets/images/OrangeCaracter.png');
     if (waterLevel < 10) bobby = Image.asset('assets/images/RedCaracter.png');
 
     final mq = MediaQueryData.fromWindow(WidgetsBinding.instance.window);
@@ -51,9 +52,17 @@ class _HomePageState extends State<HomePage> {
                 Row(
                   children: <Widget>[
                     SizedBox(width: 25),
-                    SensorCard(label: '${waterLevel}%', enabled: true, icon: Icons.water_drop, color: Colors.blue),
+                    SensorCard(
+                        label: '${waterLevel}%',
+                        enabled: true,
+                        icon: Icons.water_drop,
+                        color: Colors.blue),
                     SizedBox(width: 15),
-                    SensorCard(label: message, enabled: true, icon: Icons.sunny, color: Colors.yellow),
+                    SensorCard(
+                        label: message,
+                        enabled: true,
+                        icon: Icons.sunny,
+                        color: Colors.yellow),
                     SizedBox(width: 25),
                   ],
                 )

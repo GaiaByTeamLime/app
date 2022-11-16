@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 
 const String headingFont = 'Poppins';
 
 class Title extends Text {
-  Title(String data,
-      {Key? key, TextAlign? textAlign, bool? softWrap, TextOverflow? overflow, double? textScaleFactor, int? maxLines})
+  const Title(String data,
+      {Key? key,
+      TextAlign? textAlign,
+      bool? softWrap,
+      TextOverflow? overflow,
+      double? textScaleFactor,
+      int? maxLines})
       : super(data,
             key: key,
             textAlign: textAlign,
@@ -13,6 +17,38 @@ class Title extends Text {
             overflow: overflow,
             textScaleFactor: textScaleFactor,
             maxLines: maxLines,
-            style: TextStyle(
-                fontSize: 30, fontWeight: FontWeight.bold, color: Color(0xFF5CAF69), fontFamily: headingFont));
+            style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF0A5251),
+                fontFamily: headingFont));
+}
+
+class Header extends StatelessWidget {
+  const Header(this.text, {super.key});
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 80,
+      width: MediaQuery.of(context).size.width,
+      decoration: const BoxDecoration(
+          color: Color(0xFF9ED0B3),
+          borderRadius: BorderRadius.only(bottomLeft: Radius.circular(40))),
+      child: Padding(
+          padding: const EdgeInsets.only(left: 40),
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(text,
+                    style: const TextStyle(
+                        color: Color(0xFF0A5251),
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 28))
+              ])),
+    );
+  }
 }

@@ -55,7 +55,8 @@ class _SettingsPageState extends State<SettingsPage> {
                     SizedBox(height: 35),
                     Text("Calibrate Sensor", style: TextStyle(fontSize: 20)),
                     SizedBox(height: 20),
-                    Text("Please put in the values from your sensor in order to calibrate the sensor for your plant."),
+                    Text(
+                        "Please put in the values from your sensor in order to calibrate the sensor for your plant."),
                     SizedBox(height: 10),
                     Text("Step 1: Stick your sensor in the pot when the soil is dry."),
                     SizedBox(height: 10),
@@ -70,12 +71,14 @@ class _SettingsPageState extends State<SettingsPage> {
                     TextField(
                         controller: dryController,
                         keyboardType: TextInputType.number,
-                        decoration: InputDecoration(border: OutlineInputBorder(), labelText: "Maximum value")),
+                        decoration: InputDecoration(
+                            border: OutlineInputBorder(), labelText: "Maximum value")),
                     SizedBox(height: 20),
                     TextField(
                         controller: wetController,
                         keyboardType: TextInputType.number,
-                        decoration: InputDecoration(border: OutlineInputBorder(), labelText: "Minimum value")),
+                        decoration: InputDecoration(
+                            border: OutlineInputBorder(), labelText: "Minimum value")),
                     SizedBox(height: 15),
                     ElevatedButton(
                       onPressed: () async {

@@ -5,7 +5,7 @@ class BottomNavigation extends StatefulWidget {
   BottomNavigation(int index) {
     this.index = index;
   }
-    
+
   @override
   _bottomNavigation createState() => _bottomNavigation();
 }
