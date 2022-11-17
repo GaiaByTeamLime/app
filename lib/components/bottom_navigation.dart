@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class BottomNavigation extends StatefulWidget {
   int index = 0;
-  BottomNavigation(int index) {
-    this.index = index;
-  }
+  BottomNavigation(this.index, {super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _bottomNavigation createState() => _bottomNavigation();
 }
 
+// ignore: camel_case_types
 class _bottomNavigation extends State<BottomNavigation> {
   @override
   Widget build(BuildContext context) {

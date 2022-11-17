@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 
 class SensorCard extends Container {
   SensorCard(
-      {required String label,
+      {Key? key,
+      required String label,
       required bool enabled,
       required IconData icon,
       required Color color})
       : super(
+            key: key,
             child: Expanded(
                 child: Card(
                     child: Container(
@@ -18,7 +19,7 @@ class SensorCard extends Container {
                                 color: enabled ? color : Colors.grey,
                                 size: 60.0),
                             const SizedBox(height: 10),
-                            enabled ? Text(label) : Text(''),
+                            enabled ? Text(label) : const Text(''),
                           ],
                         )))));
 }

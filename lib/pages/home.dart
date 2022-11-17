@@ -1,19 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:typed_data';
-import 'dart:math';
-import 'dart:io';
-import '../bluetooth.dart' as Bluetooth;
+// ignore: library_prefixes
 import '../components/typography.dart' as Typography;
+import 'package:shared_preferences/shared_preferences.dart';
 import '../components/sensor_card.dart';
 import '../components/bottom_navigation.dart';
-import 'package:flex_color_scheme/flex_color_scheme.dart';
-import 'package:flutter/services.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key? key}) : super(key: key);
+  HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -22,7 +15,20 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    var connected = false;
+    ((context) async {
+      final prefs = await SharedPreferences.getInstance();
+      String connectedDeviceId = prefs.getString('connectedDeviceId') ?? "";
+
+      // If no device is stored, go to the connecting page
+      if (connectedDeviceId == "") {
+        Navigator.pushNamed(context, '/connect');
+      }
+
+      // If no calibration settings are stored, go to the positioning/calibration page
+
+      // Otherwise, connect to the sensor
+    })(context);
+
     var waterLevel = 80;
     var sun = 100;
 
@@ -31,9 +37,12 @@ class _HomePageState extends State<HomePage> {
     if (sun < 100) message = "Non-direct sunlight";
 
     var bobby = Image.asset('assets/images/GreenCaracter.png');
-    if (waterLevel < 55)
+    if (waterLevel < 55) {
       bobby = Image.asset('assets/images/OrangeCaracter.png');
-    if (waterLevel < 10) bobby = Image.asset('assets/images/RedCaracter.png');
+    }
+    if (waterLevel < 10) {
+      bobby = Image.asset('assets/images/RedCaracter.png');
+    }
 
     final mq = MediaQueryData.fromWindow(WidgetsBinding.instance.window);
 
@@ -47,25 +56,32 @@ class _HomePageState extends State<HomePage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 Center(child: bobby),
-                Typography.Title("Bobbie"),
-                SizedBox(height: 25),
+                const Typography.Title("Bobbie"),
+                const SizedBox(height: 25),
                 Row(
                   children: <Widget>[
-                    SizedBox(width: 25),
+                    const SizedBox(width: 25),
                     SensorCard(
-                        label: '${waterLevel}%',
+                        label: '$waterLevel%',
                         enabled: true,
                         icon: Icons.water_drop,
                         color: Colors.blue),
-                    SizedBox(width: 15),
+                    const SizedBox(width: 15),
                     SensorCard(
                         label: message,
                         enabled: true,
                         icon: Icons.sunny,
                         color: Colors.yellow),
-                    SizedBox(width: 25),
+                    const SizedBox(width: 25),
                   ],
-                )
+                ),
+                const SizedBox(height: 25),
+                ElevatedButton(
+                    onPressed: () async {
+                      final prefs = await SharedPreferences.getInstance();
+                      prefs.setString('connectedDeviceId', "");
+                    },
+                    child: const Text('delete conn'))
               ],
             )),
       ),

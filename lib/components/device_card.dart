@@ -45,7 +45,8 @@ class DeviceCard extends Container {
                                         strokeWidth: 2))
                                 : const Text(''),
                             isConnected
-                                ? const Icon(Icons.check_circle, size: 15)
+                                ? const Icon(Icons.check_circle,
+                                    size: 20, color: Color(0xFF0A5251))
                                 : const Text(''),
                             const SizedBox(width: 10),
                           ],

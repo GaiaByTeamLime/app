@@ -1,48 +1,39 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../bluetooth.dart';
 // ignore: library_prefixes
-import '../bluetooth.dart' as Bluetooth;
 import '../components/typography.dart' as Typography;
 import '../components/page.dart';
 import '../components/device_card.dart';
+import 'package:provider/provider.dart';
 
-class ConnectPage extends StatefulWidget {
-  final Bluetooth.Bluetooth bluetooth;
-  const ConnectPage(this.bluetooth, {Key? key}) : super(key: key);
-
-  @override
-  State<ConnectPage> createState() => _ConnectPageState();
-}
-
-class _ConnectPageState extends State<ConnectPage> {
-  Map<String, String> foundDevices = {};
-
-  void scan() {
-    widget.bluetooth.cancelScanning();
-    widget.bluetooth.scan((String deviceId, String name) {
-      setState(() {
-        foundDevices[deviceId] = name;
-      });
-    });
-  }
+class ConnectPage extends StatelessWidget {
+  const ConnectPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // When the page is rendered, start scanning if we aren't already scanning
-    if (widget.bluetooth.connectionState ==
-        Bluetooth.BluetoothConnectionState.Idle) scan();
+    Bluetooth bluetooth = Provider.of<Bluetooth>(context, listen: true);
 
-    var devices = foundDevices.entries.map((device) => DeviceCard(
-        name: device.key,
-        mac: device.value,
-        isConnecting: widget.bluetooth.connectedDeviceId == device.key &&
-            widget.bluetooth.connectionState ==
-                Bluetooth.BluetoothConnectionState.Scanning,
-        isConnected: widget.bluetooth.connectedDeviceId == device.key &&
-            widget.bluetooth.connectionState ==
-                Bluetooth.BluetoothConnectionState.Connected,
+    // When the page is rendered, start scanning if we aren't already scanning
+    bluetooth.scan();
+
+    var devices = bluetooth.foundDevices.entries.map((device) => DeviceCard(
+        name: device.value,
+        mac: device.key,
+        isConnecting: bluetooth.connectedDeviceId == device.key &&
+            bluetooth.connectionState == BluetoothConnectionState.Connecting,
+        isConnected: bluetooth.connectedDeviceId == device.key &&
+            bluetooth.connectionState == BluetoothConnectionState.Connected,
         onPressed: () {
-          setState(() {
-            widget.bluetooth.connectToDevice(device.key);
+          bluetooth.connectToDevice(device.key, onSuccess: () async {
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setString('connectedDeviceId', device.key);
+
+            Future.delayed(const Duration(seconds: 1), () {
+              Navigator.popUntil(context, ModalRoute.withName('/'));
+            });
           });
         }));
 
@@ -57,13 +48,8 @@ class _ConnectPageState extends State<ConnectPage> {
             children: <Widget>[
               const SizedBox(height: 20),
               const Typography.Title("Nearby devices"),
-              Text(widget.bluetooth.connectionState.toString()),
               const SizedBox(height: 15),
-              ...devices,
-              ElevatedButton(
-                child: Text('disconnect'),
-                onPressed: () {},
-              )
+              ...devices
             ],
           ))
         ]));
