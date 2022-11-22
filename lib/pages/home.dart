@@ -17,7 +17,9 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     ((context) async {
       final prefs = await SharedPreferences.getInstance();
-      String connectedDeviceId = prefs.getString('connectedDeviceId') ?? "";
+      var connectedDeviceId = prefs.getString('connectedDeviceId') ?? "";
+      var wet = prefs.getInt('wet') ?? 0;
+      var dry = prefs.getInt('dry') ?? 0;
 
       // If no device is stored, go to the connecting page
       if (connectedDeviceId == "") {
@@ -25,6 +27,9 @@ class _HomePageState extends State<HomePage> {
       }
 
       // If no calibration settings are stored, go to the positioning/calibration page
+      if (wet == 0 || dry == 0) {
+        Navigator.pushNamed(context, '/calibrate');
+      }
 
       // Otherwise, connect to the sensor
     })(context);

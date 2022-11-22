@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+// ignore: library_prefixes
+import '../components/typography.dart' as Typography;
 
 class HeaderPage extends Scaffold {
-  HeaderPage(Widget child, {Key? key})
+  HeaderPage(String title, List<Widget> children, {Key? key})
       : super(
             key: key,
             body: Container(
@@ -26,7 +28,17 @@ class HeaderPage extends Scaffold {
                     alignment: Alignment.topCenter,
                   ),
                 ),
-                child: child,
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.max,
+                    children: <Widget>[
+                      Typography.Header(title),
+                      Expanded(
+                          child: ListView(
+                        padding: const EdgeInsets.symmetric(horizontal: 40),
+                        children: children,
+                      ))
+                    ]),
               )),
             ));
 }

@@ -3,11 +3,11 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../bluetooth.dart';
-// ignore: library_prefixes
-import '../components/typography.dart' as Typography;
 import '../components/page.dart';
 import '../components/device_card.dart';
 import 'package:provider/provider.dart';
+// ignore: library_prefixes
+import '../components/typography.dart' as Typography;
 
 class ConnectPage extends StatelessWidget {
   const ConnectPage({super.key});
@@ -37,21 +37,11 @@ class ConnectPage extends StatelessWidget {
           });
         }));
 
-    return HeaderPage(Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.max,
-        children: <Widget>[
-          const Typography.Header("Connect Sensor"),
-          Expanded(
-              child: ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 40),
-            children: <Widget>[
-              const SizedBox(height: 20),
-              const Typography.Title("Nearby devices"),
-              const SizedBox(height: 15),
-              ...devices
-            ],
-          ))
-        ]));
+    return HeaderPage("Connect Sensor", <Widget>[
+      const SizedBox(height: 20),
+      const Typography.Title("Nearby devices"),
+      const SizedBox(height: 15),
+      ...devices
+    ]);
   }
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'bluetooth.dart';
+import 'components/page.dart';
+import 'pages/calibrate.dart';
 import 'pages/home.dart';
 import 'pages/settings.dart';
 import 'pages/connect.dart';
@@ -46,7 +48,7 @@ class Gaia extends StatelessWidget {
             ),
             visualDensity: FlexColorScheme.comfortablePlatformDensity,
             useMaterial3: true,
-            fontFamily: 'Roboto',
+            fontFamily: 'Poppins',
           ),
           darkTheme: FlexThemeData.dark(
             colors: const FlexSchemeColor(
@@ -70,14 +72,15 @@ class Gaia extends StatelessWidget {
             ),
             visualDensity: FlexColorScheme.comfortablePlatformDensity,
             useMaterial3: true,
-            fontFamily: 'Roboto',
+            fontFamily: 'Poppins',
           ),
           themeMode: ThemeMode.system,
-          initialRoute: '/',
+          initialRoute: '/test',
           routes: {
             '/': (context) => HomePage(),
             '/settings': (context) => const SettingsPage(),
             '/connect': (context) => const ConnectPage(),
+            '/calibrate': (context) => const CalibratePage(),
           },
         ));
   }
