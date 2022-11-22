@@ -2,9 +2,18 @@ import 'package:flutter/material.dart';
 // ignore: library_prefixes
 import '../components/typography.dart' as Typography;
 
-class HeaderPage extends Scaffold {
-  HeaderPage(String title, List<Widget> children, {Key? key})
-      : super(
+class HeaderPage extends StatelessWidget {
+String title;
+List<Widget> children;
+  HeaderPage(this.title, this.children, {super.key});
+
+
+  @override
+  Widget build(BuildContext context) {
+  return GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () { FocusScope.of(context).requestFocus(new FocusNode()); },
+            child: Scaffold(
             key: key,
             body: Container(
               decoration: const BoxDecoration(
@@ -40,5 +49,6 @@ class HeaderPage extends Scaffold {
                       ))
                     ]),
               )),
-            ));
+            )));
+}
 }

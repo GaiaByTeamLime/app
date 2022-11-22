@@ -16,7 +16,7 @@ FLUTTER_VERSION="3.0.1-stable"
 mkdir -p .tools/opt .tools/bin/{sdk,android} .tools/tmp 2>&1 > /dev/null
 
 # Testing for dependencies.
-for cmd in bash curl file git mkdir rm unzip which xz zip whereis tar yes; do
+for cmd in bash curl file git mkdir rm unzip which xz zip whereis yes; do
 	[ -z "$(command -v $cmd)" ] && {
 		echo "You're missing required dependency $cmd." 
 		exit 1
@@ -41,7 +41,7 @@ if [ ! -d ".tools/bin/jdk-$OPENJDK_JAVA_GITHUB_RELASE_VERSION/bin" ]; then
 		"https://github.com/adoptium/temurin${OPENJDK_JAVA_VERSION_MAJOR}-binaries/releases/download/jdk-$OPENJDK_JAVA_GITHUB_RELASE_VERSION/OpenJDK${OPENJDK_JAVA_VERSION_MAJOR}U-jdk_x64_linux_hotspot_$OPENJDK_JAVA_VERSION.tar.gz"
 
 	echo "[-] Extracting java"
-	tar \
+	gtar \
 		-x -f ".tools/tmp/java-$OPENJDK_JAVA_VERSION.tar.gz" \
 		-C .tools/bin --checkpoint=.1000
 	echo
@@ -93,7 +93,7 @@ if [ ! -d ".tools/bin/flutter/bin" ]; then
 		"https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_$FLUTTER_VERSION.tar.xz"
 
 	echo "[-] Extracting flutter"
-	tar \
+	gtar \
 		-x -f ".tools/tmp/flutter-$FLUTTER_VERSION.tar.xz" \
 		-C .tools/bin --checkpoint=.1000
 	echo

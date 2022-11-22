@@ -29,7 +29,10 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () { FocusScope.of(context).requestFocus(new FocusNode()); },
+            child: Scaffold(
       bottomNavigationBar: BottomNavigation(1),
       body: SingleChildScrollView(
           child: Padding(
@@ -88,6 +91,6 @@ class _SettingsPageState extends State<SettingsPage> {
                       child: const Text('Save'),
                     ),
                   ]))),
-    );
+    ));
   }
 }
