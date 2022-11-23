@@ -18,8 +18,8 @@ class _HomePageState extends State<HomePage> {
     ((context) async {
       final prefs = await SharedPreferences.getInstance();
       var connectedDeviceId = prefs.getString('connectedDeviceId') ?? "";
-      var wet = prefs.getInt('wet') ?? 0;
-      var dry = prefs.getInt('dry') ?? 0;
+      var wet = prefs.getDouble('wet') ?? 0;
+      var dry = prefs.getDouble('dry') ?? 0;
 
       // If no device is stored, go to the connecting page
       if (connectedDeviceId == "") {
@@ -27,7 +27,7 @@ class _HomePageState extends State<HomePage> {
       }
 
       // If no calibration settings are stored, go to the positioning/calibration page
-      if (wet == 0 || dry == 0) {
+      else if (wet == 0 || dry == 0) {
         Navigator.pushNamed(context, '/calibrate');
       }
 
@@ -51,45 +51,55 @@ class _HomePageState extends State<HomePage> {
 
     final mq = MediaQueryData.fromWindow(WidgetsBinding.instance.window);
 
-    return Scaffold(
-      bottomNavigationBar: BottomNavigation(0),
-      body: SingleChildScrollView(
-        child: ConstrainedBox(
-            constraints: BoxConstraints.tightFor(height: mq.size.height - 110),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Center(child: bobby),
-                const Typography.Title("Bobbie"),
-                const SizedBox(height: 25),
-                Row(
+    return WillPopScope(
+        onWillPop: () async => false,
+        child: Scaffold(
+          bottomNavigationBar: BottomNavigation(0),
+          body: SingleChildScrollView(
+            child: ConstrainedBox(
+                constraints:
+                    BoxConstraints.tightFor(height: mq.size.height - 110),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    const SizedBox(width: 25),
-                    SensorCard(
-                        label: '$waterLevel%',
-                        enabled: true,
-                        icon: Icons.water_drop,
-                        color: Colors.blue),
-                    const SizedBox(width: 15),
-                    SensorCard(
-                        label: message,
-                        enabled: true,
-                        icon: Icons.sunny,
-                        color: Colors.yellow),
-                    const SizedBox(width: 25),
+                    Center(child: bobby),
+                    const Typography.Title("Bobbie"),
+                    const SizedBox(height: 25),
+                    Row(
+                      children: <Widget>[
+                        const SizedBox(width: 25),
+                        SensorCard(
+                            label: '$waterLevel%',
+                            enabled: true,
+                            icon: Icons.water_drop,
+                            color: Colors.blue),
+                        const SizedBox(width: 15),
+                        SensorCard(
+                            label: message,
+                            enabled: true,
+                            icon: Icons.sunny,
+                            color: Colors.yellow),
+                        const SizedBox(width: 25),
+                      ],
+                    ),
+                    const SizedBox(height: 25),
+                    ElevatedButton(
+                        onPressed: () async {
+                          final prefs = await SharedPreferences.getInstance();
+                          prefs.setString('connectedDeviceId', "");
+                        },
+                        child: const Text('delete conn')),
+                    ElevatedButton(
+                        onPressed: () async {
+                          final prefs = await SharedPreferences.getInstance();
+                          prefs.setDouble('dry', 0);
+                          prefs.setDouble('wet', 0);
+                        },
+                        child: const Text('delete calibration'))
                   ],
-                ),
-                const SizedBox(height: 25),
-                ElevatedButton(
-                    onPressed: () async {
-                      final prefs = await SharedPreferences.getInstance();
-                      prefs.setString('connectedDeviceId', "");
-                    },
-                    child: const Text('delete conn'))
-              ],
-            )),
-      ),
-    );
+                )),
+          ),
+        ));
   }
 }

@@ -19,29 +19,36 @@ class ConnectPage extends StatelessWidget {
     // When the page is rendered, start scanning if we aren't already scanning
     bluetooth.scan();
 
-    var devices = bluetooth.foundDevices.entries.map((device) => DeviceCard(
-        name: device.value,
-        mac: device.key,
-        isConnecting: bluetooth.connectedDeviceId == device.key &&
-            bluetooth.connectionState == BluetoothConnectionState.Connecting,
-        isConnected: bluetooth.connectedDeviceId == device.key &&
-            bluetooth.connectionState == BluetoothConnectionState.Connected,
-        onPressed: () {
-          bluetooth.connectToDevice(device.key, onSuccess: () async {
-            final prefs = await SharedPreferences.getInstance();
-            await prefs.setString('connectedDeviceId', device.key);
+    var devices = bluetooth.foundDevices.entries
+        .where((device) => device.value == "Gaia Plant Sensor")
+        .map((device) => DeviceCard(
+            name: device.value,
+            mac: device.key,
+            isConnecting: bluetooth.connectedDeviceId == device.key &&
+                bluetooth.connectionState ==
+                    BluetoothConnectionState.connecting,
+            isConnected: bluetooth.connectedDeviceId == device.key &&
+                bluetooth.connectionState == BluetoothConnectionState.connected,
+            onPressed: () {
+              bluetooth.connectToDevice(device.key, onSuccess: () async {
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.setString('connectedDeviceId', device.key);
 
-            Future.delayed(const Duration(seconds: 1), () {
-              Navigator.popUntil(context, ModalRoute.withName('/'));
-            });
-          });
-        }));
+                Future.delayed(const Duration(seconds: 1), () {
+                  Navigator.popUntil(context, ModalRoute.withName('/'));
+                  Navigator.pushNamed(context, '/');
+                });
+              });
+            }));
 
-    return HeaderPage("Connect Sensor", <Widget>[
-      const SizedBox(height: 20),
-      const Typography.Title("Nearby devices"),
-      const SizedBox(height: 15),
-      ...devices
-    ]);
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: HeaderPage("Connect Sensor", <Widget>[
+        const SizedBox(height: 20),
+        const Typography.Title("Nearby devices"),
+        const SizedBox(height: 15),
+        ...devices
+      ]),
+    );
   }
 }

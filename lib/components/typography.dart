@@ -30,9 +30,6 @@ class Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(MediaQuery.of(context).size.width);
-    print(MediaQuery.of(context).size.height);
-
     return Container(
       height: 80,
       width: MediaQuery.of(context).size.width,

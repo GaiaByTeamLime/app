@@ -2,9 +2,37 @@ import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'dart:typed_data';
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-// ignore: constant_identifier_names
-enum BluetoothConnectionState { Idle, Scanning, Connecting, Connected }
+enum BluetoothConnectionState { idle, scanning, connecting, connected }
+
+enum BluetoothCharacteristic {
+  illumination,
+  humidity,
+  temperature,
+  voltage,
+  soilHumidity,
+  soilSalt
+}
+
+extension BluetoothCharacteristicExtention on BluetoothCharacteristic {
+  String get uuid {
+    switch (this) {
+      case BluetoothCharacteristic.illumination:
+        return "9A1A0001-76E2-4C05-AA14-81629336ACB8";
+      case BluetoothCharacteristic.humidity:
+        return "9A1A0002-76E2-4C05-AA14-81629336ACB8";
+      case BluetoothCharacteristic.temperature:
+        return "9A1A0003-76E2-4C05-AA14-81629336ACB8";
+      case BluetoothCharacteristic.voltage:
+        return "9A1A0004-76E2-4C05-AA14-81629336ACB8";
+      case BluetoothCharacteristic.soilHumidity:
+        return "9A1A0005-76E2-4C05-AA14-81629336ACB8";
+      case BluetoothCharacteristic.soilSalt:
+        return "9A1A0006-76E2-4C05-AA14-81629336ACB8";
+    }
+  }
+}
 
 class Bluetooth extends ChangeNotifier {
   final flutterReactiveBle = FlutterReactiveBle();
@@ -15,16 +43,20 @@ class Bluetooth extends ChangeNotifier {
 
   Map<String, String> foundDevices = {};
 
-  Map<String, double> characteristics = {
-    "9A1A0001-76E2-4C05-AA14-81629336ACB8": 0.0,
-    "9A1A0002-76E2-4C05-AA14-81629336ACB8": 0.0,
-    "9A1A0003-76E2-4C05-AA14-81629336ACB8": 0.0,
-    "9A1A0004-76E2-4C05-AA14-81629336ACB8": 0.0,
-    "9A1A0005-76E2-4C05-AA14-81629336ACB8": 0.0,
-    "9A1A0006-76E2-4C05-AA14-81629336ACB8": 0.0
+  // ignore: prefer_final_fields
+  Map<BluetoothCharacteristic, double> _characteristics = {
+    BluetoothCharacteristic.illumination: 0.0,
+    BluetoothCharacteristic.humidity: 0.0,
+    BluetoothCharacteristic.temperature: 0.0,
+    BluetoothCharacteristic.voltage: 0.0,
+    BluetoothCharacteristic.soilHumidity: 0.0,
+    BluetoothCharacteristic.soilSalt: 0.0
   };
 
-  var connectionState = BluetoothConnectionState.Idle;
+  double getCharacteristic(BluetoothCharacteristic characteristic) =>
+      _characteristics[characteristic]!;
+
+  var connectionState = BluetoothConnectionState.idle;
 
   @override
   void dispose() {
@@ -35,7 +67,7 @@ class Bluetooth extends ChangeNotifier {
 
   void scan() {
     print('scan called, $connectionState');
-    if (connectionState != BluetoothConnectionState.Idle) return;
+    if (connectionState != BluetoothConnectionState.idle) return;
     foundDevices = {};
     _deviceScanStreamSubscription?.cancel();
 
@@ -47,26 +79,27 @@ class Bluetooth extends ChangeNotifier {
       }
     });
 
-    connectionState = BluetoothConnectionState.Scanning;
+    connectionState = BluetoothConnectionState.scanning;
   }
 
   void cancelScanning() {
     _deviceScanStreamSubscription?.cancel();
-    connectionState = BluetoothConnectionState.Idle;
+    connectionState = BluetoothConnectionState.idle;
     connectedDeviceId = null;
   }
 
   void disconnect() {
     _deviceConnectionStreamSubscription?.cancel();
-    connectionState = BluetoothConnectionState.Idle;
+    connectionState = BluetoothConnectionState.idle;
     connectedDeviceId = null;
   }
 
   void connectToDevice(String deviceId, {void Function()? onSuccess}) {
-    if (connectionState != BluetoothConnectionState.Scanning) return;
+    print('connect to device $deviceId with state $connectionState');
+    if (connectionState != BluetoothConnectionState.scanning) return;
 
     cancelScanning();
-    connectionState = BluetoothConnectionState.Connecting;
+    connectionState = BluetoothConnectionState.connecting;
     connectedDeviceId = deviceId;
     notifyListeners();
 
@@ -74,15 +107,17 @@ class Bluetooth extends ChangeNotifier {
         .connectToDevice(
             id: deviceId, connectionTimeout: const Duration(seconds: 120))
         .listen((connection) {
+      print('Connection update: $connection');
       switch (connection.connectionState) {
         case DeviceConnectionState.connecting:
-          connectionState = BluetoothConnectionState.Connecting;
+          connectionState = BluetoothConnectionState.connecting;
           notifyListeners();
           break;
 
         case DeviceConnectionState.connected:
           Future.delayed(const Duration(seconds: 2), () {
-            connectionState = BluetoothConnectionState.Connected;
+            print('Connection successful!');
+            connectionState = BluetoothConnectionState.connected;
             _registerCharacteristics(deviceId);
             onSuccess?.call();
             notifyListeners();
@@ -94,19 +129,21 @@ class Bluetooth extends ChangeNotifier {
           break;
 
         case DeviceConnectionState.disconnected:
-          connectionState = BluetoothConnectionState.Idle;
+          connectionState = BluetoothConnectionState.idle;
           connectedDeviceId = null;
           notifyListeners();
           break;
       }
+    }, onError: (e) {
+      print('Error in listening to device! $e');
     });
   }
 
   void _registerCharacteristics(String deviceId) {
-    for (final characteristic in characteristics.keys) {
+    for (final characteristic in _characteristics.keys) {
       final qualifiedCharacteristic = QualifiedCharacteristic(
-          serviceId: Uuid.parse(characteristic),
-          characteristicId: Uuid.parse(characteristic),
+          serviceId: Uuid.parse(characteristic.uuid),
+          characteristicId: Uuid.parse(characteristic.uuid),
           deviceId: deviceId);
 
       flutterReactiveBle
@@ -116,12 +153,21 @@ class Bluetooth extends ChangeNotifier {
     }
   }
 
-  void Function(Uint8List) onUpdate(String uuid) {
+  void Function(Uint8List) onUpdate(BluetoothCharacteristic characteristic) {
     return (response) {
       var value = response.buffer.asFloat64List()[0];
-      characteristics[uuid] = value;
+      _characteristics[characteristic] = value;
 
       notifyListeners();
     };
+  }
+
+  Future<void> connectToStoredDevice() async {
+    final prefs = await SharedPreferences.getInstance();
+    var connectedDeviceId = prefs.getString('connectedDeviceId') ?? "";
+    if (connectedDeviceId == "") throw "No connected device!";
+
+    scan();
+    connectToDevice(connectedDeviceId);
   }
 }

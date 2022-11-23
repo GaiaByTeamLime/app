@@ -75,7 +75,7 @@ class Gaia extends StatelessWidget {
             fontFamily: 'Poppins',
           ),
           themeMode: ThemeMode.system,
-          initialRoute: '/test',
+          initialRoute: '/',
           routes: {
             '/': (context) => HomePage(),
             '/settings': (context) => const SettingsPage(),

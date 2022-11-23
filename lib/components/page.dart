@@ -3,17 +3,18 @@ import 'package:flutter/material.dart';
 import '../components/typography.dart' as Typography;
 
 class HeaderPage extends StatelessWidget {
-String title;
-List<Widget> children;
+  String title;
+  List<Widget> children;
   HeaderPage(this.title, this.children, {super.key});
-
 
   @override
   Widget build(BuildContext context) {
-  return GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () { FocusScope.of(context).requestFocus(new FocusNode()); },
-            child: Scaffold(
+    return GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          FocusScope.of(context).requestFocus(FocusNode());
+        },
+        child: Scaffold(
             key: key,
             body: Container(
               decoration: const BoxDecoration(
@@ -50,5 +51,5 @@ List<Widget> children;
                     ]),
               )),
             )));
-}
+  }
 }
