@@ -45,6 +45,21 @@ class _SettingsPageState extends State<SettingsPage> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
+                            ElevatedButton(
+                                onPressed: () async {
+                                  final prefs =
+                                      await SharedPreferences.getInstance();
+                                  prefs.setString('connectedDeviceId', "");
+                                },
+                                child: const Text('delete conn')),
+                            ElevatedButton(
+                                onPressed: () async {
+                                  final prefs =
+                                      await SharedPreferences.getInstance();
+                                  prefs.setDouble('dry', 0);
+                                  prefs.setDouble('wet', 0);
+                                },
+                                child: const Text('delete calibration')),
                             const Text("Sensor Information",
                                 style: TextStyle(fontSize: 20)),
                             const SizedBox(height: 20),
