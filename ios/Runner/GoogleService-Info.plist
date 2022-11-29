@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>1086165243324-a9oqc8p4b3nq3savumpkkibi64qa6mno.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.1086165243324-a9oqc8p4b3nq3savumpkkibi64qa6mno</string>
+	<key>API_KEY</key>
+	<string>AIzaSyB7FfphG_airPpSMxrY9FsArMO2MS--OD4</string>
+	<key>GCM_SENDER_ID</key>
+	<string>1086165243324</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.gaia</string>
+	<key>PROJECT_ID</key>
+	<string>gaia-4509e</string>
+	<key>STORAGE_BUCKET</key>
+	<string>gaia-4509e.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:1086165243324:ios:2af779b5f34b37077407b9</string>
+</dict>
+</plist>

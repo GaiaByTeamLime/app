@@ -109,6 +109,17 @@ fi
 
 export PATH="$PWD/.tools/bin/flutter/bin:$PATH"
 
+# Firebase tools
+
+if [ ! -f ".tools/bin/firebase" ]; then
+	wget \
+		-O .tools/bin/firebase \
+		https://github.com/firebase/firebase-tools/releases/download/v11.16.1/firebase-tools-linux
+	chmod +x .tools/bin/firebase
+fi
+
+export PATH="$PWD/.tools/bin:$PATH"
+
 rm -rf ".tools/tmp/{*,.*}"
 
 RCFILE=".$(basename $SHELL)rc"

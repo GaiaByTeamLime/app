@@ -32,6 +32,8 @@ dependencies:
   maybe: ^0.4.0
   flex_color_scheme: ^5.1.0
   provider: any
+  firebase_core: ^2.3.0
+  firebase_auth: ^4.1.4
 
 dev_dependencies:
   flutter_test:

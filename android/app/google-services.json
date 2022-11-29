@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "1086165243324",
+    "project_id": "gaia-4509e",
+    "storage_bucket": "gaia-4509e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1086165243324:android:fad1eb0ed5af0f717407b9",
+        "android_client_info": {
+          "package_name": "com.example.gaia"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1086165243324-5eck3mgkb9l1kndmjvm0qen8huh984q5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCG3P7CqYQoZ_4BlJIDknQg27jF6VgQ6FE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1086165243324-5eck3mgkb9l1kndmjvm0qen8huh984q5.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1086165243324-a9oqc8p4b3nq3savumpkkibi64qa6mno.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.gaia"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
