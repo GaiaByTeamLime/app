@@ -2,30 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 // ignore: library_prefixes
 import '../bluetooth.dart';
+import '../components/bobbie_builder.dart';
+// ignore: library_prefixes
 import '../components/typography.dart' as Typography;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../components/sensor_card.dart';
-import '../components/bottom_navigation.dart';
 import '../components/page.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({super.key});
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class HomePageAction {
-  HomePageAction() {}
+  HomePageAction();
 
   Widget build(BuildContext context) {
-    return const Text('');
+    return ScrollableHeaderPage('', []);
   }
 }
 
 class RedirectAction extends HomePageAction {
   String redirectTo;
   RedirectAction(this.redirectTo);
+
+  @override
+  Widget build(BuildContext context) {
+    Future.delayed(Duration.zero, () {
+      Navigator.pushNamed(context, redirectTo);
+    });
+
+    return super.build(context);
+  }
 }
 
 class DataAction extends HomePageAction {
@@ -45,15 +55,7 @@ class DataAction extends HomePageAction {
     if (sun < 250) message = "Partial sunlight";
     if (sun < 100) message = "Non-direct sunlight";
 
-    var bobby = Image.asset('assets/images/GreenCaracter.png');
-    if (waterLevel < 55) {
-      bobby = Image.asset('assets/images/OrangeCaracter.png');
-    }
-    if (waterLevel < 10) {
-      bobby = Image.asset('assets/images/RedCaracter.png');
-    }
-
-    return HeaderPage(
+    return ScrollableHeaderPage(
       "Bobbie",
       <Widget>[
         Row(children: <Widget>[
@@ -69,12 +71,13 @@ class DataAction extends HomePageAction {
                 Navigator.pushNamed(context, '/edit');
               },
               icon: const Icon(Icons.edit),
-              label: const Text('Edit'),
+              label:
+                  const SizedBox(width: 50, child: Center(child: Text('Edit'))),
             ),
           ),
         ]),
-        SizedBox(height: 332, child: Center(child: bobby)),
-        Text('${bluetooth.connectedDeviceId}: ${bluetooth.connectionState}'),
+        BobbieBuilder(
+            waterLevel: waterLevel, pot: 1, face: 1, plant: 1, color: 1),
         const SizedBox(height: 25),
         Row(
           children: <Widget>[
@@ -99,15 +102,28 @@ class DataAction extends HomePageAction {
         Center(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const <Widget>[
-              Chip(label: Text('Placement: No direct sunlight')),
-              Chip(label: Text('Watering: Every 4 days')),
-              Chip(label: Text('Scientific Name: Spider Plant')),
-              Chip(label: Text('Difficulty: Easy')),
+            children: <Widget>[
+              Chip(label: Text('MAC: ${bluetooth.connectedDeviceId}')),
+              Chip(
+                  label: Text(
+                      'State: ${bluetooth.connectionState.toString().replaceAll(RegExp(r"BluetoothConnectionState."), "")}')),
             ],
           ),
         ),
         const SizedBox(height: 56),
+        ElevatedButton(
+            onPressed: () async {
+              final prefs = await SharedPreferences.getInstance();
+              prefs.setString('connectedDeviceId', "");
+            },
+            child: const Text('delete conn')),
+        ElevatedButton(
+            onPressed: () async {
+              final prefs = await SharedPreferences.getInstance();
+              prefs.setDouble('dry', 0);
+              prefs.setDouble('wet', 0);
+            },
+            child: const Text('delete calibration')),
       ],
     );
   }
@@ -152,7 +168,7 @@ class _HomePageState extends State<HomePage> {
               if (snapshot.hasData) {
                 return snapshot.data!.build(context);
               } else {
-                return const Text('Loading!');
+                return ScrollableHeaderPage("", []);
               }
             }));
   }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -6,7 +7,6 @@ import '../components/page.dart';
 // ignore: library_prefixes
 import '../components/typography.dart' as Typography;
 import 'dart:async';
-import 'dart:math';
 
 class CalibratePage extends StatefulWidget {
   const CalibratePage({Key? key}) : super(key: key);
@@ -16,15 +16,15 @@ class CalibratePage extends StatefulWidget {
 }
 
 enum CalibratePageStage {
-  SensorPositioning,
-  InitialRead,
-  WaterYourPlant,
-  WateredReading,
-  Done
+  sensorPositioning,
+  initialRead,
+  waterYourPlant,
+  wateredReading,
+  done
 }
 
 class _CalibratePageState extends State<CalibratePage> {
-  var stage = CalibratePageStage.SensorPositioning;
+  var stage = CalibratePageStage.sensorPositioning;
 
   @override
   Widget build(BuildContext context) {
@@ -38,51 +38,51 @@ class _CalibratePageState extends State<CalibratePage> {
 
   Widget _getPage(Bluetooth bluetooth) {
     switch (stage) {
-      case CalibratePageStage.SensorPositioning:
-        return SensorPositioning_CalibratePage(bluetooth, () {
+      case CalibratePageStage.sensorPositioning:
+        return SensorPositioningCalibratePage(bluetooth, () {
           setState(() {
-            stage = CalibratePageStage.InitialRead;
+            stage = CalibratePageStage.initialRead;
           });
         });
 
-      case CalibratePageStage.InitialRead:
-        return InitialRead_CalibratePage(bluetooth, () {
+      case CalibratePageStage.initialRead:
+        return InitialReadCalibratePage(bluetooth, () {
           setState(() {
-            stage = CalibratePageStage.WaterYourPlant;
+            stage = CalibratePageStage.waterYourPlant;
           });
         });
 
-      case CalibratePageStage.WaterYourPlant:
-        return WaterYourPlant_CalibratePage(bluetooth, () {
+      case CalibratePageStage.waterYourPlant:
+        return WaterYourPlantCalibratePage(bluetooth, () {
           setState(() {
-            stage = CalibratePageStage.WateredReading;
+            stage = CalibratePageStage.wateredReading;
           });
         });
 
-      case CalibratePageStage.WateredReading:
-        return WateredReading_CalibratePage(bluetooth, () {
+      case CalibratePageStage.wateredReading:
+        return WateredReadingCalibratePage(bluetooth, () {
           setState(() {
-            stage = CalibratePageStage.Done;
+            stage = CalibratePageStage.done;
           });
         });
 
-      case CalibratePageStage.Done:
-        return Done_CalibratePage(bluetooth, () {
+      case CalibratePageStage.done:
+        return DoneCalibratePage(bluetooth, () {
           Navigator.popUntil(context, ModalRoute.withName('/'));
         });
     }
   }
 }
 
-class SensorPositioning_CalibratePage extends StatelessWidget {
+class SensorPositioningCalibratePage extends StatelessWidget {
   final void Function() nextStage;
   final Bluetooth bluetooth;
-  const SensorPositioning_CalibratePage(this.bluetooth, this.nextStage,
+  const SensorPositioningCalibratePage(this.bluetooth, this.nextStage,
       {super.key});
 
   @override
   Widget build(BuildContext context) {
-    return HeaderPage("Sensor Setup", <Widget>[
+    return ScrollableHeaderPage("Sensor Setup", <Widget>[
       const SizedBox(height: 20),
       const Typography.Title("Follow the steps", textAlign: TextAlign.center),
       const SizedBox(height: 30),
@@ -105,20 +105,26 @@ class SensorPositioning_CalibratePage extends StatelessWidget {
           child: const Text("Continue"),
         ),
       ),
+      ElevatedButton(
+          onPressed: () async {
+            final prefs = await SharedPreferences.getInstance();
+            prefs.setString('connectedDeviceId', "");
+          },
+          child: const Text('delete conn')),
     ]);
   }
 }
 
-class InitialRead_CalibratePage extends StatefulWidget {
+class InitialReadCalibratePage extends StatefulWidget {
   final void Function() nextStage;
   final Bluetooth bluetooth;
-  const InitialRead_CalibratePage(this.bluetooth, this.nextStage, {super.key});
+  const InitialReadCalibratePage(this.bluetooth, this.nextStage, {super.key});
 
   @override
-  State<StatefulWidget> createState() => InitialRead_CalibratePageState();
+  State<StatefulWidget> createState() => InitialReadCalibratePageState();
 }
 
-class InitialRead_CalibratePageState extends State<InitialRead_CalibratePage> {
+class InitialReadCalibratePageState extends State<InitialReadCalibratePage> {
   var loading = false;
   Timer? timer;
 
@@ -138,7 +144,9 @@ class InitialRead_CalibratePageState extends State<InitialRead_CalibratePage> {
       if (reading != 0) {
         timer.cancel();
         final prefs = await SharedPreferences.getInstance();
-        print('Dry value: $reading');
+        if (kDebugMode) {
+          print('Dry value: $reading');
+        }
         await prefs.setDouble('dry', reading);
 
         widget.nextStage();
@@ -148,7 +156,7 @@ class InitialRead_CalibratePageState extends State<InitialRead_CalibratePage> {
 
   @override
   Widget build(BuildContext context) {
-    return HeaderPage("Sensor Setup", <Widget>[
+    return ScrollableHeaderPage("Sensor Setup", <Widget>[
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30),
         child: Column(
@@ -169,7 +177,9 @@ class InitialRead_CalibratePageState extends State<InitialRead_CalibratePage> {
                 child: SizedBox(
                     width: 50,
                     height: 50,
-                    child: loading ? CircularProgressIndicator() : Text('')),
+                    child: loading
+                        ? const CircularProgressIndicator()
+                        : const Text('')),
               ),
               const SizedBox(height: 30),
               Center(
@@ -184,15 +194,15 @@ class InitialRead_CalibratePageState extends State<InitialRead_CalibratePage> {
   }
 }
 
-class WaterYourPlant_CalibratePage extends StatelessWidget {
+class WaterYourPlantCalibratePage extends StatelessWidget {
   final void Function() nextStage;
   final Bluetooth bluetooth;
-  const WaterYourPlant_CalibratePage(this.bluetooth, this.nextStage,
+  const WaterYourPlantCalibratePage(this.bluetooth, this.nextStage,
       {super.key});
 
   @override
   Widget build(BuildContext context) {
-    return HeaderPage("Sensor Setup", <Widget>[
+    return ScrollableHeaderPage("Sensor Setup", <Widget>[
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30),
         child: Column(
@@ -226,18 +236,18 @@ class WaterYourPlant_CalibratePage extends StatelessWidget {
   }
 }
 
-class WateredReading_CalibratePage extends StatefulWidget {
+class WateredReadingCalibratePage extends StatefulWidget {
   final void Function() nextStage;
   final Bluetooth bluetooth;
-  const WateredReading_CalibratePage(this.bluetooth, this.nextStage,
+  const WateredReadingCalibratePage(this.bluetooth, this.nextStage,
       {super.key});
 
   @override
-  State<StatefulWidget> createState() => _WateredReading_CalibratePageState();
+  State<StatefulWidget> createState() => _WateredReadingCalibratePageState();
 }
 
-class _WateredReading_CalibratePageState
-    extends State<WateredReading_CalibratePage> {
+class _WateredReadingCalibratePageState
+    extends State<WateredReadingCalibratePage> {
   var timeLeft = 10;
   Timer? timer;
 
@@ -255,7 +265,9 @@ class _WateredReading_CalibratePageState
         if (reading != 0) {
           timer.cancel();
           final prefs = await SharedPreferences.getInstance();
-          print('Wet value: $reading');
+          if (kDebugMode) {
+            print('Wet value: $reading');
+          }
           await prefs.setDouble('wet', reading);
 
           widget.nextStage();
@@ -275,7 +287,7 @@ class _WateredReading_CalibratePageState
   Widget build(BuildContext context) {
     if (timer == null) timerStart();
 
-    return HeaderPage("Sensor Setup", <Widget>[
+    return ScrollableHeaderPage("Sensor Setup", <Widget>[
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30),
         child: Column(
@@ -317,14 +329,14 @@ class _WateredReading_CalibratePageState
   }
 }
 
-class Done_CalibratePage extends StatelessWidget {
+class DoneCalibratePage extends StatelessWidget {
   final void Function() nextStage;
   final Bluetooth bluetooth;
-  const Done_CalibratePage(this.bluetooth, this.nextStage, {super.key});
+  const DoneCalibratePage(this.bluetooth, this.nextStage, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    return HeaderPage("Sensor Setup", <Widget>[
+    return ScrollableHeaderPage("Sensor Setup", <Widget>[
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30),
         child: Column(

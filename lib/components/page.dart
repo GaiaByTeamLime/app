@@ -3,53 +3,87 @@ import 'package:flutter/material.dart';
 import '../components/typography.dart' as Typography;
 
 class HeaderPage extends StatelessWidget {
-  String title;
-  List<Widget> children;
-  HeaderPage(this.title, this.children, {super.key});
+  final String title;
+  final Widget child;
+  final List<Widget> extraLayers;
+  const HeaderPage(
+    this.title,
+    this.child, {
+    super.key,
+    this.extraLayers = const [],
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () {
-          FocusScope.of(context).requestFocus(FocusNode());
-        },
-        child: Scaffold(
-            key: key,
-            body: Container(
-              decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                stops: [0, 0.39, 0.4, 1],
-                colors: [
-                  Color(0xFF9ED0B3),
-                  Color(0xFF9ED0B3),
-                  Colors.white,
-                  Colors.white,
-                ],
-              )),
-              child: SafeArea(
-                  child: Container(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        FocusScope.of(context).requestFocus(FocusNode());
+      },
+      child: Scaffold(
+        key: key,
+        body: SizedBox.expand(
+          child: Stack(
+            children: [
+              Container(
                 decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage("assets/images/Gradient.png"),
-                    fit: BoxFit.contain,
-                    alignment: Alignment.topCenter,
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    stops: [0, 0.39, 0.4, 1],
+                    colors: [
+                      Color(0xFF9ED0B3),
+                      Color(0xFF9ED0B3),
+                      Colors.white,
+                      Colors.white,
+                    ],
                   ),
                 ),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.max,
-                    children: <Widget>[
-                      Typography.Header(title),
-                      Expanded(
-                          child: ListView(
-                        padding: const EdgeInsets.symmetric(horizontal: 40),
-                        children: children,
-                      ))
-                    ]),
-              )),
-            )));
+                child: SafeArea(
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage("assets/images/Gradient.png"),
+                        fit: BoxFit.contain,
+                        alignment: Alignment.topCenter,
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.max,
+                      children: <Widget>[
+                        Typography.Header(title),
+                        Expanded(
+                          child: child,
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              ...extraLayers,
+            ],
+          ),
+        ),
+      ),
+    );
   }
+}
+
+class ScrollableHeaderPage extends HeaderPage {
+  final List<Widget> children;
+  final bool padding;
+  ScrollableHeaderPage(
+    String title,
+    this.children, {
+    super.key,
+    this.padding = true,
+  }) : super(
+            title,
+            ListView(
+              padding: padding
+                  ? const EdgeInsets.symmetric(horizontal: 40)
+                  : const EdgeInsets.all(0),
+              children: children,
+            ));
 }

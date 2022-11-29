@@ -43,7 +43,7 @@ class ConnectPage extends StatelessWidget {
 
     return WillPopScope(
       onWillPop: () async => false,
-      child: HeaderPage("Connect Sensor", <Widget>[
+      child: ScrollableHeaderPage("Connect Sensor", <Widget>[
         const SizedBox(height: 20),
         const Typography.Title("Nearby devices"),
         const SizedBox(height: 15),

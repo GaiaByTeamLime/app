@@ -44,6 +44,15 @@ flutter:
   - 'assets/images/'
   - 'assets/images/2x/'
   - 'assets/images/4x/'
+  - 'assets/images/tamagochi/Faces/'
+  - 'assets/images/tamagochi/Faces/2x/'
+  - 'assets/images/tamagochi/Faces/4x/'
+  - 'assets/images/tamagochi/Plants/'
+  - 'assets/images/tamagochi/Plants/2x/'
+  - 'assets/images/tamagochi/Plants/4x/'
+  - 'assets/images/tamagochi/Pots/'
+  - 'assets/images/tamagochi/Pots/2x/'
+  - 'assets/images/tamagochi/Pots/4x/'
   fonts:
   - family: Roboto
     fonts:

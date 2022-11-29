@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'dart:typed_data';
 import 'dart:async';

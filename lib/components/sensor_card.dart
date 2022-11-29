@@ -12,14 +12,14 @@ class SensorCard extends Container {
             padding: const EdgeInsets.symmetric(vertical: 25),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                color: Color(0xFFD9ECE1)),
+                color: const Color(0xFFD9ECE1)),
             child: Column(
               children: <Widget>[
-                Icon(icon, color: Color(0xFF0A5251), size: 60.0),
+                Icon(icon, color: const Color(0xFF0A5251), size: 60.0),
                 const SizedBox(height: 10),
                 enabled
                     ? Text(label,
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Color(0xFF0A5251)))
                     : const Text(''),

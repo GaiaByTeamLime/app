@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Pots" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #a67c52;
+        stroke: #585aa8;
+        stroke-miterlimit: 10;
+        stroke-width: 8px;
+      }
+    </style>
+  </defs>
+  <rect class="cls-1" x="316.74" y="699" width="317.7" height="50.38" rx="6.59" ry="6.59"/>
+  <path class="cls-1" d="M334.39,749.38c8.63,62.61,17.26,125.22,25.89,187.83,77.27,.36,154.54,.72,231.81,1.09,8.24-62.61,16.47-125.22,24.71-187.83-94.13-.36-188.27-.72-282.4-1.09Z"/>
+</svg>

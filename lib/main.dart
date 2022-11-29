@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'bluetooth.dart';
-import 'components/page.dart';
 import 'pages/calibrate.dart';
+import 'pages/edit.dart';
 import 'pages/home.dart';
 import 'pages/settings.dart';
 import 'pages/connect.dart';
@@ -77,10 +77,11 @@ class Gaia extends StatelessWidget {
           themeMode: ThemeMode.system,
           initialRoute: '/',
           routes: {
-            '/': (context) => HomePage(),
+            '/': (context) => const HomePage(),
             '/settings': (context) => const SettingsPage(),
             '/connect': (context) => const ConnectPage(),
             '/calibrate': (context) => const CalibratePage(),
+            '/edit': (context) => const EditPage(),
           },
         ));
   }

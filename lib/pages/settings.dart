@@ -34,7 +34,7 @@ class _SettingsPageState extends State<SettingsPage> {
         child: GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: () {
-              FocusScope.of(context).requestFocus(new FocusNode());
+              FocusScope.of(context).requestFocus(FocusNode());
             },
             child: Scaffold(
               bottomNavigationBar: BottomNavigation(1),
