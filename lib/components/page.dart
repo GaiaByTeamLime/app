@@ -2,6 +2,37 @@ import 'package:flutter/material.dart';
 // ignore: library_prefixes
 import '../components/typography.dart' as Typography;
 
+class EmptyPage extends StatelessWidget {
+  final List<Widget> children;
+  const EmptyPage({required this.children, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        FocusScope.of(context).requestFocus(FocusNode());
+      },
+      child: Scaffold(
+        body: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          color: Colors.white,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 120),
+              Image.asset('assets/images/logo.png'),
+              const SizedBox(height: 40),
+              ...children
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class HeaderPage extends StatelessWidget {
   final String title;
   final Widget child;
