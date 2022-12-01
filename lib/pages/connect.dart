@@ -35,7 +35,6 @@ class ConnectPage extends StatelessWidget {
                 await prefs.setString('connectedDeviceId', device.key);
 
                 Future.delayed(const Duration(seconds: 1), () {
-                  Navigator.popUntil(context, ModalRoute.withName('/'));
                   Navigator.pushNamed(context, '/');
                 });
               });

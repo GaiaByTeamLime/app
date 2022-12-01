@@ -17,14 +17,13 @@ class EmptyPage extends StatelessWidget {
         body: Container(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           color: Colors.white,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+          child: ListView(
             children: [
-              const SizedBox(height: 120),
+              const SizedBox(height: 100),
               Image.asset('assets/images/logo.png'),
               const SizedBox(height: 40),
-              ...children
+              ...children,
+              const SizedBox(height: 40),
             ],
           ),
         ),

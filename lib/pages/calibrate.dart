@@ -105,12 +105,6 @@ class SensorPositioningCalibratePage extends StatelessWidget {
           child: const Text("Continue"),
         ),
       ),
-      ElevatedButton(
-          onPressed: () async {
-            final prefs = await SharedPreferences.getInstance();
-            prefs.setString('connectedDeviceId', "");
-          },
-          child: const Text('delete conn')),
     ]);
   }
 }
@@ -128,7 +122,15 @@ class InitialReadCalibratePageState extends State<InitialReadCalibratePage> {
   var loading = false;
   Timer? timer;
 
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
+
   void timerStart() {
+    // TODO: If this timer takes too long, we should ask the user to a) reset the device or
+    // b) reset the connection and reconnect.
     timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
       setState(() {
         loading = true;
@@ -248,8 +250,14 @@ class WateredReadingCalibratePage extends StatefulWidget {
 
 class _WateredReadingCalibratePageState
     extends State<WateredReadingCalibratePage> {
-  var timeLeft = 10;
+  var timeLeft = 300;
   Timer? timer;
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
 
   void timerStart() {
     timer = Timer.periodic(const Duration(seconds: 1), (timer) async {

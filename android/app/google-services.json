@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1086165243324-421nt9a7dkdd9224dak1pjpquj9om0mo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.gaia",
+            "certificate_hash": "47bdfaaf93aa706ef39e0d3f49f74b376d13141e"
+          }
+        },
+        {
           "client_id": "1086165243324-5eck3mgkb9l1kndmjvm0qen8huh984q5.apps.googleusercontent.com",
           "client_type": 3
         }

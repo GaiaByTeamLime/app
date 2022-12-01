@@ -27,7 +27,7 @@ enum EditPageTab {
 
 final editPageTabSize = {
   EditPageTab.plant: 6,
-  EditPageTab.pot: 6,
+  EditPageTab.pot: 18,
   EditPageTab.face: 3,
 };
 
@@ -65,17 +65,17 @@ extension EditPageTabExtention on EditPageTab {
                 borderRadius: BorderRadius.circular(8.0),
               ),
             ),
-            onPressed: () => onPressed(i + 1),
-            child: Image.asset(formatPath(i + 1), width: 100, height: 100),
+            onPressed: () => onPressed(i),
+            child: Image.asset(formatPath(i), width: 100, height: 100),
           ),
         ),
       );
 }
 
 class _EditPageState extends State<EditPage> {
-  var face = 1;
-  var plant = 1;
-  var pot = 1;
+  var face = 0;
+  var plant = 0;
+  var pot = 0;
   var active = EditPageTab.plant;
   var currentTabHeight = 0.0;
 
@@ -84,36 +84,22 @@ class _EditPageState extends State<EditPage> {
     double height = MediaQuery.of(context).size.height;
 
     var percOfScreen = (currentTabHeight + 180) / height;
-    var bobbySize = (height - 500) / height;
+    var bobbySize = (height - 450) / height;
+    var maxScreenHeight = (height - 110) / height;
 
     double minChildSize = min(percOfScreen, bobbySize);
-    double maxChildSize = min(1, percOfScreen);
+    double maxChildSize = min(maxScreenHeight, percOfScreen);
     double initialChildSize = minChildSize;
 
     return HeaderPage(
       "Bobbie",
-      Column(
-        children: <Widget>[
-          Row(children: <Widget>[
-            const Expanded(child: SizedBox()),
-            ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                primary: Theme.of(context).colorScheme.onPrimary,
-                onPrimary: Theme.of(context).colorScheme.primary,
-              ),
-              onPressed: () {
-                Navigator.popUntil(context, ModalRoute.withName('/'));
-              },
-              icon: const Icon(Icons.close),
-              label: const SizedBox(
-                width: 50,
-                child: Center(child: Text('Close')),
-              ),
-            ),
-          ]),
-          BobbieBuilder(
-              waterLevel: 100, pot: pot, face: face, plant: plant, color: 1),
-        ],
+      Padding(
+        padding: const EdgeInsets.fromLTRB(40, 0, 40, 0),
+        child: Column(
+          children: [
+            BobbieBuilder(waterLevel: 100, pot: pot, face: face, plant: plant),
+          ],
+        ),
       ),
       extraLayers: [
         DraggableScrollableSheet(
@@ -139,50 +125,7 @@ class _EditPageState extends State<EditPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Container(
-                          padding: const EdgeInsets.only(left: 6),
-                          child: Text(
-                            active.name,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                              color: Color(0xFF0A5251),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-                        Row(
-                          children: EditPageTab.values
-                              .map<Widget>(
-                                (i) => Container(
-                                    margin: const EdgeInsets.only(right: 10),
-                                    child: TextButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          active = i;
-                                        });
-                                      },
-                                      style: active == i
-                                          ? TextButton.styleFrom(
-                                              primary: const Color(0xFFD9ECE1),
-                                              backgroundColor:
-                                                  const Color(0xFF588585),
-                                              padding: const EdgeInsets.all(0),
-                                            )
-                                          : TextButton.styleFrom(
-                                              backgroundColor:
-                                                  const Color(0xFFD9ECE1),
-                                              primary: const Color(0xFF588585),
-                                              padding: const EdgeInsets.all(0),
-                                            ),
-                                      child: Icon(i.icon),
-                                    )),
-                              )
-                              .toList(),
-                        ),
-                        const SizedBox(height: 15),
-                        Container(height: 1, color: const Color(0xFF6A9697)),
-                        const SizedBox(height: 15),
+                        const SizedBox(height: 110),
                         WidgetSize(
                           onChange: (Size size) {
                             setState(() {
@@ -209,17 +152,70 @@ class _EditPageState extends State<EditPage> {
                     ),
                   ),
                 ),
-                Center(
-                  heightFactor: 0,
-                  child: Container(
-                    height: 5,
-                    width: 50,
-                    decoration: const BoxDecoration(
-                      color: Color(0x99FFFFFF),
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                    ),
+                Container(
+                  color: const Color(0xFF9ED0B3),
+                  height: 95,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.only(left: 6),
+                        child: Text(
+                          active.name,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: Color(0xFF0A5251),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Row(
+                        children: EditPageTab.values
+                            .map<Widget>(
+                              (i) => Container(
+                                  margin: const EdgeInsets.only(right: 10),
+                                  child: TextButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        active = i;
+                                      });
+                                    },
+                                    style: active == i
+                                        ? TextButton.styleFrom(
+                                            primary: const Color(0xFFD9ECE1),
+                                            backgroundColor:
+                                                const Color(0xFF588585),
+                                            padding: const EdgeInsets.all(0),
+                                          )
+                                        : TextButton.styleFrom(
+                                            backgroundColor:
+                                                const Color(0xFFD9ECE1),
+                                            primary: const Color(0xFF588585),
+                                            padding: const EdgeInsets.all(0),
+                                          ),
+                                    child: Icon(i.icon),
+                                  )),
+                            )
+                            .toList(),
+                      ),
+                      const SizedBox(height: 15),
+                      Container(height: 1, color: const Color(0xFF6A9697)),
+                    ],
                   ),
                 ),
+                Align(
+                  alignment: Alignment.topRight,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    child: IconButton(
+                      icon: const Icon(Icons.close, color: Color(0xFF588585)),
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/');
+                      },
+                    ),
+                  ),
+                )
               ],
             ),
           ),

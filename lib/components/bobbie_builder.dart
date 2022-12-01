@@ -5,13 +5,11 @@ class BobbieBuilder extends StatelessWidget {
   final int face;
   final int pot;
   final int plant;
-  final int color;
   const BobbieBuilder(
       {required this.waterLevel,
       required this.face,
       required this.pot,
       required this.plant,
-      required this.color,
       super.key});
 
   @override

@@ -26,6 +26,7 @@ class _WidgetSizeState extends State<WidgetSize> {
   }
 
   var widgetKey = GlobalKey();
+  // ignore: prefer_typing_uninitialized_variables
   var oldSize;
 
   void postFrameCallback(_) {
