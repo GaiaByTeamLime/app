@@ -3,14 +3,39 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:gaia/components/bobbie_builder.dart';
 import 'package:gaia/components/widget_size.dart';
+import 'package:provider/provider.dart';
 
 import '../components/page.dart';
+import '../providers/user.dart';
 
-class EditPage extends StatefulWidget {
-  const EditPage({Key? key}) : super(key: key);
+class EditPage extends StatelessWidget {
+  const EditPage({super.key});
 
   @override
-  State<EditPage> createState() => _EditPageState();
+  Widget build(BuildContext context) {
+    return FutureBuilder<User>(
+      future: (() async {
+        User user = Provider.of<User>(context, listen: true);
+        await user.update();
+        return user;
+      })(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return InnerEditPage(snapshot.data!);
+        } else {
+          return ScrollableHeaderPage("Bobbie", const []);
+        }
+      },
+    );
+  }
+}
+
+class InnerEditPage extends StatefulWidget {
+  final User user;
+  const InnerEditPage(this.user, {Key? key}) : super(key: key);
+
+  @override
+  State<InnerEditPage> createState() => _InnerEditPageState();
 }
 
 extension StringExtension on String {
@@ -72,7 +97,7 @@ extension EditPageTabExtention on EditPageTab {
       );
 }
 
-class _EditPageState extends State<EditPage> {
+class _InnerEditPageState extends State<InnerEditPage> {
   var face = 0;
   var plant = 0;
   var pot = 0;
@@ -92,12 +117,17 @@ class _EditPageState extends State<EditPage> {
     double initialChildSize = minChildSize;
 
     return HeaderPage(
-      "Bobbie",
+      "Edit",
       Padding(
         padding: const EdgeInsets.fromLTRB(40, 0, 40, 0),
         child: Column(
           children: [
-            BobbieBuilder(waterLevel: 100, pot: pot, face: face, plant: plant),
+            BobbieBuilder(
+              waterLevel: 100,
+              pot: widget.user.pot,
+              face: widget.user.face,
+              plant: widget.user.plant,
+            ),
           ],
         ),
       ),
@@ -133,19 +163,17 @@ class _EditPageState extends State<EditPage> {
                             });
                           },
                           child: active.tab((i) {
-                            setState(() {
-                              switch (active) {
-                                case EditPageTab.plant:
-                                  plant = i;
-                                  break;
-                                case EditPageTab.pot:
-                                  pot = i;
-                                  break;
-                                case EditPageTab.face:
-                                  face = i;
-                                  break;
-                              }
-                            });
+                            switch (active) {
+                              case EditPageTab.plant:
+                                widget.user.setPlant(i);
+                                break;
+                              case EditPageTab.pot:
+                                widget.user.setPot(i);
+                                break;
+                              case EditPageTab.face:
+                                widget.user.setFace(i);
+                                break;
+                            }
                           }),
                         ),
                       ],
@@ -221,6 +249,9 @@ class _EditPageState extends State<EditPage> {
           ),
         ),
       ],
+      backButton: () {
+        Navigator.pushNamed(context, '/');
+      },
     );
   }
 }

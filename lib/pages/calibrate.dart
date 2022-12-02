@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../bluetooth.dart';
+import '../providers/bluetooth.dart';
 import '../components/page.dart';
 // ignore: library_prefixes
 import '../components/typography.dart' as Typography;

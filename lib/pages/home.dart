@@ -1,8 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' hide User;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-// ignore: library_prefixes
-import '../bluetooth.dart';
+import '../providers/bluetooth.dart';
+import '../providers/user.dart';
 import '../components/bobbie_builder.dart';
 // ignore: library_prefixes
 import '../components/typography.dart' as Typography;
@@ -15,14 +15,45 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Bluetooth bluetooth = Provider.of<Bluetooth>(context, listen: true);
+    return FutureBuilder<User>(
+      future: (() async {
+        User user = Provider.of<User>(context, listen: true);
+        await user.update();
+        return user;
+      })(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return InnerHomePage(snapshot.data!);
+        } else {
+          return ScrollableHeaderPage("Bobbie", const []);
+        }
+      },
+    );
+  }
+}
 
-    var waterLevel = 80;
-    var sun = 100;
+class InnerHomePage extends StatelessWidget {
+  final User user;
+  const InnerHomePage(this.user, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    Bluetooth bluetooth = Provider.of<Bluetooth>(context, listen: true);
+    bluetooth.connectToStoredDevice();
+
+    var current =
+        bluetooth.getCharacteristic(BluetoothCharacteristic.soilHumidity);
+    var waterLevel = 100 - ((current - user.wet) / (user.dry - user.wet) * 100);
+
+    var sunLevel =
+        bluetooth.getCharacteristic(BluetoothCharacteristic.illumination);
 
     var message = "Direct sunlight";
-    if (sun < 250) message = "Partial sunlight";
-    if (sun < 100) message = "Non-direct sunlight";
+    if (sunLevel < 250) message = "Partial sunlight";
+    if (sunLevel < 100) message = "Indirect sunlight";
+
+    var connected =
+        bluetooth.connectionState == BluetoothConnectionState.connected;
 
     return ScrollableHeaderPage(
       "Bobbie",
@@ -31,23 +62,26 @@ class HomePage extends StatelessWidget {
           onTap: () {
             Navigator.pushNamed(context, '/edit');
           },
-          child:
-              BobbieBuilder(waterLevel: waterLevel, pot: 0, face: 0, plant: 0),
+          child: BobbieBuilder(
+              waterLevel: waterLevel.floor(),
+              pot: user.pot,
+              face: user.face,
+              plant: user.plant),
         ),
         const SizedBox(height: 25),
         Row(
           children: <Widget>[
             Expanded(
                 child: SensorCard(
-                    label: '$waterLevel%',
-                    enabled: true,
+                    label: '${waterLevel.floor()}%',
+                    enabled: connected,
                     icon: Icons.water_drop,
                     color: Colors.blue)),
             const SizedBox(width: 10),
             Expanded(
                 child: SensorCard(
                     label: message,
-                    enabled: true,
+                    enabled: connected,
                     icon: Icons.sunny,
                     color: Colors.yellow)),
           ],
@@ -66,33 +100,22 @@ class HomePage extends StatelessWidget {
               Chip(
                   label: Text(
                       'Logged in user: ${FirebaseAuth.instance.currentUser?.uid}')),
+              Chip(label: Text('Dry: ${user.dry}')),
+              Chip(label: Text('Wet: ${user.wet}')),
+              Chip(
+                  label: Text(
+                      'Current: ${bluetooth.getCharacteristic(BluetoothCharacteristic.humidity)}')),
             ],
           ),
         ),
-        const SizedBox(height: 56),
-        ElevatedButton(
-            onPressed: () async {
-              final prefs = await SharedPreferences.getInstance();
-              await prefs.setString('connectedDeviceId', "");
+        const SizedBox(height: 16),
+      ],
+      menuItems: [
+        IconButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/settings');
             },
-            child: const Text('delete connection')),
-        ElevatedButton(
-            onPressed: () async {
-              final prefs = await SharedPreferences.getInstance();
-              await prefs.setDouble('dry', 0);
-              await prefs.setDouble('wet', 0);
-            },
-            child: const Text('delete calibration')),
-        ElevatedButton(
-            onPressed: () async {
-              await FirebaseAuth.instance.signOut();
-            },
-            child: const Text('sign out')),
-        ElevatedButton(
-            onPressed: () async {
-              Navigator.pushNamed(context, '/');
-            },
-            child: const Text('reset')),
+            icon: const Icon(Icons.settings, color: Color(0xFF0A5251)))
       ],
     );
   }

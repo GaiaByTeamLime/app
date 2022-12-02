@@ -6,6 +6,17 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+class SingletonBluetooth {
+  SingletonBluetooth._privateConstructor();
+  static final SingletonBluetooth _instance =
+      SingletonBluetooth._privateConstructor();
+
+  factory SingletonBluetooth() {
+    return _instance;
+  }
+  final flutterReactiveBle = FlutterReactiveBle();
+}
+
 enum BluetoothConnectionState { idle, scanning, connecting, connected }
 
 enum BluetoothCharacteristic {
@@ -37,7 +48,7 @@ extension BluetoothCharacteristicExtention on BluetoothCharacteristic {
 }
 
 class Bluetooth extends ChangeNotifier {
-  final flutterReactiveBle = FlutterReactiveBle();
+  final flutterReactiveBle = SingletonBluetooth().flutterReactiveBle;
   StreamSubscription<DiscoveredDevice>? _deviceScanStreamSubscription;
   StreamSubscription<ConnectionStateUpdate>?
       _deviceConnectionStreamSubscription;
@@ -68,7 +79,6 @@ class Bluetooth extends ChangeNotifier {
   }
 
   void scan() {
-    print('scan called, $connectionState');
     if (connectionState != BluetoothConnectionState.idle) return;
     foundDevices = {};
     _deviceScanStreamSubscription?.cancel();
@@ -151,7 +161,9 @@ class Bluetooth extends ChangeNotifier {
       flutterReactiveBle
           .subscribeToCharacteristic(qualifiedCharacteristic)
           .cast<Uint8List>()
-          .listen(onUpdate(characteristic));
+          .listen(onUpdate(characteristic), onError: (e) {
+        print('Error in adding characteristic! $e');
+      });
     }
   }
 
@@ -165,9 +177,11 @@ class Bluetooth extends ChangeNotifier {
   }
 
   Future<void> connectToStoredDevice() async {
+    if (connectionState != BluetoothConnectionState.idle) return;
+
     final prefs = await SharedPreferences.getInstance();
     var connectedDeviceId = prefs.getString('connectedDeviceId') ?? "";
-    if (connectedDeviceId == "") throw "No connected device!";
+    if (connectedDeviceId == "") return;
 
     scan();
     connectToDevice(connectedDeviceId);

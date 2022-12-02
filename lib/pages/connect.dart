@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../bluetooth.dart';
+import '../providers/bluetooth.dart';
 import '../components/page.dart';
 import '../components/device_card.dart';
 import 'package:provider/provider.dart';

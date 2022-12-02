@@ -1,118 +1,109 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../components/bottom_navigation.dart';
 
-class SettingsPage extends StatefulWidget {
+import '../components/page.dart';
+import '../providers/bluetooth.dart';
+
+class SettingsPage extends StatelessWidget {
   const SettingsPage({Key? key}) : super(key: key);
 
   @override
-  State<SettingsPage> createState() => _SettingsPageState();
-}
-
-class _SettingsPageState extends State<SettingsPage> {
-  var wet = 2600;
-  var dry = 3239;
-  final wetController = TextEditingController();
-  final dryController = TextEditingController();
-
-  _SettingsPageState() {
-    (() async {
-      final prefs = await SharedPreferences.getInstance();
-
-      wet = prefs.getInt('wet') ?? wet;
-      wetController.text = wet.toString();
-
-      dry = prefs.getInt('dry') ?? dry;
-      dryController.text = dry.toString();
-    })();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-        onWillPop: () async => false,
-        child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () {
-              FocusScope.of(context).requestFocus(FocusNode());
-            },
-            child: Scaffold(
-              bottomNavigationBar: BottomNavigation(1),
-              body: SingleChildScrollView(
-                  child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            ElevatedButton(
-                                onPressed: () async {
-                                  final prefs =
-                                      await SharedPreferences.getInstance();
-                                  prefs.setString('connectedDeviceId', "");
-                                },
-                                child: const Text('delete conn')),
-                            ElevatedButton(
-                                onPressed: () async {
-                                  final prefs =
-                                      await SharedPreferences.getInstance();
-                                  prefs.setDouble('dry', 0);
-                                  prefs.setDouble('wet', 0);
-                                },
-                                child: const Text('delete calibration')),
-                            const Text("Sensor Information",
-                                style: TextStyle(fontSize: 20)),
-                            const SizedBox(height: 20),
-                            const Text("Current connection state: xxx"),
-                            const SizedBox(height: 10),
-                            const Text("Sensor value: xxx"),
-                            const SizedBox(height: 35),
-                            const Text("Calibrate Sensor",
-                                style: TextStyle(fontSize: 20)),
-                            const SizedBox(height: 20),
-                            const Text(
-                                "Please put in the values from your sensor in order to calibrate the sensor for your plant."),
-                            const SizedBox(height: 10),
-                            const Text(
-                                "Step 1: Stick your sensor in the pot when the soil is dry."),
-                            const SizedBox(height: 10),
-                            const Text(
-                                "Step 2: Input the maximum value shown above."),
-                            const SizedBox(height: 10),
-                            const Text("Step 3: Water your plant generously."),
-                            const SizedBox(height: 10),
-                            const Text(
-                                "Step 4: Input the minimum value shown above."),
-                            const SizedBox(height: 10),
-                            const Text(
-                                "Step 5: Save your values and your sensor is calibrated"),
-                            const SizedBox(height: 30),
-                            TextField(
-                                controller: dryController,
-                                keyboardType: TextInputType.number,
-                                decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: "Maximum value")),
-                            const SizedBox(height: 20),
-                            TextField(
-                                controller: wetController,
-                                keyboardType: TextInputType.number,
-                                decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: "Minimum value")),
-                            const SizedBox(height: 15),
-                            ElevatedButton(
-                              onPressed: () async {
-                                final prefs =
-                                    await SharedPreferences.getInstance();
-                                wet = int.parse(dryController.text);
-                                dry = int.parse(wetController.text);
-                                await prefs.setInt('wet', wet);
-                                await prefs.setInt('dry', dry);
-                              },
-                              child: const Text('Save'),
-                            ),
-                          ]))),
-            )));
+    Bluetooth bluetooth = Provider.of<Bluetooth>(context, listen: true);
+
+    return ScrollableHeaderPage(
+      "Settings",
+      <Widget>[
+        const SizedBox(height: 20),
+        ElevatedButton(
+          onPressed: () async {
+            await bluetooth.connectToStoredDevice();
+            Navigator.pushNamed(context, '/');
+          },
+          child: Row(
+            children: const [
+              Expanded(child: Text('connect', textAlign: TextAlign.center)),
+              Icon(Icons.arrow_right_alt),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10),
+        ElevatedButton(
+          onPressed: () async {
+            Navigator.pushNamed(context, '/edit');
+          },
+          child: Row(
+            children: const [
+              Expanded(child: Text('edit avatar', textAlign: TextAlign.center)),
+              Icon(Icons.arrow_right_alt),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10),
+        ElevatedButton(
+          onPressed: () async {
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setString('connectedDeviceId', "");
+            Navigator.pushNamed(context, '/');
+          },
+          child: Row(
+            children: const [
+              Expanded(
+                  child: Text('delete stored connection',
+                      textAlign: TextAlign.center)),
+              Icon(Icons.arrow_right_alt),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10),
+        ElevatedButton(
+          onPressed: () async {
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setDouble('dry', 0);
+            await prefs.setDouble('wet', 0);
+            Navigator.pushNamed(context, '/');
+          },
+          child: Row(
+            children: const [
+              Expanded(
+                  child:
+                      Text('delete calibration', textAlign: TextAlign.center)),
+              Icon(Icons.arrow_right_alt),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10),
+        ElevatedButton(
+          onPressed: () async {
+            await FirebaseAuth.instance.signOut();
+            Navigator.pushNamed(context, '/');
+          },
+          child: Row(
+            children: const [
+              Expanded(child: Text('sign out', textAlign: TextAlign.center)),
+              Icon(Icons.arrow_right_alt),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10),
+        ElevatedButton(
+          onPressed: () async {
+            Navigator.pushNamed(context, '/');
+          },
+          child: Row(
+            children: const [
+              Expanded(child: Text('reload app', textAlign: TextAlign.center)),
+              Icon(Icons.arrow_right_alt),
+            ],
+          ),
+        ),
+      ],
+      backButton: () {
+        Navigator.pushNamed(context, '/');
+      },
+    );
   }
 }

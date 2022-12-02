@@ -35,11 +35,17 @@ dependencies:
   firebase_core: ^2.3.0
   firebase_auth: ^4.1.4
   intl_phone_number_input: ^0.7.1
+  cloud_firestore: ^4.1.0
+  cloud_firestore_odm: ^1.0.0-dev.42
+  json_annotation: ^4.7.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
+  build_runner: ^2.3.2
+  cloud_firestore_odm_generator: ^1.0.0-dev.42
+  json_serializable: ^6.5.4
 
 flutter:
   uses-material-design: true

@@ -36,10 +36,14 @@ class HeaderPage extends StatelessWidget {
   final String title;
   final Widget child;
   final List<Widget> extraLayers;
+  final List<Widget> menuItems;
+  final Function()? backButton;
   const HeaderPage(
     this.title,
     this.child, {
     super.key,
+    this.backButton,
+    this.menuItems = const [],
     this.extraLayers = const [],
   });
 
@@ -82,7 +86,8 @@ class HeaderPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.max,
                       children: <Widget>[
-                        Typography.Header(title),
+                        Typography.Header(title,
+                            menuItems: menuItems, backButton: backButton),
                         Expanded(
                           child: child,
                         )
@@ -108,6 +113,9 @@ class ScrollableHeaderPage extends HeaderPage {
     this.children, {
     super.key,
     this.padding = true,
+    super.extraLayers,
+    super.menuItems,
+    super.backButton,
   }) : super(
             title,
             ListView(

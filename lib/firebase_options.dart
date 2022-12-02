@@ -63,7 +63,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1086165243324',
     projectId: 'gaia-4509e',
     storageBucket: 'gaia-4509e.appspot.com',
-    iosClientId: '1086165243324-a9oqc8p4b3nq3savumpkkibi64qa6mno.apps.googleusercontent.com',
+    iosClientId:
+        '1086165243324-a9oqc8p4b3nq3savumpkkibi64qa6mno.apps.googleusercontent.com',
     iosBundleId: 'com.example.gaia',
   );
 }

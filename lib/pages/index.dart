@@ -4,7 +4,7 @@ import 'package:gaia/pages/calibrate.dart';
 import 'package:gaia/pages/connect.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../bluetooth.dart';
+import '../providers/bluetooth.dart';
 import '../components/page.dart';
 import 'home.dart';
 import 'login.dart';

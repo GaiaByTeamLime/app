@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
+import 'providers/user.dart';
 import 'pages/index.dart';
 import 'pages/login.dart';
-import 'bluetooth.dart';
+import 'providers/bluetooth.dart';
 import 'pages/calibrate.dart';
 import 'pages/edit.dart';
 import 'pages/home.dart';
 import 'pages/settings.dart';
-import 'pages/connect.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'pages/connect.dart';
 
 import 'firebase_options.dart';
 
@@ -31,7 +32,11 @@ class Gaia extends StatelessWidget {
         FlexColorScheme.themedSystemNavigationBar(context, opacity: 0.0));
 
     return MultiProvider(
-        providers: [ChangeNotifierProvider.value(value: Bluetooth())],
+        providers: [
+          ChangeNotifierProvider.value(value: Bluetooth()),
+          ChangeNotifierProvider.value(value: User()),
+          // ChangeNotifierProvider.value(value: Storage()),
+        ],
         child: MaterialApp(
           title: 'Gaia',
           theme: FlexThemeData.light(
@@ -59,31 +64,7 @@ class Gaia extends StatelessWidget {
             useMaterial3: true,
             fontFamily: 'Poppins',
           ),
-          darkTheme: FlexThemeData.dark(
-            colors: const FlexSchemeColor(
-              primary: Color(0xff9ed0b3),
-              primaryContainer: Color(0xff006875),
-              secondary: Color(0xfff49954),
-              secondaryContainer: Color(0xffe9456d),
-              tertiary: Color(0xffe9456d),
-              tertiaryContainer: Color(0xfff49954),
-              appBarColor: Color(0xffe9456d),
-              error: Color(0xffcf6679),
-            ),
-            surfaceMode: FlexSurfaceMode.highScaffoldLowSurface,
-            blendLevel: 15,
-            appBarOpacity: 0.90,
-            subThemesData: const FlexSubThemesData(
-              blendOnLevel: 30,
-              switchSchemeColor: SchemeColor.tertiaryContainer,
-              navigationRailBackgroundSchemeColor: SchemeColor.primaryContainer,
-              bottomNavigationBarOpacity: 0.95,
-            ),
-            visualDensity: FlexColorScheme.comfortablePlatformDensity,
-            useMaterial3: true,
-            fontFamily: 'Poppins',
-          ),
-          themeMode: ThemeMode.system,
+          themeMode: ThemeMode.light,
           initialRoute: '/',
           routes: {
             '/': (context) => const IndexPage(),

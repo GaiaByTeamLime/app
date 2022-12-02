@@ -25,8 +25,11 @@ class Title extends Text {
 }
 
 class Header extends StatelessWidget {
-  const Header(this.text, {super.key});
+  const Header(this.text,
+      {this.backButton, this.menuItems = const [], super.key});
   final String text;
+  final List<Widget> menuItems;
+  final Function()? backButton;
 
   @override
   Widget build(BuildContext context) {
@@ -37,17 +40,27 @@ class Header extends StatelessWidget {
           color: Color(0xFF9ED0B3),
           borderRadius: BorderRadius.only(bottomLeft: Radius.circular(40))),
       child: Padding(
-          padding: const EdgeInsets.only(left: 40),
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
+          padding: const EdgeInsets.only(left: 15, right: 15),
+          child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                Text(text,
-                    style: const TextStyle(
-                        color: Color(0xFF0A5251),
-                        fontFamily: 'Poppins',
-                        fontWeight: FontWeight.bold,
-                        fontSize: 28))
+                backButton != null
+                    ? IconButton(
+                        icon: const Icon(Icons.navigate_before),
+                        color: const Color(0xFF0A5251),
+                        onPressed: backButton,
+                        padding: EdgeInsets.zero,
+                      )
+                    : const SizedBox(width: 35),
+                Expanded(
+                    child: Text(text,
+                        style: const TextStyle(
+                            color: Color(0xFF0A5251),
+                            fontFamily: 'Poppins',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 28))),
+                ...menuItems,
               ])),
     );
   }
