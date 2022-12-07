@@ -48,32 +48,43 @@ enum EditPageTab {
   plant,
   pot,
   face,
+  accessories1,
+  accessories2,
 }
 
 final editPageTabSize = {
   EditPageTab.plant: 6,
   EditPageTab.pot: 18,
   EditPageTab.face: 3,
+  EditPageTab.accessories1: 13,
+  EditPageTab.accessories2: 7,
 };
 
 final editPageTabIcon = {
   EditPageTab.plant: Icons.eco,
   EditPageTab.pot: Icons.inventory_2,
   EditPageTab.face: Icons.mood,
+  EditPageTab.accessories1: Icons.home,
+  EditPageTab.accessories2: Icons.home,
 };
 
 extension EditPageTabExtention on EditPageTab {
   String get label => toString().split('.').last;
   String get name => label.capitalize();
-  IconData get icon => editPageTabIcon[this]!;
+  String icon(bool active) =>
+      'assets/images/tamagochi/Icons/$label${active ? '_active' : ''}_test.png';
 
   String formatPath(i) {
     switch (this) {
       case EditPageTab.plant:
       case EditPageTab.pot:
-        return 'assets/images/tamagochi/${name}s/$i.png';
+        return 'assets/images/tamagochi/${name}s/${i}_thumb.png';
+      case EditPageTab.accessories1:
+        return 'assets/images/tamagochi/Accessories/1_${i}_thumb.png';
+      case EditPageTab.accessories2:
+        return 'assets/images/tamagochi/Accessories/2_${i}_thumb.png';
       case EditPageTab.face:
-        return 'assets/images/tamagochi/${name}s/${i}_happy.png';
+        return 'assets/images/tamagochi/${name}s/${i}_happy_thumb.png';
     }
   }
 
@@ -105,6 +116,16 @@ class _InnerEditPageState extends State<InnerEditPage> {
   var currentTabHeight = 0.0;
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    for (var image in EditPageTab.values) {
+      precacheImage(AssetImage(image.icon(true)), context);
+      precacheImage(AssetImage(image.icon(false)), context);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
 
@@ -115,6 +136,11 @@ class _InnerEditPageState extends State<InnerEditPage> {
     double minChildSize = min(percOfScreen, bobbySize);
     double maxChildSize = min(maxScreenHeight, percOfScreen);
     double initialChildSize = minChildSize;
+
+    for (var image in EditPageTab.values) {
+      precacheImage(AssetImage(image.icon(true)), context);
+      precacheImage(AssetImage(image.icon(false)), context);
+    }
 
     return HeaderPage(
       "Edit",
@@ -127,6 +153,8 @@ class _InnerEditPageState extends State<InnerEditPage> {
               pot: widget.user.pot,
               face: widget.user.face,
               plant: widget.user.plant,
+              accessories1: widget.user.accessories1,
+              accessories2: widget.user.accessories2,
             ),
           ],
         ),
@@ -145,97 +173,106 @@ class _InnerEditPageState extends State<InnerEditPage> {
               ),
             ),
             margin: const EdgeInsets.symmetric(horizontal: 3),
-            padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
             child: Stack(
               children: [
                 SingleChildScrollView(
                   controller: scrollController,
                   child: SafeArea(
                     top: false,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        const SizedBox(height: 110),
-                        WidgetSize(
-                          onChange: (Size size) {
-                            setState(() {
-                              currentTabHeight = size.height;
-                            });
-                          },
-                          child: active.tab((i) {
-                            switch (active) {
-                              case EditPageTab.plant:
-                                widget.user.setPlant(i);
-                                break;
-                              case EditPageTab.pot:
-                                widget.user.setPot(i);
-                                break;
-                              case EditPageTab.face:
-                                widget.user.setFace(i);
-                                break;
-                            }
-                          }),
-                        ),
-                      ],
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const SizedBox(height: 110),
+                          WidgetSize(
+                            onChange: (Size size) {
+                              setState(() {
+                                currentTabHeight = size.height;
+                              });
+                            },
+                            child: active.tab((i) {
+                              switch (active) {
+                                case EditPageTab.plant:
+                                  widget.user.setPlant(i);
+                                  break;
+                                case EditPageTab.pot:
+                                  widget.user.setPot(i);
+                                  break;
+                                case EditPageTab.face:
+                                  widget.user.setFace(i);
+                                  break;
+                                case EditPageTab.accessories1:
+                                  widget.user.setAccessories1(i);
+                                  break;
+                                case EditPageTab.accessories2:
+                                  widget.user.setAccessories2(i);
+                                  break;
+                              }
+                            }),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
                 Container(
-                  color: const Color(0xFF9ED0B3),
-                  height: 95,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.only(left: 6),
-                        child: Text(
-                          active.name,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                            color: Color(0xFF0A5251),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF9ED0B3),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      topRight: Radius.circular(10),
+                    ),
+                  ),
+                  height: 99,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.only(left: 6),
+                          child: Text(
+                            active.name,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: Color(0xFF0A5251),
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 5),
-                      Row(
-                        children: EditPageTab.values
-                            .map<Widget>(
-                              (i) => Container(
-                                  margin: const EdgeInsets.only(right: 10),
-                                  child: TextButton(
-                                    onPressed: () {
+                        const SizedBox(height: 5),
+                        Row(
+                          children: EditPageTab.values
+                              .map<Widget>(
+                                (i) => Container(
+                                  margin: const EdgeInsets.only(right: 15),
+                                  child: GestureDetector(
+                                    onTap: () {
                                       setState(() {
                                         active = i;
                                       });
                                     },
-                                    style: active == i
-                                        ? TextButton.styleFrom(
-                                            primary: const Color(0xFFD9ECE1),
-                                            backgroundColor:
-                                                const Color(0xFF588585),
-                                            padding: const EdgeInsets.all(0),
-                                          )
-                                        : TextButton.styleFrom(
-                                            backgroundColor:
-                                                const Color(0xFFD9ECE1),
-                                            primary: const Color(0xFF588585),
-                                            padding: const EdgeInsets.all(0),
-                                          ),
-                                    child: Icon(i.icon),
-                                  )),
-                            )
-                            .toList(),
-                      ),
-                      const SizedBox(height: 15),
-                      Container(height: 1, color: const Color(0xFF6A9697)),
-                    ],
+                                    child: Image.asset(
+                                      i.icon(active == i),
+                                      width: 42,
+                                      height: 42,
+                                    ),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                        ),
+                        const SizedBox(height: 15),
+                        Container(height: 1, color: const Color(0xFF6A9697)),
+                      ],
+                    ),
                   ),
                 ),
                 Align(
                   alignment: Alignment.topRight,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    padding: const EdgeInsets.all(5),
                     child: IconButton(
                       icon: const Icon(Icons.close, color: Color(0xFF588585)),
                       onPressed: () {

@@ -48,12 +48,9 @@ class InnerHomePage extends StatelessWidget {
     var sunLevel =
         bluetooth.getCharacteristic(BluetoothCharacteristic.illumination);
 
-    var message = "Direct sunlight";
-    if (sunLevel < 250) message = "Partial sunlight";
-    if (sunLevel < 100) message = "Indirect sunlight";
-
     var connected =
-        bluetooth.connectionState == BluetoothConnectionState.connected;
+        bluetooth.connectionState == BluetoothConnectionState.connected &&
+            current != 0.0;
 
     return ScrollableHeaderPage(
       "Bobbie",
@@ -63,10 +60,13 @@ class InnerHomePage extends StatelessWidget {
             Navigator.pushNamed(context, '/edit');
           },
           child: BobbieBuilder(
-              waterLevel: waterLevel.floor(),
-              pot: user.pot,
-              face: user.face,
-              plant: user.plant),
+            waterLevel: waterLevel.floor(),
+            pot: user.pot,
+            face: user.face,
+            plant: user.plant,
+            accessories1: user.accessories1,
+            accessories2: user.accessories2,
+          ),
         ),
         const SizedBox(height: 25),
         Row(
@@ -80,35 +80,12 @@ class InnerHomePage extends StatelessWidget {
             const SizedBox(width: 10),
             Expanded(
                 child: SensorCard(
-                    label: message,
+                    label: '${sunLevel.floor()} lx',
                     enabled: connected,
                     icon: Icons.sunny,
                     color: Colors.yellow)),
           ],
         ),
-        const SizedBox(height: 56),
-        const Typography.Title("Nutrition Levels", textAlign: TextAlign.center),
-        const SizedBox(height: 16),
-        Center(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Chip(label: Text('MAC: ${bluetooth.connectedDeviceId}')),
-              Chip(
-                  label: Text(
-                      'State: ${bluetooth.connectionState.toString().split('.').last}')),
-              Chip(
-                  label: Text(
-                      'Logged in user: ${FirebaseAuth.instance.currentUser?.uid}')),
-              Chip(label: Text('Dry: ${user.dry}')),
-              Chip(label: Text('Wet: ${user.wet}')),
-              Chip(
-                  label: Text(
-                      'Current: ${bluetooth.getCharacteristic(BluetoothCharacteristic.humidity)}')),
-            ],
-          ),
-        ),
-        const SizedBox(height: 16),
       ],
       menuItems: [
         IconButton(

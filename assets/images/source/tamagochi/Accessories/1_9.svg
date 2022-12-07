@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="face" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #fcee21;
+        stroke: #dbc03a;
+        stroke-miterlimit: 10;
+        stroke-width: 5px;
+      }
+    </style>
+  </defs>
+  <path class="cls-1" d="M482,218c-34.91,0-94-6.74-94-32s59.09-32,94-32,94,6.74,94,32-59.09,32-94,32Zm-77.91-32c2.6,4.81,28.28,16,77.91,16s75.31-11.19,77.91-16c-2.6-4.81-28.28-16-77.91-16s-75.31,11.19-77.91,16Z"/>
+</svg>

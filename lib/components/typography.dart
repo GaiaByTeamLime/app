@@ -51,6 +51,7 @@ class Header extends StatelessWidget {
                         color: const Color(0xFF0A5251),
                         onPressed: backButton,
                         padding: EdgeInsets.zero,
+                        iconSize: 42,
                       )
                     : const SizedBox(width: 35),
                 Expanded(
