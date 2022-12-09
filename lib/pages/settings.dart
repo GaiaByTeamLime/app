@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -21,6 +20,7 @@ class SettingsPage extends StatelessWidget {
         ElevatedButton(
           onPressed: () async {
             await bluetooth.connectToStoredDevice();
+            // ignore: use_build_context_synchronously
             Navigator.pushNamed(context, '/');
           },
           child: Row(
@@ -47,6 +47,7 @@ class SettingsPage extends StatelessWidget {
           onPressed: () async {
             final prefs = await SharedPreferences.getInstance();
             await prefs.setString('connectedDeviceId', "");
+            // ignore: use_build_context_synchronously
             Navigator.pushNamed(context, '/');
           },
           child: Row(
@@ -64,6 +65,7 @@ class SettingsPage extends StatelessWidget {
             final prefs = await SharedPreferences.getInstance();
             await prefs.setDouble('dry', 0);
             await prefs.setDouble('wet', 0);
+            // ignore: use_build_context_synchronously
             Navigator.pushNamed(context, '/');
           },
           child: Row(
@@ -79,6 +81,7 @@ class SettingsPage extends StatelessWidget {
         ElevatedButton(
           onPressed: () async {
             await FirebaseAuth.instance.signOut();
+            // ignore: use_build_context_synchronously
             Navigator.pushNamed(context, '/');
           },
           child: Row(

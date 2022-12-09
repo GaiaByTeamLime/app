@@ -53,7 +53,7 @@ class Header extends StatelessWidget {
                         padding: EdgeInsets.zero,
                         iconSize: 42,
                       )
-                    : const SizedBox(width: 35),
+                    : const SizedBox(width: 25),
                 Expanded(
                     child: Text(text,
                         style: const TextStyle(

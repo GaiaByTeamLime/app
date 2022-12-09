@@ -129,8 +129,6 @@ class InitialReadCalibratePageState extends State<InitialReadCalibratePage> {
   }
 
   void timerStart() {
-    // TODO: If this timer takes too long, we should ask the user to a) reset the device or
-    // b) reset the connection and reconnect.
     timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
       setState(() {
         loading = true;

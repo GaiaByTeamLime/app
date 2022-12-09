@@ -38,6 +38,7 @@ dependencies:
   cloud_firestore: ^4.1.0
   cloud_firestore_odm: ^1.0.0-dev.42
   json_annotation: ^4.7.0
+  blufi_plugin: ^1.0.4
 
 dev_dependencies:
   flutter_test:
@@ -57,7 +58,6 @@ flutter_icons:
 flutter:
   uses-material-design: true
   assets:
-  - 'assets/animations/'
   - 'assets/images/'
   - 'assets/images/2x/'
   - 'assets/images/4x/'

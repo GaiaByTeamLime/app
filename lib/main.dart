@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:gaia/providers/blufi.dart';
 import 'providers/user.dart';
 import 'pages/index.dart';
 import 'pages/login.dart';
-import 'providers/bluetooth.dart';
 import 'pages/calibrate.dart';
 import 'pages/edit.dart';
 import 'pages/home.dart';
@@ -33,7 +33,7 @@ class Gaia extends StatelessWidget {
 
     return MultiProvider(
         providers: [
-          ChangeNotifierProvider.value(value: Bluetooth()),
+          ChangeNotifierProvider.value(value: Blufi()),
           ChangeNotifierProvider.value(value: User()),
           // ChangeNotifierProvider.value(value: Storage()),
         ],
@@ -70,7 +70,8 @@ class Gaia extends StatelessWidget {
             '/': (context) => const IndexPage(),
             '/home': (context) => const HomePage(),
             '/settings': (context) => const SettingsPage(),
-            '/connect': (context) => const ConnectPage(),
+            '/connect': (context) => const ConnectBluetoothPage(),
+            '/connect/wifi': (context) => const ConnectWifiPage(),
             '/calibrate': (context) => const CalibratePage(),
             '/edit': (context) => const EditPage(),
             '/login': (context) => const LoginPage(),

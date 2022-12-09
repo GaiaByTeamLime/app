@@ -4,7 +4,7 @@ PWD="$PWD/$(dirname ${BASH_SOURCE[0]})"
 mkdir -p "$PWD/"{2x,4x}
 
 cd "$PWD/source"
-for image in $(find tamagochi/Icons -type f); do
+for image in $(find . -type f); do
     filedir="$(dirname -- "$image")"
     filename="$(basename -- "$image")"
     extension="${filename##*.}"

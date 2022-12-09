@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 
 class DeviceCard extends Container {
-  DeviceCard(
-      {Key? key,
-      required String name,
-      required String mac,
-      required void Function() onPressed,
-      bool isConnecting = false,
-      bool isConnected = false})
-      : super(
+  DeviceCard({
+    Key? key,
+    required String title,
+    String? subtitle,
+    required void Function()? onPressed,
+    bool isConnecting = false,
+    bool isConnected = false,
+    IconData icon = Icons.radar,
+  }) : super(
             key: key,
             child: Padding(
                 padding: const EdgeInsets.only(bottom: 10),
@@ -22,20 +23,23 @@ class DeviceCard extends Container {
                         child: Row(
                           children: <Widget>[
                             const SizedBox(width: 10),
-                            const Icon(Icons.radar,
-                                size: 20.0, color: Color(0xFF0A5251)),
+                            Icon(icon,
+                                size: 20.0, color: const Color(0xFF0A5251)),
                             const SizedBox(width: 10),
                             Expanded(
                                 child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: <Widget>[
-                                  Text(name,
+                                  Text(title,
                                       style: const TextStyle(
-                                          color: Color(0xFF0A5251))),
-                                  Text(mac,
-                                      style: const TextStyle(
-                                          color: Color(0xFF0A5251))),
+                                          color: Color(0xFF0A5251),
+                                          fontWeight: FontWeight.bold)),
+                                  if (subtitle != null)
+                                    Text(subtitle,
+                                        style: const TextStyle(
+                                            color: Color(0xFF0A5251))),
                                 ])),
                             isConnecting
                                 ? const SizedBox(

@@ -1,12 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart' hide User;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/bluetooth.dart';
 import '../providers/user.dart';
 import '../components/bobbie_builder.dart';
-// ignore: library_prefixes
-import '../components/typography.dart' as Typography;
-import 'package:shared_preferences/shared_preferences.dart';
 import '../components/sensor_card.dart';
 import '../components/page.dart';
 
@@ -38,19 +33,20 @@ class InnerHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Bluetooth bluetooth = Provider.of<Bluetooth>(context, listen: true);
-    bluetooth.connectToStoredDevice();
+    // Bluetooth bluetooth = Provider.of<Bluetooth>(context, listen: true);
+    // bluetooth.connectToStoredDevice();
 
-    var current =
-        bluetooth.getCharacteristic(BluetoothCharacteristic.soilHumidity);
-    var waterLevel = 100 - ((current - user.wet) / (user.dry - user.wet) * 100);
+    // var current =
+    // bluetooth.getCharacteristic(BluetoothCharacteristic.soilHumidity);
+    var waterLevel = 100;
+    // ((current - user.wet) / (user.dry - user.wet + 0.000000001) * 100);
 
-    var sunLevel =
-        bluetooth.getCharacteristic(BluetoothCharacteristic.illumination);
+    var sunLevel = 100;
+    // bluetooth.getCharacteristic(BluetoothCharacteristic.illumination);
 
-    var connected =
-        bluetooth.connectionState == BluetoothConnectionState.connected &&
-            current != 0.0;
+    var connected = true;
+    // bluetooth.connectionState == BluetoothConnectionState.connected &&
+    // current != 0.0;
 
     return ScrollableHeaderPage(
       "Bobbie",
