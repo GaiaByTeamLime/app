@@ -132,10 +132,11 @@ cat <<BASHRC >> .tools/$RCFILE
 	alias sdkmanager="sdkmanager --sdk_root='$PWD/.tools/bin/sdk'"
 
 	echo -e ""
-	echo -e "    Welcome to the \x1b[36;1m⚛ flutter\x1b[0m environment!"
+	echo -e "    Welcome to the \x1b[36;1m✌︎ flutter\x1b[0m environment!"
 	echo -e ""
 	echo -e "    - Use \x1b[1m./emulator.sh\x1b[0m to launch an emulator"
-	echo -e "    - To start the app run \x1b[1m./start.sh\x1b[0m"
+	echo -e "    - To start the app run \x1b[1mflutter run\x1b[0m"
+	echo -e "    - Make sure you generated assets first by running \x1b[1m./assets/images/generate.sh\x1b[0m"
 	echo -e ""
 BASHRC
 
@@ -150,5 +151,3 @@ else
 		*) $SHELL --init-file "$PWD/.tools/$RCFILE" -c "${@}" ;;
 	esac
 fi
-
-
