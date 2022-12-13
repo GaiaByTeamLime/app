@@ -1,9 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:gaia/controller/plant.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/bluetooth.dart';
 import '../components/page.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 // ignore: library_prefixes
 import '../components/typography.dart' as Typography;
 import 'dart:async';
@@ -15,60 +17,46 @@ class CalibratePage extends StatefulWidget {
   State<CalibratePage> createState() => _CalibratePageState();
 }
 
-enum CalibratePageStage {
-  sensorPositioning,
-  initialRead,
-  waterYourPlant,
-  wateredReading,
-  done
-}
+enum CalibratePageStage { sensorPositioning, initialRead, waterYourPlant, done }
 
 class _CalibratePageState extends State<CalibratePage> {
   var stage = CalibratePageStage.sensorPositioning;
 
   @override
   Widget build(BuildContext context) {
-    Bluetooth bluetooth = Provider.of<Bluetooth>(context, listen: true);
-
     return WillPopScope(
       onWillPop: () async => false,
-      child: _getPage(bluetooth),
+      child: _getPage(),
     );
   }
 
-  Widget _getPage(Bluetooth bluetooth) {
+  Widget _getPage() {
     switch (stage) {
       case CalibratePageStage.sensorPositioning:
-        return SensorPositioningCalibratePage(bluetooth, () {
+        return SensorPositioningCalibratePage(() {
           setState(() {
             stage = CalibratePageStage.initialRead;
           });
         });
 
       case CalibratePageStage.initialRead:
-        return InitialReadCalibratePage(bluetooth, () {
+        return InitialReadCalibratePage(() {
           setState(() {
             stage = CalibratePageStage.waterYourPlant;
           });
         });
 
       case CalibratePageStage.waterYourPlant:
-        return WaterYourPlantCalibratePage(bluetooth, () {
-          setState(() {
-            stage = CalibratePageStage.wateredReading;
-          });
-        });
-
-      case CalibratePageStage.wateredReading:
-        return WateredReadingCalibratePage(bluetooth, () {
+        return WaterYourPlantCalibratePage(() {
           setState(() {
             stage = CalibratePageStage.done;
           });
         });
 
       case CalibratePageStage.done:
-        return DoneCalibratePage(bluetooth, () {
+        return DoneCalibratePage(() {
           Navigator.popUntil(context, ModalRoute.withName('/'));
+          Navigator.pushNamed(context, "/");
         });
     }
   }
@@ -76,9 +64,7 @@ class _CalibratePageState extends State<CalibratePage> {
 
 class SensorPositioningCalibratePage extends StatelessWidget {
   final void Function() nextStage;
-  final Bluetooth bluetooth;
-  const SensorPositioningCalibratePage(this.bluetooth, this.nextStage,
-      {super.key});
+  const SensorPositioningCalibratePage(this.nextStage, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -111,8 +97,8 @@ class SensorPositioningCalibratePage extends StatelessWidget {
 
 class InitialReadCalibratePage extends StatefulWidget {
   final void Function() nextStage;
-  final Bluetooth bluetooth;
-  const InitialReadCalibratePage(this.bluetooth, this.nextStage, {super.key});
+
+  const InitialReadCalibratePage(this.nextStage, {super.key});
 
   @override
   State<StatefulWidget> createState() => InitialReadCalibratePageState();
@@ -121,6 +107,7 @@ class InitialReadCalibratePage extends StatefulWidget {
 class InitialReadCalibratePageState extends State<InitialReadCalibratePage> {
   var loading = false;
   Timer? timer;
+  DateTime? lastDate;
 
   @override
   void dispose() {
@@ -129,76 +116,96 @@ class InitialReadCalibratePageState extends State<InitialReadCalibratePage> {
   }
 
   void timerStart() {
-    timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
-      setState(() {
-        loading = true;
-      });
+    timer = Timer.periodic(const Duration(seconds: 2), (timer) async {
+      var reading = await PlantController().getSoilHumidity();
+      var updatedOn = await PlantController().getLastUpdated();
 
-      if (widget.bluetooth.connectionState == BluetoothConnectionState.idle) {
-        await widget.bluetooth.connectToStoredDevice();
-      }
+      print('old update: $lastDate, new update: $updatedOn, reading: $reading');
 
-      var reading = widget.bluetooth
-          .getCharacteristic(BluetoothCharacteristic.soilHumidity);
-
-      if (reading != 0) {
+      if (updatedOn != lastDate && reading != 0 && updatedOn != null) {
         timer.cancel();
-        final prefs = await SharedPreferences.getInstance();
         if (kDebugMode) {
           print('Dry value: $reading');
         }
-        await prefs.setDouble('dry', reading);
+        await PlantController().setCalibrationDry(reading!.floor());
+        await PlantController().setCalibrating(true);
 
         widget.nextStage();
+      } else {
+        // Update firebase values with cloud function
+        FirebaseFunctions.instance.httpsCallable('updateFirestore').call();
       }
     });
   }
 
+  Widget page(BuildContext context) =>
+      ScrollableHeaderPage("Sensor Setup", <Widget>[
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 30),
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                const SizedBox(height: 80),
+                Center(
+                    child: Image.asset("assets/images/sensor_thing.png",
+                        width: 200)),
+                const SizedBox(height: 80),
+                const Text(
+                    'To connect the sensor with your plant, follow these steps',
+                    style: TextStyle(fontWeight: FontWeight.w600)),
+                const SizedBox(height: 20),
+                const Text(
+                    'Step 1: Press the top button on your sensor and click continue afterwards.'),
+                const SizedBox(height: 30),
+                Center(
+                  child: SizedBox(
+                      width: 50,
+                      height: 50,
+                      child: loading
+                          ? const CircularProgressIndicator()
+                          : const Text('')),
+                ),
+                const SizedBox(height: 30),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: loading
+                        ? null
+                        : () {
+                            setState(() {
+                              loading = true;
+                            });
+                            timerStart();
+                          },
+                    child: const Text('Continue'),
+                  ),
+                ),
+              ]),
+        ),
+      ]);
+
   @override
   Widget build(BuildContext context) {
-    return ScrollableHeaderPage("Sensor Setup", <Widget>[
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 30),
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              const SizedBox(height: 80),
-              Center(
-                  child: Image.asset("assets/images/sensor_thing.png",
-                      width: 200)),
-              const SizedBox(height: 80),
-              const Text(
-                  'To connect the sensor with your plant, follow these steps',
-                  style: TextStyle(fontWeight: FontWeight.w600)),
-              const SizedBox(height: 20),
-              const Text('Step 1: Click continue.'),
-              const SizedBox(height: 30),
-              Center(
-                child: SizedBox(
-                    width: 50,
-                    height: 50,
-                    child: loading
-                        ? const CircularProgressIndicator()
-                        : const Text('')),
-              ),
-              const SizedBox(height: 30),
-              Center(
-                child: ElevatedButton(
-                  onPressed: loading ? null : timerStart,
-                  child: const Text('Continue'),
-                ),
-              ),
-            ]),
-      ),
-    ]);
+    return FutureBuilder<DateTime?>(
+        future: PlantController().getLastUpdated(),
+        builder: (BuildContext context, AsyncSnapshot<DateTime?> snapshot) {
+          if (snapshot.hasData) {
+            lastDate ??= snapshot.data!;
+            return page(context);
+          } else if (snapshot.hasError) {
+            return ScrollableHeaderPage("something went wrong", [
+              Text('error: ${snapshot.error}'),
+            ]);
+          } else {
+            return ScrollableHeaderPage("waiting for last updated", const []);
+          }
+        });
   }
 }
 
 class WaterYourPlantCalibratePage extends StatelessWidget {
   final void Function() nextStage;
-  final Bluetooth bluetooth;
-  const WaterYourPlantCalibratePage(this.bluetooth, this.nextStage,
-      {super.key});
+
+  const WaterYourPlantCalibratePage(this.nextStage, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -236,109 +243,10 @@ class WaterYourPlantCalibratePage extends StatelessWidget {
   }
 }
 
-class WateredReadingCalibratePage extends StatefulWidget {
-  final void Function() nextStage;
-  final Bluetooth bluetooth;
-  const WateredReadingCalibratePage(this.bluetooth, this.nextStage,
-      {super.key});
-
-  @override
-  State<StatefulWidget> createState() => _WateredReadingCalibratePageState();
-}
-
-class _WateredReadingCalibratePageState
-    extends State<WateredReadingCalibratePage> {
-  var timeLeft = 300;
-  Timer? timer;
-
-  @override
-  void dispose() {
-    timer?.cancel();
-    super.dispose();
-  }
-
-  void timerStart() {
-    timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
-      if (timeLeft == 0) {
-        timer.cancel();
-        if (widget.bluetooth.connectionState == BluetoothConnectionState.idle) {
-          await widget.bluetooth.connectToStoredDevice();
-        }
-
-        var reading = widget.bluetooth
-            .getCharacteristic(BluetoothCharacteristic.soilHumidity);
-
-        if (reading != 0) {
-          timer.cancel();
-          final prefs = await SharedPreferences.getInstance();
-          if (kDebugMode) {
-            print('Wet value: $reading');
-          }
-          await prefs.setDouble('wet', reading);
-
-          widget.nextStage();
-        }
-      } else {
-        setState(() {
-          timeLeft--;
-        });
-      }
-    });
-  }
-
-  String formatTime(int time) =>
-      Duration(seconds: time).toString().substring(3, 7);
-
-  @override
-  Widget build(BuildContext context) {
-    if (timer == null) timerStart();
-
-    return ScrollableHeaderPage("Sensor Setup", <Widget>[
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 30),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            const SizedBox(height: 80),
-            Center(
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(100000000),
-                  color: const Color(0xFF9ED0B3),
-                ),
-                width: 200,
-                height: 200,
-                child: Center(
-                  child: Text(
-                    formatTime(timeLeft),
-                    style: const TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF0A5251),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 80),
-            const Text(
-                'The calibration should take 5 minutes to complete, just wait until the timer is done.',
-                textAlign: TextAlign.center),
-            const SizedBox(height: 20),
-            const Text('Please keep the app open while the timer is running.',
-                style: TextStyle(fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center),
-          ],
-        ),
-      ),
-    ]);
-  }
-}
-
 class DoneCalibratePage extends StatelessWidget {
   final void Function() nextStage;
-  final Bluetooth bluetooth;
-  const DoneCalibratePage(this.bluetooth, this.nextStage, {super.key});
+
+  const DoneCalibratePage(this.nextStage, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -356,7 +264,8 @@ class DoneCalibratePage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 80),
-            const Text('Your sensor is sucessfully set-up!'),
+            const Text(
+                'Calibration will happen in the background, and should finish in around an hour. Your sensor is sucessfully set-up!'),
             const SizedBox(height: 50),
             Center(
               child: ElevatedButton(

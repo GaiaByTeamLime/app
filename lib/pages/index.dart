@@ -5,9 +5,12 @@ import 'package:gaia/pages/connect.dart';
 import 'package:provider/provider.dart';
 // import 'package:shared_preferences/shared_preferences.dart';
 import '../components/page.dart';
-import '../providers/blufi.dart';
+import '../controller/plant.dart';
+import 'calibrate.dart';
 import 'home.dart';
 import 'login.dart';
+
+bool isNullOrEmpty(int? a) => a == 0 || a == null;
 
 class IndexPage extends StatefulWidget {
   const IndexPage({super.key});
@@ -17,49 +20,53 @@ class IndexPage extends StatefulWidget {
 }
 
 class _IndexPageState extends State<IndexPage> {
-  Future<Widget> calulation(Blufi blufi) async {
+  Future<Widget> calulation() async {
+    print('a');
     final user = UserController();
-    // final prefs = await SharedPreferences.getInstance();
-    // var connectedDeviceId = prefs.getString('connectedDeviceId') ?? "";
-    // var wet = prefs.getDouble('wet') ?? 0;
-    // var dry = prefs.getDouble('dry') ?? 0;
-
-    print('hoi: ${await FirebaseAuth.instance.currentUser?.getIdToken()}');
+    print('b');
+    final plant = PlantController();
+    print('c');
 
     // If we're not logged in, go to login page.
     if (FirebaseAuth.instance.currentUser == null) {
+      print('d');
       return const LoginPage();
     }
 
     // If no device is stored, go to the connecting page
     else if (await user.getPlant() == null) {
+      print('e');
       return const ConnectBluetoothPage();
     }
 
     // If no calibration settings are stored, go to the positioning/calibration page
-    // else if (wet == 0 || dry == 0) {
-    //   return const CalibratePage();
-    // }
+    else if (isNullOrEmpty(await plant.getCalibrationDry())) {
+      print('f');
+      return const CalibratePage();
+    }
 
     // Otherwise, go home
     else {
+      print('g');
       return const HomePage();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    Blufi blufi = Provider.of<Blufi>(context, listen: false);
-
     return WillPopScope(
       onWillPop: () async => false,
       child: FutureBuilder<Widget>(
-        future: calulation(blufi),
+        future: calulation(),
         builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
           if (snapshot.hasData) {
             return snapshot.data!;
+          } else if (snapshot.hasError) {
+            return ScrollableHeaderPage("Something went wrong", [
+              Text('Error: ${snapshot.error}'),
+            ]);
           } else {
-            return ScrollableHeaderPage("", const []);
+            return ScrollableHeaderPage("loading user data", const []);
           }
         },
       ),

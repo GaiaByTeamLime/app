@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:gaia/controller/plant.dart';
+import 'package:gaia/controller/user.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -11,26 +13,10 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Bluetooth bluetooth = Provider.of<Bluetooth>(context, listen: true);
-
     return ScrollableHeaderPage(
       "Settings",
       <Widget>[
         const SizedBox(height: 20),
-        ElevatedButton(
-          onPressed: () async {
-            await bluetooth.connectToStoredDevice();
-            // ignore: use_build_context_synchronously
-            Navigator.pushNamed(context, '/');
-          },
-          child: Row(
-            children: const [
-              Expanded(child: Text('connect', textAlign: TextAlign.center)),
-              Icon(Icons.arrow_right_alt),
-            ],
-          ),
-        ),
-        const SizedBox(height: 10),
         ElevatedButton(
           onPressed: () async {
             Navigator.pushNamed(context, '/edit');
@@ -45,8 +31,7 @@ class SettingsPage extends StatelessWidget {
         const SizedBox(height: 10),
         ElevatedButton(
           onPressed: () async {
-            final prefs = await SharedPreferences.getInstance();
-            await prefs.setString('connectedDeviceId', "");
+            UserController().setPlant(null);
             // ignore: use_build_context_synchronously
             Navigator.pushNamed(context, '/');
           },
@@ -62,9 +47,9 @@ class SettingsPage extends StatelessWidget {
         const SizedBox(height: 10),
         ElevatedButton(
           onPressed: () async {
-            final prefs = await SharedPreferences.getInstance();
-            await prefs.setDouble('dry', 0);
-            await prefs.setDouble('wet', 0);
+            PlantController().setCalibrationWet(0);
+            PlantController().setCalibrationDry(0);
+            PlantController().setCalibrating(false);
             // ignore: use_build_context_synchronously
             Navigator.pushNamed(context, '/');
           },
@@ -80,6 +65,23 @@ class SettingsPage extends StatelessWidget {
         const SizedBox(height: 10),
         ElevatedButton(
           onPressed: () async {
+            PlantController().setCalibrationWet(0);
+            PlantController().setCalibrationDry(0);
+            PlantController().setCalibrating(false);
+            UserController().setPlant(null);
+            // ignore: use_build_context_synchronously
+            Navigator.pushNamed(context, '/');
+          },
+          child: Row(
+            children: const [
+              Expanded(child: Text('delete both', textAlign: TextAlign.center)),
+              Icon(Icons.arrow_right_alt),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10),
+        ElevatedButton(
+          onPressed: () async {
             await FirebaseAuth.instance.signOut();
             // ignore: use_build_context_synchronously
             Navigator.pushNamed(context, '/');
@@ -87,6 +89,25 @@ class SettingsPage extends StatelessWidget {
           child: Row(
             children: const [
               Expanded(child: Text('sign out', textAlign: TextAlign.center)),
+              Icon(Icons.arrow_right_alt),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10),
+        ElevatedButton(
+          onPressed: () async {
+            PlantController().setCalibrationWet(0);
+            PlantController().setCalibrationDry(0);
+            PlantController().setCalibrating(false);
+            UserController().setPlant(null);
+            await FirebaseAuth.instance.signOut();
+            // ignore: use_build_context_synchronously
+            Navigator.pushNamed(context, '/');
+          },
+          child: Row(
+            children: const [
+              Expanded(
+                  child: Text('reset everything', textAlign: TextAlign.center)),
               Icon(Icons.arrow_right_alt),
             ],
           ),

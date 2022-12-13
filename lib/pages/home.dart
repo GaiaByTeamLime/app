@@ -57,7 +57,7 @@ class InnerHomePage extends StatelessWidget {
             Expanded(
                 child: SensorCard(
                     label: '${waterLevel.floor()}%',
-                    enabled: true,
+                    enabled: !plant.isCalibrating,
                     icon: Icons.water_drop,
                     color: Colors.blue)),
             const SizedBox(width: 10),

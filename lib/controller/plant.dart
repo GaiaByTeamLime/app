@@ -29,6 +29,7 @@ class PlantController {
           soilSalt: 0,
           temperature: 0,
           voltage: 0,
+          isCalibrating: false,
           /* */
           avatarAccessories1: 12,
           avatarAccessories2: 6,
@@ -36,6 +37,7 @@ class PlantController {
           avatarPlant: 0,
           avatarPot: 0,
           name: 'Bobbie',
+          lastUpdated: DateTime.now(),
         );
   }
 
@@ -49,6 +51,8 @@ class PlantController {
   Future<double?> getSoilSalt() async => (await self)?.soilSalt;
   Future<double?> getTemperature() async => (await self)?.temperature;
   Future<double?> getVoltage() async => (await self)?.voltage;
+  Future<DateTime?> getLastUpdated() async => (await self)?.lastUpdated;
+  Future<bool> isCalibrating() async => (await self)?.isCalibrating ?? false;
 
   Future<int?> getAvatarAccessories1() async =>
       (await self)?.avatarAccessories1;
@@ -135,6 +139,16 @@ class PlantController {
 
     var updatedPlant = (await self)!;
     updatedPlant.name = value;
+
+    await plantRef.doc(plant).set(updatedPlant);
+  }
+
+  Future<void> setCalibrating(bool value) async {
+    final plant = await UserController().getPlant();
+    if (plant == null) return;
+
+    var updatedPlant = (await self)!;
+    updatedPlant.isCalibrating = value;
 
     await plantRef.doc(plant).set(updatedPlant);
   }

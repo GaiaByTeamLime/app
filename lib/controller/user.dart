@@ -28,13 +28,13 @@ class UserController {
     }
   }
 
-  Future<void> setPlant(String mac) async {
+  Future<void> setPlant(String? mac) async {
     if (_auth.currentUser == null) return;
 
     final uid = (_auth.currentUser?.uid)!;
 
     var updatedUser = (await _self)!;
-    updatedUser.plants = [mac];
+    updatedUser.plants = mac == null ? [] : [mac];
 
     await usersRef.doc(uid).set(updatedUser);
   }

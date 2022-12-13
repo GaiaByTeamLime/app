@@ -16,6 +16,7 @@ exports.updateFirestore = functions.https.onRequest((request, response) => {
 
         for (item of last_items) {
             let doc = plants.doc(item.sensor_mac.toUpperCase());
+            let d = new Date(item.created);
 
             doc.update({
                 illumination: item.illumination,
@@ -24,9 +25,10 @@ exports.updateFirestore = functions.https.onRequest((request, response) => {
                 voltage: item.voltage,
                 soilHumidity: item.soil_humidity,
                 soilSalt: item.soil_salt,
+                lastUpdated: new admin.firestore.Timestamp(Math.round(d.getTime() / 1000), 0),
             })
         }
 
-        response.send("Success");
+        response.json({ result: 'Success' });
     });
 });

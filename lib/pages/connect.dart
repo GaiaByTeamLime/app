@@ -233,7 +233,7 @@ class _ConnectWifiPageState extends State<ConnectWifiPage> {
     // When the page is rendered, start scanning for Wifi if we weren't doing that already.
     if (!promptingPassword) {
       blufi.scanForWifiNetworks(onError: () {
-        if (_canTryAutoFix < 2 && _deviceId != null) {
+        if (_canTryAutoFix < 1 && _deviceId != null) {
           // Everything is disconnected so we should try again.
           blufi.scan();
           Future.delayed(const Duration(seconds: 5), () {

@@ -23,6 +23,8 @@ class PlantDTO {
     required this.soilSalt,
     required this.temperature,
     required this.voltage,
+    required this.lastUpdated,
+    required this.isCalibrating,
     /* */
     required this.name,
     required this.avatarPot,
@@ -43,6 +45,8 @@ class PlantDTO {
   final double voltage;
   final double soilHumidity;
   final double soilSalt;
+  final DateTime lastUpdated;
+  bool isCalibrating;
 
   String name;
   int avatarPot;
