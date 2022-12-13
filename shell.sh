@@ -137,6 +137,8 @@ cat <<BASHRC >> .tools/$RCFILE
 	echo -e "    - Use \x1b[1m./emulator.sh\x1b[0m to launch an emulator"
 	echo -e "    - To start the app run \x1b[1mflutter run\x1b[0m"
 	echo -e "    - Make sure you generated assets first by running \x1b[1m./assets/images/generate.sh\x1b[0m"
+	echo -e "    - Run orm code generation by executing"
+	echo -e "      \x1b[1mflutter pub run build_runner build --delete-conflicting-outputs\x1b[0m"
 	echo -e ""
 BASHRC
 

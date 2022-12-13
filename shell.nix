@@ -10,7 +10,7 @@ let my-google-chrome = (writeShellApplication {
 in
 mkShell {
     name = "gaia-app";
-    buildInputs = [ git unzip android-tools cmake steam-run my-google-chrome imagemagick entr killall ];
+    buildInputs = [ git unzip android-tools cmake steam-run my-google-chrome imagemagick entr killall nodejs nodePackages.npm ];
     shellHook = ''
         ./shell.sh
         exit

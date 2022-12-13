@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:gaia/providers/blufi.dart';
-import 'providers/user.dart';
 import 'pages/index.dart';
 import 'pages/login.dart';
 import 'pages/calibrate.dart';
@@ -34,7 +33,6 @@ class Gaia extends StatelessWidget {
     return MultiProvider(
         providers: [
           ChangeNotifierProvider.value(value: Blufi()),
-          ChangeNotifierProvider.value(value: User()),
           // ChangeNotifierProvider.value(value: Storage()),
         ],
         child: MaterialApp(

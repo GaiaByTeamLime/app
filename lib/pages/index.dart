@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:gaia/controller/user.dart';
 import 'package:gaia/pages/connect.dart';
 import 'package:provider/provider.dart';
 // import 'package:shared_preferences/shared_preferences.dart';
@@ -17,10 +18,13 @@ class IndexPage extends StatefulWidget {
 
 class _IndexPageState extends State<IndexPage> {
   Future<Widget> calulation(Blufi blufi) async {
+    final user = UserController();
     // final prefs = await SharedPreferences.getInstance();
     // var connectedDeviceId = prefs.getString('connectedDeviceId') ?? "";
     // var wet = prefs.getDouble('wet') ?? 0;
     // var dry = prefs.getDouble('dry') ?? 0;
+
+    print('hoi: ${await FirebaseAuth.instance.currentUser?.getIdToken()}');
 
     // If we're not logged in, go to login page.
     if (FirebaseAuth.instance.currentUser == null) {
@@ -28,16 +32,8 @@ class _IndexPageState extends State<IndexPage> {
     }
 
     // If no device is stored, go to the connecting page
-    else if (blufi.connectionState == BlufiConnectionState.idle ||
-        blufi.connectionState == BlufiConnectionState.scanningBluetooth ||
-        blufi.connectionState == BlufiConnectionState.connectingBluetooth) {
+    else if (await user.getPlant() == null) {
       return const ConnectBluetoothPage();
-    }
-
-    // If no device is stored, go to the connecting page
-    else if (blufi.connectionState == BlufiConnectionState.connectedBluetooth ||
-        blufi.connectionState == BlufiConnectionState.scanningWifi) {
-      return const ConnectWifiPage();
     }
 
     // If no calibration settings are stored, go to the positioning/calibration page

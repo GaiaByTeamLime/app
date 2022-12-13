@@ -21,8 +21,8 @@ class UserDTO {
 
   @Id()
   final String id;
-  final List<BluetoothDevice> plants;
+  List<BluetoothDevice> plants;
 }
 
 @Collection<UserDTO>('users')
-final usersRef = UserCollectionReference();
+final usersRef = UserDTOCollectionReference();

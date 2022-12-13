@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../providers/user.dart';
+import 'package:gaia/controller/plant.dart';
+import '../dal/plant.dart';
 import '../components/bobbie_builder.dart';
 import '../components/sensor_card.dart';
 import '../components/page.dart';
@@ -10,12 +10,8 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<User>(
-      future: (() async {
-        User user = Provider.of<User>(context, listen: true);
-        await user.update();
-        return user;
-      })(),
+    return FutureBuilder<PlantDTO?>(
+      future: PlantController().self,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return InnerHomePage(snapshot.data!);
@@ -28,25 +24,16 @@ class HomePage extends StatelessWidget {
 }
 
 class InnerHomePage extends StatelessWidget {
-  final User user;
-  const InnerHomePage(this.user, {super.key});
+  final PlantDTO plant;
+  const InnerHomePage(this.plant, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Bluetooth bluetooth = Provider.of<Bluetooth>(context, listen: true);
-    // bluetooth.connectToStoredDevice();
+    var waterLevel = ((plant.soilHumidity - plant.calibrationWet) /
+        (plant.calibrationDry - plant.calibrationWet + 0.000000001) *
+        100);
 
-    // var current =
-    // bluetooth.getCharacteristic(BluetoothCharacteristic.soilHumidity);
-    var waterLevel = 100;
-    // ((current - user.wet) / (user.dry - user.wet + 0.000000001) * 100);
-
-    var sunLevel = 100;
-    // bluetooth.getCharacteristic(BluetoothCharacteristic.illumination);
-
-    var connected = true;
-    // bluetooth.connectionState == BluetoothConnectionState.connected &&
-    // current != 0.0;
+    var sunLevel = plant.illumination;
 
     return ScrollableHeaderPage(
       "Bobbie",
@@ -57,11 +44,11 @@ class InnerHomePage extends StatelessWidget {
           },
           child: BobbieBuilder(
             waterLevel: waterLevel.floor(),
-            pot: user.pot,
-            face: user.face,
-            plant: user.plant,
-            accessories1: user.accessories1,
-            accessories2: user.accessories2,
+            pot: plant.avatarPot,
+            face: plant.avatarFace,
+            plant: plant.avatarPlant,
+            accessories1: plant.avatarAccessories1,
+            accessories2: plant.avatarAccessories2,
           ),
         ),
         const SizedBox(height: 25),
@@ -70,14 +57,14 @@ class InnerHomePage extends StatelessWidget {
             Expanded(
                 child: SensorCard(
                     label: '${waterLevel.floor()}%',
-                    enabled: connected,
+                    enabled: true,
                     icon: Icons.water_drop,
                     color: Colors.blue)),
             const SizedBox(width: 10),
             Expanded(
                 child: SensorCard(
                     label: '${sunLevel.floor()} lx',
-                    enabled: connected,
+                    enabled: true,
                     icon: Icons.sunny,
                     color: Colors.yellow)),
           ],

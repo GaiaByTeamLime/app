@@ -39,6 +39,7 @@ dependencies:
   cloud_firestore_odm: ^1.0.0-dev.42
   json_annotation: ^4.7.0
   blufi_plugin: ^1.0.4
+  http: ^0.13.5
 
 dev_dependencies:
   flutter_test:

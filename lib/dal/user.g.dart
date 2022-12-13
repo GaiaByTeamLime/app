@@ -18,53 +18,53 @@ const _sentinel = _Sentinel();
 /// A collection reference object can be used for adding documents,
 /// getting document references, and querying for documents
 /// (using the methods inherited from Query).
-abstract class UserCollectionReference
+abstract class UserDTOCollectionReference
     implements
-        UserQuery,
-        FirestoreCollectionReference<UserDTO, UserQuerySnapshot> {
-  factory UserCollectionReference([
+        UserDTOQuery,
+        FirestoreCollectionReference<UserDTO, UserDTOQuerySnapshot> {
+  factory UserDTOCollectionReference([
     FirebaseFirestore? firestore,
-  ]) = _$UserCollectionReference;
+  ]) = _$UserDTOCollectionReference;
 
   static UserDTO fromFirestore(
     DocumentSnapshot<Map<String, Object?>> snapshot,
     SnapshotOptions? options,
   ) {
-    return _$UserFromJson({'id': snapshot.id, ...?snapshot.data()});
+    return _$UserDTOFromJson({'id': snapshot.id, ...?snapshot.data()});
   }
 
   static Map<String, Object?> toFirestore(
     UserDTO value,
     SetOptions? options,
   ) {
-    return {..._$UserToJson(value)}..remove('id');
+    return {..._$UserDTOToJson(value)}..remove('id');
   }
 
   @override
   CollectionReference<UserDTO> get reference;
 
   @override
-  UserDocumentReference doc([String? id]);
+  UserDTODocumentReference doc([String? id]);
 
   /// Add a new document to this collection with the specified data,
   /// assigning it a document ID automatically.
-  Future<UserDocumentReference> add(UserDTO value);
+  Future<UserDTODocumentReference> add(UserDTO value);
 }
 
-class _$UserCollectionReference extends _$UserQuery
-    implements UserCollectionReference {
-  factory _$UserCollectionReference([FirebaseFirestore? firestore]) {
+class _$UserDTOCollectionReference extends _$UserDTOQuery
+    implements UserDTOCollectionReference {
+  factory _$UserDTOCollectionReference([FirebaseFirestore? firestore]) {
     firestore ??= FirebaseFirestore.instance;
 
-    return _$UserCollectionReference._(
+    return _$UserDTOCollectionReference._(
       firestore.collection('users').withConverter(
-            fromFirestore: UserCollectionReference.fromFirestore,
-            toFirestore: UserCollectionReference.toFirestore,
+            fromFirestore: UserDTOCollectionReference.fromFirestore,
+            toFirestore: UserDTOCollectionReference.toFirestore,
           ),
     );
   }
 
-  _$UserCollectionReference._(
+  _$UserDTOCollectionReference._(
     CollectionReference<UserDTO> reference,
   ) : super(reference, $referenceWithoutCursor: reference);
 
@@ -75,24 +75,24 @@ class _$UserCollectionReference extends _$UserQuery
       super.reference as CollectionReference<UserDTO>;
 
   @override
-  UserDocumentReference doc([String? id]) {
+  UserDTODocumentReference doc([String? id]) {
     assert(
       id == null || id.split('/').length == 1,
       'The document ID cannot be from a different collection',
     );
-    return UserDocumentReference(
+    return UserDTODocumentReference(
       reference.doc(id),
     );
   }
 
   @override
-  Future<UserDocumentReference> add(UserDTO value) {
-    return reference.add(value).then((ref) => UserDocumentReference(ref));
+  Future<UserDTODocumentReference> add(UserDTO value) {
+    return reference.add(value).then((ref) => UserDTODocumentReference(ref));
   }
 
   @override
   bool operator ==(Object other) {
-    return other is _$UserCollectionReference &&
+    return other is _$UserDTOCollectionReference &&
         other.runtimeType == runtimeType &&
         other.reference == reference;
   }
@@ -101,23 +101,23 @@ class _$UserCollectionReference extends _$UserQuery
   int get hashCode => Object.hash(runtimeType, reference);
 }
 
-abstract class UserDocumentReference
-    extends FirestoreDocumentReference<UserDTO, UserDocumentSnapshot> {
-  factory UserDocumentReference(DocumentReference<UserDTO> reference) =
-      _$UserDocumentReference;
+abstract class UserDTODocumentReference
+    extends FirestoreDocumentReference<UserDTO, UserDTODocumentSnapshot> {
+  factory UserDTODocumentReference(DocumentReference<UserDTO> reference) =
+      _$UserDTODocumentReference;
 
   DocumentReference<UserDTO> get reference;
 
-  /// A reference to the [UserCollectionReference] containing this document.
-  UserCollectionReference get parent {
-    return _$UserCollectionReference(reference.firestore);
+  /// A reference to the [UserDTOCollectionReference] containing this document.
+  UserDTOCollectionReference get parent {
+    return _$UserDTOCollectionReference(reference.firestore);
   }
 
   @override
-  Stream<UserDocumentSnapshot> snapshots();
+  Stream<UserDTODocumentSnapshot> snapshots();
 
   @override
-  Future<UserDocumentSnapshot> get([GetOptions? options]);
+  Future<UserDTODocumentSnapshot> get([GetOptions? options]);
 
   @override
   Future<void> delete();
@@ -141,32 +141,32 @@ abstract class UserDocumentReference
   });
 }
 
-class _$UserDocumentReference
-    extends FirestoreDocumentReference<UserDTO, UserDocumentSnapshot>
-    implements UserDocumentReference {
-  _$UserDocumentReference(this.reference);
+class _$UserDTODocumentReference
+    extends FirestoreDocumentReference<UserDTO, UserDTODocumentSnapshot>
+    implements UserDTODocumentReference {
+  _$UserDTODocumentReference(this.reference);
 
   @override
   final DocumentReference<UserDTO> reference;
 
-  /// A reference to the [UserCollectionReference] containing this document.
-  UserCollectionReference get parent {
-    return _$UserCollectionReference(reference.firestore);
+  /// A reference to the [UserDTOCollectionReference] containing this document.
+  UserDTOCollectionReference get parent {
+    return _$UserDTOCollectionReference(reference.firestore);
   }
 
   @override
-  Stream<UserDocumentSnapshot> snapshots() {
-    return reference.snapshots().map(UserDocumentSnapshot._);
+  Stream<UserDTODocumentSnapshot> snapshots() {
+    return reference.snapshots().map(UserDTODocumentSnapshot._);
   }
 
   @override
-  Future<UserDocumentSnapshot> get([GetOptions? options]) {
-    return reference.get(options).then(UserDocumentSnapshot._);
+  Future<UserDTODocumentSnapshot> get([GetOptions? options]) {
+    return reference.get(options).then(UserDTODocumentSnapshot._);
   }
 
   @override
-  Future<UserDocumentSnapshot> transactionGet(Transaction transaction) {
-    return transaction.get(reference).then(UserDocumentSnapshot._);
+  Future<UserDTODocumentSnapshot> transactionGet(Transaction transaction) {
+    return transaction.get(reference).then(UserDTODocumentSnapshot._);
   }
 
   Future<void> update({
@@ -179,8 +179,9 @@ class _$UserDocumentReference
     );
     final json = {
       if (plants != _sentinel)
-        _$UserFieldMap['plants']!: plants as List<String>,
-      if (plantsFieldValue != null) _$UserFieldMap['plants']!: plantsFieldValue,
+        _$UserDTOFieldMap['plants']!: plants as List<String>,
+      if (plantsFieldValue != null)
+        _$UserDTOFieldMap['plants']!: plantsFieldValue,
     };
 
     return reference.update(json);
@@ -197,8 +198,9 @@ class _$UserDocumentReference
     );
     final json = {
       if (plants != _sentinel)
-        _$UserFieldMap['plants']!: plants as List<String>,
-      if (plantsFieldValue != null) _$UserFieldMap['plants']!: plantsFieldValue,
+        _$UserDTOFieldMap['plants']!: plants as List<String>,
+      if (plantsFieldValue != null)
+        _$UserDTOFieldMap['plants']!: plantsFieldValue,
     };
 
     transaction.update(reference, json);
@@ -206,7 +208,7 @@ class _$UserDocumentReference
 
   @override
   bool operator ==(Object other) {
-    return other is UserDocumentReference &&
+    return other is UserDTODocumentReference &&
         other.runtimeType == runtimeType &&
         other.parent == parent &&
         other.id == id;
@@ -216,12 +218,13 @@ class _$UserDocumentReference
   int get hashCode => Object.hash(runtimeType, parent, id);
 }
 
-abstract class UserQuery implements QueryReference<UserDTO, UserQuerySnapshot> {
+abstract class UserDTOQuery
+    implements QueryReference<UserDTO, UserDTOQuerySnapshot> {
   @override
-  UserQuery limit(int limit);
+  UserDTOQuery limit(int limit);
 
   @override
-  UserQuery limitToLast(int limit);
+  UserDTOQuery limitToLast(int limit);
 
   /// Perform an order query based on a [FieldPath].
   ///
@@ -243,17 +246,17 @@ abstract class UserQuery implements QueryReference<UserDTO, UserQuerySnapshot> {
   /// ```dart
   /// collection.orderByTitle(startAt: 'title');
   /// ```
-  UserQuery orderByFieldPath(
+  UserDTOQuery orderByFieldPath(
     FieldPath fieldPath, {
     bool descending = false,
     Object? startAt,
     Object? startAfter,
     Object? endAt,
     Object? endBefore,
-    UserDocumentSnapshot? startAtDocument,
-    UserDocumentSnapshot? endAtDocument,
-    UserDocumentSnapshot? endBeforeDocument,
-    UserDocumentSnapshot? startAfterDocument,
+    UserDTODocumentSnapshot? startAtDocument,
+    UserDTODocumentSnapshot? endAtDocument,
+    UserDTODocumentSnapshot? endBeforeDocument,
+    UserDTODocumentSnapshot? startAfterDocument,
   });
 
   /// Perform a where query based on a [FieldPath].
@@ -273,7 +276,7 @@ abstract class UserQuery implements QueryReference<UserDTO, UserQuerySnapshot> {
   /// ```dart
   /// collection.whereTitle(isEqualTo: 'title');
   /// ```
-  UserQuery whereFieldPath(
+  UserDTOQuery whereFieldPath(
     FieldPath fieldPath, {
     Object? isEqualTo,
     Object? isNotEqualTo,
@@ -288,7 +291,7 @@ abstract class UserQuery implements QueryReference<UserDTO, UserQuerySnapshot> {
     bool? isNull,
   });
 
-  UserQuery whereDocumentId({
+  UserDTOQuery whereDocumentId({
     String? isEqualTo,
     String? isNotEqualTo,
     String? isLessThan,
@@ -299,7 +302,7 @@ abstract class UserQuery implements QueryReference<UserDTO, UserQuerySnapshot> {
     List<String>? whereIn,
     List<String>? whereNotIn,
   });
-  UserQuery wherePlants({
+  UserDTOQuery wherePlants({
     List<String>? isEqualTo,
     List<String>? isNotEqualTo,
     List<String>? isLessThan,
@@ -311,34 +314,34 @@ abstract class UserQuery implements QueryReference<UserDTO, UserQuerySnapshot> {
     List<String>? arrayContainsAny,
   });
 
-  UserQuery orderByDocumentId({
+  UserDTOQuery orderByDocumentId({
     bool descending = false,
     String startAt,
     String startAfter,
     String endAt,
     String endBefore,
-    UserDocumentSnapshot? startAtDocument,
-    UserDocumentSnapshot? endAtDocument,
-    UserDocumentSnapshot? endBeforeDocument,
-    UserDocumentSnapshot? startAfterDocument,
+    UserDTODocumentSnapshot? startAtDocument,
+    UserDTODocumentSnapshot? endAtDocument,
+    UserDTODocumentSnapshot? endBeforeDocument,
+    UserDTODocumentSnapshot? startAfterDocument,
   });
 
-  UserQuery orderByPlants({
+  UserDTOQuery orderByPlants({
     bool descending = false,
     List<String> startAt,
     List<String> startAfter,
     List<String> endAt,
     List<String> endBefore,
-    UserDocumentSnapshot? startAtDocument,
-    UserDocumentSnapshot? endAtDocument,
-    UserDocumentSnapshot? endBeforeDocument,
-    UserDocumentSnapshot? startAfterDocument,
+    UserDTODocumentSnapshot? startAtDocument,
+    UserDTODocumentSnapshot? endAtDocument,
+    UserDTODocumentSnapshot? endBeforeDocument,
+    UserDTODocumentSnapshot? startAfterDocument,
   });
 }
 
-class _$UserQuery extends QueryReference<UserDTO, UserQuerySnapshot>
-    implements UserQuery {
-  _$UserQuery(
+class _$UserDTOQuery extends QueryReference<UserDTO, UserDTOQuerySnapshot>
+    implements UserDTOQuery {
+  _$UserDTOQuery(
     this._collection, {
     required Query<UserDTO> $referenceWithoutCursor,
     $QueryCursor $queryCursor = const $QueryCursor(),
@@ -350,18 +353,18 @@ class _$UserQuery extends QueryReference<UserDTO, UserQuerySnapshot>
   final CollectionReference<Object?> _collection;
 
   @override
-  Stream<UserQuerySnapshot> snapshots([SnapshotOptions? options]) {
-    return reference.snapshots().map(UserQuerySnapshot._fromQuerySnapshot);
+  Stream<UserDTOQuerySnapshot> snapshots([SnapshotOptions? options]) {
+    return reference.snapshots().map(UserDTOQuerySnapshot._fromQuerySnapshot);
   }
 
   @override
-  Future<UserQuerySnapshot> get([GetOptions? options]) {
-    return reference.get(options).then(UserQuerySnapshot._fromQuerySnapshot);
+  Future<UserDTOQuerySnapshot> get([GetOptions? options]) {
+    return reference.get(options).then(UserDTOQuerySnapshot._fromQuerySnapshot);
   }
 
   @override
-  UserQuery limit(int limit) {
-    return _$UserQuery(
+  UserDTOQuery limit(int limit) {
+    return _$UserDTOQuery(
       _collection,
       $referenceWithoutCursor: $referenceWithoutCursor.limit(limit),
       $queryCursor: $queryCursor,
@@ -369,25 +372,25 @@ class _$UserQuery extends QueryReference<UserDTO, UserQuerySnapshot>
   }
 
   @override
-  UserQuery limitToLast(int limit) {
-    return _$UserQuery(
+  UserDTOQuery limitToLast(int limit) {
+    return _$UserDTOQuery(
       _collection,
       $referenceWithoutCursor: $referenceWithoutCursor.limitToLast(limit),
       $queryCursor: $queryCursor,
     );
   }
 
-  UserQuery orderByFieldPath(
+  UserDTOQuery orderByFieldPath(
     FieldPath fieldPath, {
     bool descending = false,
     Object? startAt = _sentinel,
     Object? startAfter = _sentinel,
     Object? endAt = _sentinel,
     Object? endBefore = _sentinel,
-    UserDocumentSnapshot? startAtDocument,
-    UserDocumentSnapshot? endAtDocument,
-    UserDocumentSnapshot? endBeforeDocument,
-    UserDocumentSnapshot? startAfterDocument,
+    UserDTODocumentSnapshot? startAtDocument,
+    UserDTODocumentSnapshot? endAtDocument,
+    UserDTODocumentSnapshot? endBeforeDocument,
+    UserDTODocumentSnapshot? startAfterDocument,
   }) {
     final query =
         $referenceWithoutCursor.orderBy(fieldPath, descending: descending);
@@ -442,14 +445,14 @@ class _$UserQuery extends QueryReference<UserDTO, UserQuerySnapshot>
         endBeforeDocumentSnapshot: null,
       );
     }
-    return _$UserQuery(
+    return _$UserDTOQuery(
       _collection,
       $referenceWithoutCursor: query,
       $queryCursor: queryCursor,
     );
   }
 
-  UserQuery whereFieldPath(
+  UserDTOQuery whereFieldPath(
     FieldPath fieldPath, {
     Object? isEqualTo,
     Object? isNotEqualTo,
@@ -463,7 +466,7 @@ class _$UserQuery extends QueryReference<UserDTO, UserQuerySnapshot>
     List<Object?>? whereNotIn,
     bool? isNull,
   }) {
-    return _$UserQuery(
+    return _$UserDTOQuery(
       _collection,
       $referenceWithoutCursor: $referenceWithoutCursor.where(
         fieldPath,
@@ -483,7 +486,7 @@ class _$UserQuery extends QueryReference<UserDTO, UserQuerySnapshot>
     );
   }
 
-  UserQuery whereDocumentId({
+  UserDTOQuery whereDocumentId({
     String? isEqualTo,
     String? isNotEqualTo,
     String? isLessThan,
@@ -494,7 +497,7 @@ class _$UserQuery extends QueryReference<UserDTO, UserQuerySnapshot>
     List<String>? whereIn,
     List<String>? whereNotIn,
   }) {
-    return _$UserQuery(
+    return _$UserDTOQuery(
       _collection,
       $referenceWithoutCursor: $referenceWithoutCursor.where(
         FieldPath.documentId,
@@ -512,7 +515,7 @@ class _$UserQuery extends QueryReference<UserDTO, UserQuerySnapshot>
     );
   }
 
-  UserQuery wherePlants({
+  UserDTOQuery wherePlants({
     List<String>? isEqualTo,
     List<String>? isNotEqualTo,
     List<String>? isLessThan,
@@ -523,10 +526,10 @@ class _$UserQuery extends QueryReference<UserDTO, UserQuerySnapshot>
     String? arrayContains,
     List<String>? arrayContainsAny,
   }) {
-    return _$UserQuery(
+    return _$UserDTOQuery(
       _collection,
       $referenceWithoutCursor: $referenceWithoutCursor.where(
-        _$UserFieldMap['plants']!,
+        _$UserDTOFieldMap['plants']!,
         isEqualTo: isEqualTo,
         isNotEqualTo: isNotEqualTo,
         isLessThan: isLessThan,
@@ -541,16 +544,16 @@ class _$UserQuery extends QueryReference<UserDTO, UserQuerySnapshot>
     );
   }
 
-  UserQuery orderByDocumentId({
+  UserDTOQuery orderByDocumentId({
     bool descending = false,
     Object? startAt = _sentinel,
     Object? startAfter = _sentinel,
     Object? endAt = _sentinel,
     Object? endBefore = _sentinel,
-    UserDocumentSnapshot? startAtDocument,
-    UserDocumentSnapshot? endAtDocument,
-    UserDocumentSnapshot? endBeforeDocument,
-    UserDocumentSnapshot? startAfterDocument,
+    UserDTODocumentSnapshot? startAtDocument,
+    UserDTODocumentSnapshot? endAtDocument,
+    UserDTODocumentSnapshot? endBeforeDocument,
+    UserDTODocumentSnapshot? startAfterDocument,
   }) {
     final query = $referenceWithoutCursor.orderBy(FieldPath.documentId,
         descending: descending);
@@ -606,25 +609,25 @@ class _$UserQuery extends QueryReference<UserDTO, UserQuerySnapshot>
       );
     }
 
-    return _$UserQuery(
+    return _$UserDTOQuery(
       _collection,
       $referenceWithoutCursor: query,
       $queryCursor: queryCursor,
     );
   }
 
-  UserQuery orderByPlants({
+  UserDTOQuery orderByPlants({
     bool descending = false,
     Object? startAt = _sentinel,
     Object? startAfter = _sentinel,
     Object? endAt = _sentinel,
     Object? endBefore = _sentinel,
-    UserDocumentSnapshot? startAtDocument,
-    UserDocumentSnapshot? endAtDocument,
-    UserDocumentSnapshot? endBeforeDocument,
-    UserDocumentSnapshot? startAfterDocument,
+    UserDTODocumentSnapshot? startAtDocument,
+    UserDTODocumentSnapshot? endAtDocument,
+    UserDTODocumentSnapshot? endBeforeDocument,
+    UserDTODocumentSnapshot? startAfterDocument,
   }) {
-    final query = $referenceWithoutCursor.orderBy(_$UserFieldMap['plants']!,
+    final query = $referenceWithoutCursor.orderBy(_$UserDTOFieldMap['plants']!,
         descending: descending);
     var queryCursor = $queryCursor;
 
@@ -678,7 +681,7 @@ class _$UserQuery extends QueryReference<UserDTO, UserQuerySnapshot>
       );
     }
 
-    return _$UserQuery(
+    return _$UserDTOQuery(
       _collection,
       $referenceWithoutCursor: query,
       $queryCursor: queryCursor,
@@ -687,7 +690,7 @@ class _$UserQuery extends QueryReference<UserDTO, UserQuerySnapshot>
 
   @override
   bool operator ==(Object other) {
-    return other is _$UserQuery &&
+    return other is _$UserDTOQuery &&
         other.runtimeType == runtimeType &&
         other.reference == reference;
   }
@@ -696,15 +699,15 @@ class _$UserQuery extends QueryReference<UserDTO, UserQuerySnapshot>
   int get hashCode => Object.hash(runtimeType, reference);
 }
 
-class UserDocumentSnapshot extends FirestoreDocumentSnapshot<UserDTO> {
-  UserDocumentSnapshot._(this.snapshot) : data = snapshot.data();
+class UserDTODocumentSnapshot extends FirestoreDocumentSnapshot<UserDTO> {
+  UserDTODocumentSnapshot._(this.snapshot) : data = snapshot.data();
 
   @override
   final DocumentSnapshot<UserDTO> snapshot;
 
   @override
-  UserDocumentReference get reference {
-    return UserDocumentReference(
+  UserDTODocumentReference get reference {
+    return UserDTODocumentReference(
       snapshot.reference,
     );
   }
@@ -713,38 +716,39 @@ class UserDocumentSnapshot extends FirestoreDocumentSnapshot<UserDTO> {
   final UserDTO? data;
 }
 
-class UserQuerySnapshot
-    extends FirestoreQuerySnapshot<UserDTO, UserQueryDocumentSnapshot> {
-  UserQuerySnapshot._(
+class UserDTOQuerySnapshot
+    extends FirestoreQuerySnapshot<UserDTO, UserDTOQueryDocumentSnapshot> {
+  UserDTOQuerySnapshot._(
     this.snapshot,
     this.docs,
     this.docChanges,
   );
 
-  factory UserQuerySnapshot._fromQuerySnapshot(
+  factory UserDTOQuerySnapshot._fromQuerySnapshot(
     QuerySnapshot<UserDTO> snapshot,
   ) {
-    final docs = snapshot.docs.map(UserQueryDocumentSnapshot._).toList();
+    final docs = snapshot.docs.map(UserDTOQueryDocumentSnapshot._).toList();
 
     final docChanges = snapshot.docChanges.map((change) {
       return _decodeDocumentChange(
         change,
-        UserDocumentSnapshot._,
+        UserDTODocumentSnapshot._,
       );
     }).toList();
 
-    return UserQuerySnapshot._(
+    return UserDTOQuerySnapshot._(
       snapshot,
       docs,
       docChanges,
     );
   }
 
-  static FirestoreDocumentChange<UserDocumentSnapshot> _decodeDocumentChange<T>(
+  static FirestoreDocumentChange<UserDTODocumentSnapshot>
+      _decodeDocumentChange<T>(
     DocumentChange<T> docChange,
-    UserDocumentSnapshot Function(DocumentSnapshot<T> doc) decodeDoc,
+    UserDTODocumentSnapshot Function(DocumentSnapshot<T> doc) decodeDoc,
   ) {
-    return FirestoreDocumentChange<UserDocumentSnapshot>(
+    return FirestoreDocumentChange<UserDTODocumentSnapshot>(
       type: docChange.type,
       oldIndex: docChange.oldIndex,
       newIndex: docChange.newIndex,
@@ -755,15 +759,16 @@ class UserQuerySnapshot
   final QuerySnapshot<UserDTO> snapshot;
 
   @override
-  final List<UserQueryDocumentSnapshot> docs;
+  final List<UserDTOQueryDocumentSnapshot> docs;
 
   @override
-  final List<FirestoreDocumentChange<UserDocumentSnapshot>> docChanges;
+  final List<FirestoreDocumentChange<UserDTODocumentSnapshot>> docChanges;
 }
 
-class UserQueryDocumentSnapshot extends FirestoreQueryDocumentSnapshot<UserDTO>
-    implements UserDocumentSnapshot {
-  UserQueryDocumentSnapshot._(this.snapshot) : data = snapshot.data();
+class UserDTOQueryDocumentSnapshot
+    extends FirestoreQueryDocumentSnapshot<UserDTO>
+    implements UserDTODocumentSnapshot {
+  UserDTOQueryDocumentSnapshot._(this.snapshot) : data = snapshot.data();
 
   @override
   final QueryDocumentSnapshot<UserDTO> snapshot;
@@ -772,8 +777,8 @@ class UserQueryDocumentSnapshot extends FirestoreQueryDocumentSnapshot<UserDTO>
   final UserDTO data;
 
   @override
-  UserDocumentReference get reference {
-    return UserDocumentReference(snapshot.reference);
+  UserDTODocumentReference get reference {
+    return UserDTODocumentReference(snapshot.reference);
   }
 }
 
@@ -781,18 +786,18 @@ class UserQueryDocumentSnapshot extends FirestoreQueryDocumentSnapshot<UserDTO>
 // JsonSerializableGenerator
 // **************************************************************************
 
-UserDTO _$UserFromJson(Map<String, dynamic> json) => UserDTO(
+UserDTO _$UserDTOFromJson(Map<String, dynamic> json) => UserDTO(
       plants:
           (json['plants'] as List<dynamic>).map((e) => e as String).toList(),
       id: json['id'] as String,
     );
 
-const _$UserFieldMap = <String, String>{
+const _$UserDTOFieldMap = <String, String>{
   'id': 'id',
   'plants': 'plants',
 };
 
-Map<String, dynamic> _$UserToJson(UserDTO instance) => <String, dynamic>{
+Map<String, dynamic> _$UserDTOToJson(UserDTO instance) => <String, dynamic>{
       'id': instance.id,
       'plants': instance.plants,
     };

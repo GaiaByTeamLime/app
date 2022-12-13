@@ -2,6 +2,8 @@
 
 import 'dart:async';
 import 'package:flutter/material.dart';
+import '../controller/auth.dart';
+import '../controller/user.dart';
 import '../providers/blufi.dart';
 import '../components/page.dart';
 import '../components/device_card.dart';
@@ -113,7 +115,7 @@ class _ConnectWifiPageState extends State<ConnectWifiPage> {
       var blufi = Blufi();
       timePassed++;
 
-      if (timePassed > 45 && blufi.foundNetworks.isEmpty) {
+      if (timePassed > 60 && blufi.foundNetworks.isEmpty) {
         // Haven't found any networks after 45 seconds, reload the page.
         blufi.stopWifiScanning();
         Navigator.pushNamed(context, '/connect/wifi');
@@ -126,6 +128,8 @@ class _ConnectWifiPageState extends State<ConnectWifiPage> {
     var blufi = Blufi();
 
     blufi.disconnect();
+    _reloadPageTimer?.cancel();
+    _reloadPageTimer = null;
     super.dispose();
   }
 
@@ -217,7 +221,7 @@ class _ConnectWifiPageState extends State<ConnectWifiPage> {
         );
       });
 
-  var _canTryAutoFix = true;
+  var _canTryAutoFix = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -229,7 +233,7 @@ class _ConnectWifiPageState extends State<ConnectWifiPage> {
     // When the page is rendered, start scanning for Wifi if we weren't doing that already.
     if (!promptingPassword) {
       blufi.scanForWifiNetworks(onError: () {
-        if (_canTryAutoFix && _deviceId != null) {
+        if (_canTryAutoFix < 2 && _deviceId != null) {
           // Everything is disconnected so we should try again.
           blufi.scan();
           Future.delayed(const Duration(seconds: 5), () {
@@ -243,14 +247,16 @@ class _ConnectWifiPageState extends State<ConnectWifiPage> {
               }
             });
           });
-          _canTryAutoFix = false;
+          _canTryAutoFix++;
         } else {
+          blufi.disconnect();
           _showReconnect(context);
         }
       });
     }
 
-    var devices = blufi.foundNetworks.entries.map((device) => DeviceCard(
+    var devices = blufi.foundNetworks.entries.map(
+      (device) => DeviceCard(
         title: device.key,
         icon: Icons.wifi,
         isConnecting: blufi.connectedSsid == device.key &&
@@ -264,25 +270,63 @@ class _ConnectWifiPageState extends State<ConnectWifiPage> {
                 var password = await _promptPassword(context, device.key);
                 if (password != null) {
                   print("connect to wifi,.......");
-                  blufi.connectToWifiNetwork(device.key, password,
-                      onSuccess: () async {
-                    await _showConnectionSuccess(context);
-                    // ignore: use_build_context_synchronously
-                    Navigator.pushNamed(context, '/');
-                  }, onError: (e) async {
-                    print("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE $e");
-                    promptingPassword = false;
-                    _showReconnect(context);
-                  }, onTimeout: () async {
-                    promptingPassword = false;
-                    _showIncorrectPassword(context);
-                  });
+                  blufi.connectToWifiNetwork(
+                    device.key,
+                    password,
+                    onSuccess: () async {
+                      // FIXME: Device ID is NOT equal to device MAC on iOS!
+                      var token =
+                          await AuthController().registerNewToken(_deviceId!);
+                      if (token != null) {
+                        print('token: $token');
+                        blufi.registerAuthToken(
+                          token,
+                          onSuccess: () async {
+                            await UserController().setPlant(_deviceId!);
+
+                            // ignore: use_build_context_synchronously
+                            await _showConnectionSuccess(context);
+                            // ignore: use_build_context_synchronously
+                            Navigator.pushNamed(context, '/');
+                          },
+                          onError: (Object? e) async {
+                            print(
+                                "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE3 $e");
+                            promptingPassword = false;
+                            _reloadPageTimer?.cancel();
+                            _reloadPageTimer = null;
+                            _showReconnect(context);
+                          },
+                        );
+                      } else {
+                        print("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE2");
+                        promptingPassword = false;
+                        _reloadPageTimer?.cancel();
+                        _reloadPageTimer = null;
+                        // ignore: use_build_context_synchronously
+                        _showReconnect(context);
+                      }
+                    },
+                    onError: (e) async {
+                      print("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE $e");
+                      promptingPassword = false;
+                      _reloadPageTimer?.cancel();
+                      _reloadPageTimer = null;
+                      _showReconnect(context);
+                    },
+                    onTimeout: () async {
+                      promptingPassword = false;
+                      _showIncorrectPassword(context);
+                    },
+                  );
                 } else {
                   print("nahhhhhh,.......");
                   promptingPassword = false;
                 }
               }
-            : null));
+            : null,
+      ),
+    );
 
     return WillPopScope(
       onWillPop: () async => false,

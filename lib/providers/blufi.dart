@@ -125,7 +125,10 @@ class Blufi extends ChangeNotifier {
   }
 
   Future<void> disconnect() async {
-    if (connectionState != BlufiConnectionState.connectedBluetooth) return;
+    if (connectionState != BlufiConnectionState.connectedBluetooth ||
+        connectionState != BlufiConnectionState.scanningWifi ||
+        connectionState != BlufiConnectionState.scanningWifi ||
+        connectionState != BlufiConnectionState.connected) return;
     connectionState = BlufiConnectionState.idle;
     await BlufiPlugin.instance.requestCloseConnection();
   }
@@ -137,7 +140,6 @@ class Blufi extends ChangeNotifier {
     connectionState = BlufiConnectionState.scanningWifi;
     foundDevices = {};
     _onWifiError = onError;
-    _ignoredPacketCount = 0;
 
     void handleError() {
       print('error! Reset sensor now!');
@@ -155,16 +157,9 @@ class Blufi extends ChangeNotifier {
           String key = mapData['key'];
           if (key == 'wifi_info') {
             if (mapData['value'] == "0") {
-              print("Value was 0 ignore packet $_ignoredPacketCount");
-              _ignoredPacketCount++;
-
-              if (_ignoredPacketCount > 3) {
-                handleError();
-              }
+              handleError();
               return;
             }
-            // If we succeed, reset the counter.
-            _ignoredPacketCount = 0;
 
             Map<String, dynamic> peripheral = mapData['value'];
 
@@ -275,5 +270,41 @@ class Blufi extends ChangeNotifier {
 
     await BlufiPlugin.instance
         .configProvision(username: ssid, password: password);
+  }
+
+  void registerAuthToken(
+    String token, {
+    required Future<void> Function() onSuccess,
+    required Future<void> Function(Object?) onError,
+  }) async {
+    if (connectionState != BlufiConnectionState.connected) return;
+
+    BlufiPlugin.instance.onMessageReceived(
+      successCallback: (String? data) {
+        Map<String, dynamic> mapData = json.decode(data ?? "{}");
+        if (mapData.containsKey('key')) {
+          String key = mapData['key'];
+          var value = mapData['value'];
+          if (key == 'post_custom_data') {
+            if (value == "1") {
+              print("Set token successfully!");
+              onSuccess();
+            } else {
+              onError("`device_token_set` failed with code $value");
+            }
+          } else if (key == 'receive_error_cWode') {
+            onError(
+                "Recieved `receive_error_code` from device with value $value");
+          }
+        }
+      },
+      errorCallback: (String? error) {
+        print(
+            "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! errorCallback $error");
+        onError(error);
+      },
+    );
+
+    BlufiPlugin.instance.postCustomData(token);
   }
 }

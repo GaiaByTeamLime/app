@@ -18,53 +18,53 @@ const _sentinel = _Sentinel();
 /// A collection reference object can be used for adding documents,
 /// getting document references, and querying for documents
 /// (using the methods inherited from Query).
-abstract class PlantCollectionReference
+abstract class PlantDTOCollectionReference
     implements
-        PlantQuery,
-        FirestoreCollectionReference<PlantDTO, PlantQuerySnapshot> {
-  factory PlantCollectionReference([
+        PlantDTOQuery,
+        FirestoreCollectionReference<PlantDTO, PlantDTOQuerySnapshot> {
+  factory PlantDTOCollectionReference([
     FirebaseFirestore? firestore,
-  ]) = _$PlantCollectionReference;
+  ]) = _$PlantDTOCollectionReference;
 
   static PlantDTO fromFirestore(
     DocumentSnapshot<Map<String, Object?>> snapshot,
     SnapshotOptions? options,
   ) {
-    return _$PlantFromJson({'id': snapshot.id, ...?snapshot.data()});
+    return _$PlantDTOFromJson({'id': snapshot.id, ...?snapshot.data()});
   }
 
   static Map<String, Object?> toFirestore(
     PlantDTO value,
     SetOptions? options,
   ) {
-    return {..._$PlantToJson(value)}..remove('id');
+    return {..._$PlantDTOToJson(value)}..remove('id');
   }
 
   @override
   CollectionReference<PlantDTO> get reference;
 
   @override
-  PlantDocumentReference doc([String? id]);
+  PlantDTODocumentReference doc([String? id]);
 
   /// Add a new document to this collection with the specified data,
   /// assigning it a document ID automatically.
-  Future<PlantDocumentReference> add(PlantDTO value);
+  Future<PlantDTODocumentReference> add(PlantDTO value);
 }
 
-class _$PlantCollectionReference extends _$PlantQuery
-    implements PlantCollectionReference {
-  factory _$PlantCollectionReference([FirebaseFirestore? firestore]) {
+class _$PlantDTOCollectionReference extends _$PlantDTOQuery
+    implements PlantDTOCollectionReference {
+  factory _$PlantDTOCollectionReference([FirebaseFirestore? firestore]) {
     firestore ??= FirebaseFirestore.instance;
 
-    return _$PlantCollectionReference._(
+    return _$PlantDTOCollectionReference._(
       firestore.collection('plants').withConverter(
-            fromFirestore: PlantCollectionReference.fromFirestore,
-            toFirestore: PlantCollectionReference.toFirestore,
+            fromFirestore: PlantDTOCollectionReference.fromFirestore,
+            toFirestore: PlantDTOCollectionReference.toFirestore,
           ),
     );
   }
 
-  _$PlantCollectionReference._(
+  _$PlantDTOCollectionReference._(
     CollectionReference<PlantDTO> reference,
   ) : super(reference, $referenceWithoutCursor: reference);
 
@@ -75,24 +75,24 @@ class _$PlantCollectionReference extends _$PlantQuery
       super.reference as CollectionReference<PlantDTO>;
 
   @override
-  PlantDocumentReference doc([String? id]) {
+  PlantDTODocumentReference doc([String? id]) {
     assert(
       id == null || id.split('/').length == 1,
       'The document ID cannot be from a different collection',
     );
-    return PlantDocumentReference(
+    return PlantDTODocumentReference(
       reference.doc(id),
     );
   }
 
   @override
-  Future<PlantDocumentReference> add(PlantDTO value) {
-    return reference.add(value).then((ref) => PlantDocumentReference(ref));
+  Future<PlantDTODocumentReference> add(PlantDTO value) {
+    return reference.add(value).then((ref) => PlantDTODocumentReference(ref));
   }
 
   @override
   bool operator ==(Object other) {
-    return other is _$PlantCollectionReference &&
+    return other is _$PlantDTOCollectionReference &&
         other.runtimeType == runtimeType &&
         other.reference == reference;
   }
@@ -101,23 +101,23 @@ class _$PlantCollectionReference extends _$PlantQuery
   int get hashCode => Object.hash(runtimeType, reference);
 }
 
-abstract class PlantDocumentReference
-    extends FirestoreDocumentReference<PlantDTO, PlantDocumentSnapshot> {
-  factory PlantDocumentReference(DocumentReference<PlantDTO> reference) =
-      _$PlantDocumentReference;
+abstract class PlantDTODocumentReference
+    extends FirestoreDocumentReference<PlantDTO, PlantDTODocumentSnapshot> {
+  factory PlantDTODocumentReference(DocumentReference<PlantDTO> reference) =
+      _$PlantDTODocumentReference;
 
   DocumentReference<PlantDTO> get reference;
 
-  /// A reference to the [PlantCollectionReference] containing this document.
-  PlantCollectionReference get parent {
-    return _$PlantCollectionReference(reference.firestore);
+  /// A reference to the [PlantDTOCollectionReference] containing this document.
+  PlantDTOCollectionReference get parent {
+    return _$PlantDTOCollectionReference(reference.firestore);
   }
 
   @override
-  Stream<PlantDocumentSnapshot> snapshots();
+  Stream<PlantDTODocumentSnapshot> snapshots();
 
   @override
-  Future<PlantDocumentSnapshot> get([GetOptions? options]);
+  Future<PlantDTODocumentSnapshot> get([GetOptions? options]);
 
   @override
   Future<void> delete();
@@ -127,18 +127,34 @@ abstract class PlantDocumentReference
   ///
   /// If no document exists yet, the update will fail.
   Future<void> update({
-    String name,
-    FieldValue nameFieldValue,
-    int avatarPot,
-    FieldValue avatarPotFieldValue,
-    int plantPot,
-    FieldValue plantPotFieldValue,
-    int facePot,
-    FieldValue facePotFieldValue,
     int calibrationDry,
     FieldValue calibrationDryFieldValue,
     int calibrationWet,
     FieldValue calibrationWetFieldValue,
+    double illumination,
+    FieldValue illuminationFieldValue,
+    double humidity,
+    FieldValue humidityFieldValue,
+    double temperature,
+    FieldValue temperatureFieldValue,
+    double voltage,
+    FieldValue voltageFieldValue,
+    double soilHumidity,
+    FieldValue soilHumidityFieldValue,
+    double soilSalt,
+    FieldValue soilSaltFieldValue,
+    String name,
+    FieldValue nameFieldValue,
+    int avatarPot,
+    FieldValue avatarPotFieldValue,
+    int avatarPlant,
+    FieldValue avatarPlantFieldValue,
+    int avatarFace,
+    FieldValue avatarFaceFieldValue,
+    int avatarAccessories1,
+    FieldValue avatarAccessories1FieldValue,
+    int avatarAccessories2,
+    FieldValue avatarAccessories2FieldValue,
   });
 
   /// Updates fields in the current document using the transaction API.
@@ -146,63 +162,127 @@ abstract class PlantDocumentReference
   /// The update will fail if applied to a document that does not exist.
   void transactionUpdate(
     Transaction transaction, {
-    String name,
-    FieldValue nameFieldValue,
-    int avatarPot,
-    FieldValue avatarPotFieldValue,
-    int plantPot,
-    FieldValue plantPotFieldValue,
-    int facePot,
-    FieldValue facePotFieldValue,
     int calibrationDry,
     FieldValue calibrationDryFieldValue,
     int calibrationWet,
     FieldValue calibrationWetFieldValue,
+    double illumination,
+    FieldValue illuminationFieldValue,
+    double humidity,
+    FieldValue humidityFieldValue,
+    double temperature,
+    FieldValue temperatureFieldValue,
+    double voltage,
+    FieldValue voltageFieldValue,
+    double soilHumidity,
+    FieldValue soilHumidityFieldValue,
+    double soilSalt,
+    FieldValue soilSaltFieldValue,
+    String name,
+    FieldValue nameFieldValue,
+    int avatarPot,
+    FieldValue avatarPotFieldValue,
+    int avatarPlant,
+    FieldValue avatarPlantFieldValue,
+    int avatarFace,
+    FieldValue avatarFaceFieldValue,
+    int avatarAccessories1,
+    FieldValue avatarAccessories1FieldValue,
+    int avatarAccessories2,
+    FieldValue avatarAccessories2FieldValue,
   });
 }
 
-class _$PlantDocumentReference
-    extends FirestoreDocumentReference<PlantDTO, PlantDocumentSnapshot>
-    implements PlantDocumentReference {
-  _$PlantDocumentReference(this.reference);
+class _$PlantDTODocumentReference
+    extends FirestoreDocumentReference<PlantDTO, PlantDTODocumentSnapshot>
+    implements PlantDTODocumentReference {
+  _$PlantDTODocumentReference(this.reference);
 
   @override
   final DocumentReference<PlantDTO> reference;
 
-  /// A reference to the [PlantCollectionReference] containing this document.
-  PlantCollectionReference get parent {
-    return _$PlantCollectionReference(reference.firestore);
+  /// A reference to the [PlantDTOCollectionReference] containing this document.
+  PlantDTOCollectionReference get parent {
+    return _$PlantDTOCollectionReference(reference.firestore);
   }
 
   @override
-  Stream<PlantDocumentSnapshot> snapshots() {
-    return reference.snapshots().map(PlantDocumentSnapshot._);
+  Stream<PlantDTODocumentSnapshot> snapshots() {
+    return reference.snapshots().map(PlantDTODocumentSnapshot._);
   }
 
   @override
-  Future<PlantDocumentSnapshot> get([GetOptions? options]) {
-    return reference.get(options).then(PlantDocumentSnapshot._);
+  Future<PlantDTODocumentSnapshot> get([GetOptions? options]) {
+    return reference.get(options).then(PlantDTODocumentSnapshot._);
   }
 
   @override
-  Future<PlantDocumentSnapshot> transactionGet(Transaction transaction) {
-    return transaction.get(reference).then(PlantDocumentSnapshot._);
+  Future<PlantDTODocumentSnapshot> transactionGet(Transaction transaction) {
+    return transaction.get(reference).then(PlantDTODocumentSnapshot._);
   }
 
   Future<void> update({
-    Object? name = _sentinel,
-    FieldValue? nameFieldValue,
-    Object? avatarPot = _sentinel,
-    FieldValue? avatarPotFieldValue,
-    Object? plantPot = _sentinel,
-    FieldValue? plantPotFieldValue,
-    Object? facePot = _sentinel,
-    FieldValue? facePotFieldValue,
     Object? calibrationDry = _sentinel,
     FieldValue? calibrationDryFieldValue,
     Object? calibrationWet = _sentinel,
     FieldValue? calibrationWetFieldValue,
+    Object? illumination = _sentinel,
+    FieldValue? illuminationFieldValue,
+    Object? humidity = _sentinel,
+    FieldValue? humidityFieldValue,
+    Object? temperature = _sentinel,
+    FieldValue? temperatureFieldValue,
+    Object? voltage = _sentinel,
+    FieldValue? voltageFieldValue,
+    Object? soilHumidity = _sentinel,
+    FieldValue? soilHumidityFieldValue,
+    Object? soilSalt = _sentinel,
+    FieldValue? soilSaltFieldValue,
+    Object? name = _sentinel,
+    FieldValue? nameFieldValue,
+    Object? avatarPot = _sentinel,
+    FieldValue? avatarPotFieldValue,
+    Object? avatarPlant = _sentinel,
+    FieldValue? avatarPlantFieldValue,
+    Object? avatarFace = _sentinel,
+    FieldValue? avatarFaceFieldValue,
+    Object? avatarAccessories1 = _sentinel,
+    FieldValue? avatarAccessories1FieldValue,
+    Object? avatarAccessories2 = _sentinel,
+    FieldValue? avatarAccessories2FieldValue,
   }) async {
+    assert(
+      calibrationDry == _sentinel || calibrationDryFieldValue == null,
+      "Cannot specify both calibrationDry and calibrationDryFieldValue",
+    );
+    assert(
+      calibrationWet == _sentinel || calibrationWetFieldValue == null,
+      "Cannot specify both calibrationWet and calibrationWetFieldValue",
+    );
+    assert(
+      illumination == _sentinel || illuminationFieldValue == null,
+      "Cannot specify both illumination and illuminationFieldValue",
+    );
+    assert(
+      humidity == _sentinel || humidityFieldValue == null,
+      "Cannot specify both humidity and humidityFieldValue",
+    );
+    assert(
+      temperature == _sentinel || temperatureFieldValue == null,
+      "Cannot specify both temperature and temperatureFieldValue",
+    );
+    assert(
+      voltage == _sentinel || voltageFieldValue == null,
+      "Cannot specify both voltage and voltageFieldValue",
+    );
+    assert(
+      soilHumidity == _sentinel || soilHumidityFieldValue == null,
+      "Cannot specify both soilHumidity and soilHumidityFieldValue",
+    );
+    assert(
+      soilSalt == _sentinel || soilSaltFieldValue == null,
+      "Cannot specify both soilSalt and soilSaltFieldValue",
+    );
     assert(
       name == _sentinel || nameFieldValue == null,
       "Cannot specify both name and nameFieldValue",
@@ -212,42 +292,76 @@ class _$PlantDocumentReference
       "Cannot specify both avatarPot and avatarPotFieldValue",
     );
     assert(
-      plantPot == _sentinel || plantPotFieldValue == null,
-      "Cannot specify both plantPot and plantPotFieldValue",
+      avatarPlant == _sentinel || avatarPlantFieldValue == null,
+      "Cannot specify both avatarPlant and avatarPlantFieldValue",
     );
     assert(
-      facePot == _sentinel || facePotFieldValue == null,
-      "Cannot specify both facePot and facePotFieldValue",
+      avatarFace == _sentinel || avatarFaceFieldValue == null,
+      "Cannot specify both avatarFace and avatarFaceFieldValue",
     );
     assert(
-      calibrationDry == _sentinel || calibrationDryFieldValue == null,
-      "Cannot specify both calibrationDry and calibrationDryFieldValue",
+      avatarAccessories1 == _sentinel || avatarAccessories1FieldValue == null,
+      "Cannot specify both avatarAccessories1 and avatarAccessories1FieldValue",
     );
     assert(
-      calibrationWet == _sentinel || calibrationWetFieldValue == null,
-      "Cannot specify both calibrationWet and calibrationWetFieldValue",
+      avatarAccessories2 == _sentinel || avatarAccessories2FieldValue == null,
+      "Cannot specify both avatarAccessories2 and avatarAccessories2FieldValue",
     );
     final json = {
-      if (name != _sentinel) _$PlantFieldMap['name']!: name as String,
-      if (nameFieldValue != null) _$PlantFieldMap['name']!: nameFieldValue,
-      if (avatarPot != _sentinel)
-        _$PlantFieldMap['avatarPot']!: avatarPot as int,
-      if (avatarPotFieldValue != null)
-        _$PlantFieldMap['avatarPot']!: avatarPotFieldValue,
-      if (plantPot != _sentinel) _$PlantFieldMap['plantPot']!: plantPot as int,
-      if (plantPotFieldValue != null)
-        _$PlantFieldMap['plantPot']!: plantPotFieldValue,
-      if (facePot != _sentinel) _$PlantFieldMap['facePot']!: facePot as int,
-      if (facePotFieldValue != null)
-        _$PlantFieldMap['facePot']!: facePotFieldValue,
       if (calibrationDry != _sentinel)
-        _$PlantFieldMap['calibrationDry']!: calibrationDry as int,
+        _$PlantDTOFieldMap['calibrationDry']!: calibrationDry as int,
       if (calibrationDryFieldValue != null)
-        _$PlantFieldMap['calibrationDry']!: calibrationDryFieldValue,
+        _$PlantDTOFieldMap['calibrationDry']!: calibrationDryFieldValue,
       if (calibrationWet != _sentinel)
-        _$PlantFieldMap['calibrationWet']!: calibrationWet as int,
+        _$PlantDTOFieldMap['calibrationWet']!: calibrationWet as int,
       if (calibrationWetFieldValue != null)
-        _$PlantFieldMap['calibrationWet']!: calibrationWetFieldValue,
+        _$PlantDTOFieldMap['calibrationWet']!: calibrationWetFieldValue,
+      if (illumination != _sentinel)
+        _$PlantDTOFieldMap['illumination']!: illumination as double,
+      if (illuminationFieldValue != null)
+        _$PlantDTOFieldMap['illumination']!: illuminationFieldValue,
+      if (humidity != _sentinel)
+        _$PlantDTOFieldMap['humidity']!: humidity as double,
+      if (humidityFieldValue != null)
+        _$PlantDTOFieldMap['humidity']!: humidityFieldValue,
+      if (temperature != _sentinel)
+        _$PlantDTOFieldMap['temperature']!: temperature as double,
+      if (temperatureFieldValue != null)
+        _$PlantDTOFieldMap['temperature']!: temperatureFieldValue,
+      if (voltage != _sentinel)
+        _$PlantDTOFieldMap['voltage']!: voltage as double,
+      if (voltageFieldValue != null)
+        _$PlantDTOFieldMap['voltage']!: voltageFieldValue,
+      if (soilHumidity != _sentinel)
+        _$PlantDTOFieldMap['soilHumidity']!: soilHumidity as double,
+      if (soilHumidityFieldValue != null)
+        _$PlantDTOFieldMap['soilHumidity']!: soilHumidityFieldValue,
+      if (soilSalt != _sentinel)
+        _$PlantDTOFieldMap['soilSalt']!: soilSalt as double,
+      if (soilSaltFieldValue != null)
+        _$PlantDTOFieldMap['soilSalt']!: soilSaltFieldValue,
+      if (name != _sentinel) _$PlantDTOFieldMap['name']!: name as String,
+      if (nameFieldValue != null) _$PlantDTOFieldMap['name']!: nameFieldValue,
+      if (avatarPot != _sentinel)
+        _$PlantDTOFieldMap['avatarPot']!: avatarPot as int,
+      if (avatarPotFieldValue != null)
+        _$PlantDTOFieldMap['avatarPot']!: avatarPotFieldValue,
+      if (avatarPlant != _sentinel)
+        _$PlantDTOFieldMap['avatarPlant']!: avatarPlant as int,
+      if (avatarPlantFieldValue != null)
+        _$PlantDTOFieldMap['avatarPlant']!: avatarPlantFieldValue,
+      if (avatarFace != _sentinel)
+        _$PlantDTOFieldMap['avatarFace']!: avatarFace as int,
+      if (avatarFaceFieldValue != null)
+        _$PlantDTOFieldMap['avatarFace']!: avatarFaceFieldValue,
+      if (avatarAccessories1 != _sentinel)
+        _$PlantDTOFieldMap['avatarAccessories1']!: avatarAccessories1 as int,
+      if (avatarAccessories1FieldValue != null)
+        _$PlantDTOFieldMap['avatarAccessories1']!: avatarAccessories1FieldValue,
+      if (avatarAccessories2 != _sentinel)
+        _$PlantDTOFieldMap['avatarAccessories2']!: avatarAccessories2 as int,
+      if (avatarAccessories2FieldValue != null)
+        _$PlantDTOFieldMap['avatarAccessories2']!: avatarAccessories2FieldValue,
     };
 
     return reference.update(json);
@@ -255,19 +369,67 @@ class _$PlantDocumentReference
 
   void transactionUpdate(
     Transaction transaction, {
-    Object? name = _sentinel,
-    FieldValue? nameFieldValue,
-    Object? avatarPot = _sentinel,
-    FieldValue? avatarPotFieldValue,
-    Object? plantPot = _sentinel,
-    FieldValue? plantPotFieldValue,
-    Object? facePot = _sentinel,
-    FieldValue? facePotFieldValue,
     Object? calibrationDry = _sentinel,
     FieldValue? calibrationDryFieldValue,
     Object? calibrationWet = _sentinel,
     FieldValue? calibrationWetFieldValue,
+    Object? illumination = _sentinel,
+    FieldValue? illuminationFieldValue,
+    Object? humidity = _sentinel,
+    FieldValue? humidityFieldValue,
+    Object? temperature = _sentinel,
+    FieldValue? temperatureFieldValue,
+    Object? voltage = _sentinel,
+    FieldValue? voltageFieldValue,
+    Object? soilHumidity = _sentinel,
+    FieldValue? soilHumidityFieldValue,
+    Object? soilSalt = _sentinel,
+    FieldValue? soilSaltFieldValue,
+    Object? name = _sentinel,
+    FieldValue? nameFieldValue,
+    Object? avatarPot = _sentinel,
+    FieldValue? avatarPotFieldValue,
+    Object? avatarPlant = _sentinel,
+    FieldValue? avatarPlantFieldValue,
+    Object? avatarFace = _sentinel,
+    FieldValue? avatarFaceFieldValue,
+    Object? avatarAccessories1 = _sentinel,
+    FieldValue? avatarAccessories1FieldValue,
+    Object? avatarAccessories2 = _sentinel,
+    FieldValue? avatarAccessories2FieldValue,
   }) {
+    assert(
+      calibrationDry == _sentinel || calibrationDryFieldValue == null,
+      "Cannot specify both calibrationDry and calibrationDryFieldValue",
+    );
+    assert(
+      calibrationWet == _sentinel || calibrationWetFieldValue == null,
+      "Cannot specify both calibrationWet and calibrationWetFieldValue",
+    );
+    assert(
+      illumination == _sentinel || illuminationFieldValue == null,
+      "Cannot specify both illumination and illuminationFieldValue",
+    );
+    assert(
+      humidity == _sentinel || humidityFieldValue == null,
+      "Cannot specify both humidity and humidityFieldValue",
+    );
+    assert(
+      temperature == _sentinel || temperatureFieldValue == null,
+      "Cannot specify both temperature and temperatureFieldValue",
+    );
+    assert(
+      voltage == _sentinel || voltageFieldValue == null,
+      "Cannot specify both voltage and voltageFieldValue",
+    );
+    assert(
+      soilHumidity == _sentinel || soilHumidityFieldValue == null,
+      "Cannot specify both soilHumidity and soilHumidityFieldValue",
+    );
+    assert(
+      soilSalt == _sentinel || soilSaltFieldValue == null,
+      "Cannot specify both soilSalt and soilSaltFieldValue",
+    );
     assert(
       name == _sentinel || nameFieldValue == null,
       "Cannot specify both name and nameFieldValue",
@@ -277,42 +439,76 @@ class _$PlantDocumentReference
       "Cannot specify both avatarPot and avatarPotFieldValue",
     );
     assert(
-      plantPot == _sentinel || plantPotFieldValue == null,
-      "Cannot specify both plantPot and plantPotFieldValue",
+      avatarPlant == _sentinel || avatarPlantFieldValue == null,
+      "Cannot specify both avatarPlant and avatarPlantFieldValue",
     );
     assert(
-      facePot == _sentinel || facePotFieldValue == null,
-      "Cannot specify both facePot and facePotFieldValue",
+      avatarFace == _sentinel || avatarFaceFieldValue == null,
+      "Cannot specify both avatarFace and avatarFaceFieldValue",
     );
     assert(
-      calibrationDry == _sentinel || calibrationDryFieldValue == null,
-      "Cannot specify both calibrationDry and calibrationDryFieldValue",
+      avatarAccessories1 == _sentinel || avatarAccessories1FieldValue == null,
+      "Cannot specify both avatarAccessories1 and avatarAccessories1FieldValue",
     );
     assert(
-      calibrationWet == _sentinel || calibrationWetFieldValue == null,
-      "Cannot specify both calibrationWet and calibrationWetFieldValue",
+      avatarAccessories2 == _sentinel || avatarAccessories2FieldValue == null,
+      "Cannot specify both avatarAccessories2 and avatarAccessories2FieldValue",
     );
     final json = {
-      if (name != _sentinel) _$PlantFieldMap['name']!: name as String,
-      if (nameFieldValue != null) _$PlantFieldMap['name']!: nameFieldValue,
-      if (avatarPot != _sentinel)
-        _$PlantFieldMap['avatarPot']!: avatarPot as int,
-      if (avatarPotFieldValue != null)
-        _$PlantFieldMap['avatarPot']!: avatarPotFieldValue,
-      if (plantPot != _sentinel) _$PlantFieldMap['plantPot']!: plantPot as int,
-      if (plantPotFieldValue != null)
-        _$PlantFieldMap['plantPot']!: plantPotFieldValue,
-      if (facePot != _sentinel) _$PlantFieldMap['facePot']!: facePot as int,
-      if (facePotFieldValue != null)
-        _$PlantFieldMap['facePot']!: facePotFieldValue,
       if (calibrationDry != _sentinel)
-        _$PlantFieldMap['calibrationDry']!: calibrationDry as int,
+        _$PlantDTOFieldMap['calibrationDry']!: calibrationDry as int,
       if (calibrationDryFieldValue != null)
-        _$PlantFieldMap['calibrationDry']!: calibrationDryFieldValue,
+        _$PlantDTOFieldMap['calibrationDry']!: calibrationDryFieldValue,
       if (calibrationWet != _sentinel)
-        _$PlantFieldMap['calibrationWet']!: calibrationWet as int,
+        _$PlantDTOFieldMap['calibrationWet']!: calibrationWet as int,
       if (calibrationWetFieldValue != null)
-        _$PlantFieldMap['calibrationWet']!: calibrationWetFieldValue,
+        _$PlantDTOFieldMap['calibrationWet']!: calibrationWetFieldValue,
+      if (illumination != _sentinel)
+        _$PlantDTOFieldMap['illumination']!: illumination as double,
+      if (illuminationFieldValue != null)
+        _$PlantDTOFieldMap['illumination']!: illuminationFieldValue,
+      if (humidity != _sentinel)
+        _$PlantDTOFieldMap['humidity']!: humidity as double,
+      if (humidityFieldValue != null)
+        _$PlantDTOFieldMap['humidity']!: humidityFieldValue,
+      if (temperature != _sentinel)
+        _$PlantDTOFieldMap['temperature']!: temperature as double,
+      if (temperatureFieldValue != null)
+        _$PlantDTOFieldMap['temperature']!: temperatureFieldValue,
+      if (voltage != _sentinel)
+        _$PlantDTOFieldMap['voltage']!: voltage as double,
+      if (voltageFieldValue != null)
+        _$PlantDTOFieldMap['voltage']!: voltageFieldValue,
+      if (soilHumidity != _sentinel)
+        _$PlantDTOFieldMap['soilHumidity']!: soilHumidity as double,
+      if (soilHumidityFieldValue != null)
+        _$PlantDTOFieldMap['soilHumidity']!: soilHumidityFieldValue,
+      if (soilSalt != _sentinel)
+        _$PlantDTOFieldMap['soilSalt']!: soilSalt as double,
+      if (soilSaltFieldValue != null)
+        _$PlantDTOFieldMap['soilSalt']!: soilSaltFieldValue,
+      if (name != _sentinel) _$PlantDTOFieldMap['name']!: name as String,
+      if (nameFieldValue != null) _$PlantDTOFieldMap['name']!: nameFieldValue,
+      if (avatarPot != _sentinel)
+        _$PlantDTOFieldMap['avatarPot']!: avatarPot as int,
+      if (avatarPotFieldValue != null)
+        _$PlantDTOFieldMap['avatarPot']!: avatarPotFieldValue,
+      if (avatarPlant != _sentinel)
+        _$PlantDTOFieldMap['avatarPlant']!: avatarPlant as int,
+      if (avatarPlantFieldValue != null)
+        _$PlantDTOFieldMap['avatarPlant']!: avatarPlantFieldValue,
+      if (avatarFace != _sentinel)
+        _$PlantDTOFieldMap['avatarFace']!: avatarFace as int,
+      if (avatarFaceFieldValue != null)
+        _$PlantDTOFieldMap['avatarFace']!: avatarFaceFieldValue,
+      if (avatarAccessories1 != _sentinel)
+        _$PlantDTOFieldMap['avatarAccessories1']!: avatarAccessories1 as int,
+      if (avatarAccessories1FieldValue != null)
+        _$PlantDTOFieldMap['avatarAccessories1']!: avatarAccessories1FieldValue,
+      if (avatarAccessories2 != _sentinel)
+        _$PlantDTOFieldMap['avatarAccessories2']!: avatarAccessories2 as int,
+      if (avatarAccessories2FieldValue != null)
+        _$PlantDTOFieldMap['avatarAccessories2']!: avatarAccessories2FieldValue,
     };
 
     transaction.update(reference, json);
@@ -320,7 +516,7 @@ class _$PlantDocumentReference
 
   @override
   bool operator ==(Object other) {
-    return other is PlantDocumentReference &&
+    return other is PlantDTODocumentReference &&
         other.runtimeType == runtimeType &&
         other.parent == parent &&
         other.id == id;
@@ -330,13 +526,13 @@ class _$PlantDocumentReference
   int get hashCode => Object.hash(runtimeType, parent, id);
 }
 
-abstract class PlantQuery
-    implements QueryReference<PlantDTO, PlantQuerySnapshot> {
+abstract class PlantDTOQuery
+    implements QueryReference<PlantDTO, PlantDTOQuerySnapshot> {
   @override
-  PlantQuery limit(int limit);
+  PlantDTOQuery limit(int limit);
 
   @override
-  PlantQuery limitToLast(int limit);
+  PlantDTOQuery limitToLast(int limit);
 
   /// Perform an order query based on a [FieldPath].
   ///
@@ -358,17 +554,17 @@ abstract class PlantQuery
   /// ```dart
   /// collection.orderByTitle(startAt: 'title');
   /// ```
-  PlantQuery orderByFieldPath(
+  PlantDTOQuery orderByFieldPath(
     FieldPath fieldPath, {
     bool descending = false,
     Object? startAt,
     Object? startAfter,
     Object? endAt,
     Object? endBefore,
-    PlantDocumentSnapshot? startAtDocument,
-    PlantDocumentSnapshot? endAtDocument,
-    PlantDocumentSnapshot? endBeforeDocument,
-    PlantDocumentSnapshot? startAfterDocument,
+    PlantDTODocumentSnapshot? startAtDocument,
+    PlantDTODocumentSnapshot? endAtDocument,
+    PlantDTODocumentSnapshot? endBeforeDocument,
+    PlantDTODocumentSnapshot? startAfterDocument,
   });
 
   /// Perform a where query based on a [FieldPath].
@@ -388,7 +584,7 @@ abstract class PlantQuery
   /// ```dart
   /// collection.whereTitle(isEqualTo: 'title');
   /// ```
-  PlantQuery whereFieldPath(
+  PlantDTOQuery whereFieldPath(
     FieldPath fieldPath, {
     Object? isEqualTo,
     Object? isNotEqualTo,
@@ -403,7 +599,7 @@ abstract class PlantQuery
     bool? isNull,
   });
 
-  PlantQuery whereDocumentId({
+  PlantDTOQuery whereDocumentId({
     String? isEqualTo,
     String? isNotEqualTo,
     String? isLessThan,
@@ -414,7 +610,95 @@ abstract class PlantQuery
     List<String>? whereIn,
     List<String>? whereNotIn,
   });
-  PlantQuery whereName({
+  PlantDTOQuery whereCalibrationDry({
+    int? isEqualTo,
+    int? isNotEqualTo,
+    int? isLessThan,
+    int? isLessThanOrEqualTo,
+    int? isGreaterThan,
+    int? isGreaterThanOrEqualTo,
+    bool? isNull,
+    List<int>? whereIn,
+    List<int>? whereNotIn,
+  });
+  PlantDTOQuery whereCalibrationWet({
+    int? isEqualTo,
+    int? isNotEqualTo,
+    int? isLessThan,
+    int? isLessThanOrEqualTo,
+    int? isGreaterThan,
+    int? isGreaterThanOrEqualTo,
+    bool? isNull,
+    List<int>? whereIn,
+    List<int>? whereNotIn,
+  });
+  PlantDTOQuery whereIllumination({
+    double? isEqualTo,
+    double? isNotEqualTo,
+    double? isLessThan,
+    double? isLessThanOrEqualTo,
+    double? isGreaterThan,
+    double? isGreaterThanOrEqualTo,
+    bool? isNull,
+    List<double>? whereIn,
+    List<double>? whereNotIn,
+  });
+  PlantDTOQuery whereHumidity({
+    double? isEqualTo,
+    double? isNotEqualTo,
+    double? isLessThan,
+    double? isLessThanOrEqualTo,
+    double? isGreaterThan,
+    double? isGreaterThanOrEqualTo,
+    bool? isNull,
+    List<double>? whereIn,
+    List<double>? whereNotIn,
+  });
+  PlantDTOQuery whereTemperature({
+    double? isEqualTo,
+    double? isNotEqualTo,
+    double? isLessThan,
+    double? isLessThanOrEqualTo,
+    double? isGreaterThan,
+    double? isGreaterThanOrEqualTo,
+    bool? isNull,
+    List<double>? whereIn,
+    List<double>? whereNotIn,
+  });
+  PlantDTOQuery whereVoltage({
+    double? isEqualTo,
+    double? isNotEqualTo,
+    double? isLessThan,
+    double? isLessThanOrEqualTo,
+    double? isGreaterThan,
+    double? isGreaterThanOrEqualTo,
+    bool? isNull,
+    List<double>? whereIn,
+    List<double>? whereNotIn,
+  });
+  PlantDTOQuery whereSoilHumidity({
+    double? isEqualTo,
+    double? isNotEqualTo,
+    double? isLessThan,
+    double? isLessThanOrEqualTo,
+    double? isGreaterThan,
+    double? isGreaterThanOrEqualTo,
+    bool? isNull,
+    List<double>? whereIn,
+    List<double>? whereNotIn,
+  });
+  PlantDTOQuery whereSoilSalt({
+    double? isEqualTo,
+    double? isNotEqualTo,
+    double? isLessThan,
+    double? isLessThanOrEqualTo,
+    double? isGreaterThan,
+    double? isGreaterThanOrEqualTo,
+    bool? isNull,
+    List<double>? whereIn,
+    List<double>? whereNotIn,
+  });
+  PlantDTOQuery whereName({
     String? isEqualTo,
     String? isNotEqualTo,
     String? isLessThan,
@@ -425,7 +709,7 @@ abstract class PlantQuery
     List<String>? whereIn,
     List<String>? whereNotIn,
   });
-  PlantQuery whereAvatarPot({
+  PlantDTOQuery whereAvatarPot({
     int? isEqualTo,
     int? isNotEqualTo,
     int? isLessThan,
@@ -436,7 +720,7 @@ abstract class PlantQuery
     List<int>? whereIn,
     List<int>? whereNotIn,
   });
-  PlantQuery wherePlantPot({
+  PlantDTOQuery whereAvatarPlant({
     int? isEqualTo,
     int? isNotEqualTo,
     int? isLessThan,
@@ -447,7 +731,7 @@ abstract class PlantQuery
     List<int>? whereIn,
     List<int>? whereNotIn,
   });
-  PlantQuery whereFacePot({
+  PlantDTOQuery whereAvatarFace({
     int? isEqualTo,
     int? isNotEqualTo,
     int? isLessThan,
@@ -458,7 +742,7 @@ abstract class PlantQuery
     List<int>? whereIn,
     List<int>? whereNotIn,
   });
-  PlantQuery whereCalibrationDry({
+  PlantDTOQuery whereAvatarAccessories1({
     int? isEqualTo,
     int? isNotEqualTo,
     int? isLessThan,
@@ -469,7 +753,7 @@ abstract class PlantQuery
     List<int>? whereIn,
     List<int>? whereNotIn,
   });
-  PlantQuery whereCalibrationWet({
+  PlantDTOQuery whereAvatarAccessories2({
     int? isEqualTo,
     int? isNotEqualTo,
     int? isLessThan,
@@ -481,94 +765,190 @@ abstract class PlantQuery
     List<int>? whereNotIn,
   });
 
-  PlantQuery orderByDocumentId({
+  PlantDTOQuery orderByDocumentId({
     bool descending = false,
     String startAt,
     String startAfter,
     String endAt,
     String endBefore,
-    PlantDocumentSnapshot? startAtDocument,
-    PlantDocumentSnapshot? endAtDocument,
-    PlantDocumentSnapshot? endBeforeDocument,
-    PlantDocumentSnapshot? startAfterDocument,
+    PlantDTODocumentSnapshot? startAtDocument,
+    PlantDTODocumentSnapshot? endAtDocument,
+    PlantDTODocumentSnapshot? endBeforeDocument,
+    PlantDTODocumentSnapshot? startAfterDocument,
   });
 
-  PlantQuery orderByName({
+  PlantDTOQuery orderByCalibrationDry({
+    bool descending = false,
+    int startAt,
+    int startAfter,
+    int endAt,
+    int endBefore,
+    PlantDTODocumentSnapshot? startAtDocument,
+    PlantDTODocumentSnapshot? endAtDocument,
+    PlantDTODocumentSnapshot? endBeforeDocument,
+    PlantDTODocumentSnapshot? startAfterDocument,
+  });
+
+  PlantDTOQuery orderByCalibrationWet({
+    bool descending = false,
+    int startAt,
+    int startAfter,
+    int endAt,
+    int endBefore,
+    PlantDTODocumentSnapshot? startAtDocument,
+    PlantDTODocumentSnapshot? endAtDocument,
+    PlantDTODocumentSnapshot? endBeforeDocument,
+    PlantDTODocumentSnapshot? startAfterDocument,
+  });
+
+  PlantDTOQuery orderByIllumination({
+    bool descending = false,
+    double startAt,
+    double startAfter,
+    double endAt,
+    double endBefore,
+    PlantDTODocumentSnapshot? startAtDocument,
+    PlantDTODocumentSnapshot? endAtDocument,
+    PlantDTODocumentSnapshot? endBeforeDocument,
+    PlantDTODocumentSnapshot? startAfterDocument,
+  });
+
+  PlantDTOQuery orderByHumidity({
+    bool descending = false,
+    double startAt,
+    double startAfter,
+    double endAt,
+    double endBefore,
+    PlantDTODocumentSnapshot? startAtDocument,
+    PlantDTODocumentSnapshot? endAtDocument,
+    PlantDTODocumentSnapshot? endBeforeDocument,
+    PlantDTODocumentSnapshot? startAfterDocument,
+  });
+
+  PlantDTOQuery orderByTemperature({
+    bool descending = false,
+    double startAt,
+    double startAfter,
+    double endAt,
+    double endBefore,
+    PlantDTODocumentSnapshot? startAtDocument,
+    PlantDTODocumentSnapshot? endAtDocument,
+    PlantDTODocumentSnapshot? endBeforeDocument,
+    PlantDTODocumentSnapshot? startAfterDocument,
+  });
+
+  PlantDTOQuery orderByVoltage({
+    bool descending = false,
+    double startAt,
+    double startAfter,
+    double endAt,
+    double endBefore,
+    PlantDTODocumentSnapshot? startAtDocument,
+    PlantDTODocumentSnapshot? endAtDocument,
+    PlantDTODocumentSnapshot? endBeforeDocument,
+    PlantDTODocumentSnapshot? startAfterDocument,
+  });
+
+  PlantDTOQuery orderBySoilHumidity({
+    bool descending = false,
+    double startAt,
+    double startAfter,
+    double endAt,
+    double endBefore,
+    PlantDTODocumentSnapshot? startAtDocument,
+    PlantDTODocumentSnapshot? endAtDocument,
+    PlantDTODocumentSnapshot? endBeforeDocument,
+    PlantDTODocumentSnapshot? startAfterDocument,
+  });
+
+  PlantDTOQuery orderBySoilSalt({
+    bool descending = false,
+    double startAt,
+    double startAfter,
+    double endAt,
+    double endBefore,
+    PlantDTODocumentSnapshot? startAtDocument,
+    PlantDTODocumentSnapshot? endAtDocument,
+    PlantDTODocumentSnapshot? endBeforeDocument,
+    PlantDTODocumentSnapshot? startAfterDocument,
+  });
+
+  PlantDTOQuery orderByName({
     bool descending = false,
     String startAt,
     String startAfter,
     String endAt,
     String endBefore,
-    PlantDocumentSnapshot? startAtDocument,
-    PlantDocumentSnapshot? endAtDocument,
-    PlantDocumentSnapshot? endBeforeDocument,
-    PlantDocumentSnapshot? startAfterDocument,
+    PlantDTODocumentSnapshot? startAtDocument,
+    PlantDTODocumentSnapshot? endAtDocument,
+    PlantDTODocumentSnapshot? endBeforeDocument,
+    PlantDTODocumentSnapshot? startAfterDocument,
   });
 
-  PlantQuery orderByAvatarPot({
+  PlantDTOQuery orderByAvatarPot({
     bool descending = false,
     int startAt,
     int startAfter,
     int endAt,
     int endBefore,
-    PlantDocumentSnapshot? startAtDocument,
-    PlantDocumentSnapshot? endAtDocument,
-    PlantDocumentSnapshot? endBeforeDocument,
-    PlantDocumentSnapshot? startAfterDocument,
+    PlantDTODocumentSnapshot? startAtDocument,
+    PlantDTODocumentSnapshot? endAtDocument,
+    PlantDTODocumentSnapshot? endBeforeDocument,
+    PlantDTODocumentSnapshot? startAfterDocument,
   });
 
-  PlantQuery orderByPlantPot({
+  PlantDTOQuery orderByAvatarPlant({
     bool descending = false,
     int startAt,
     int startAfter,
     int endAt,
     int endBefore,
-    PlantDocumentSnapshot? startAtDocument,
-    PlantDocumentSnapshot? endAtDocument,
-    PlantDocumentSnapshot? endBeforeDocument,
-    PlantDocumentSnapshot? startAfterDocument,
+    PlantDTODocumentSnapshot? startAtDocument,
+    PlantDTODocumentSnapshot? endAtDocument,
+    PlantDTODocumentSnapshot? endBeforeDocument,
+    PlantDTODocumentSnapshot? startAfterDocument,
   });
 
-  PlantQuery orderByFacePot({
+  PlantDTOQuery orderByAvatarFace({
     bool descending = false,
     int startAt,
     int startAfter,
     int endAt,
     int endBefore,
-    PlantDocumentSnapshot? startAtDocument,
-    PlantDocumentSnapshot? endAtDocument,
-    PlantDocumentSnapshot? endBeforeDocument,
-    PlantDocumentSnapshot? startAfterDocument,
+    PlantDTODocumentSnapshot? startAtDocument,
+    PlantDTODocumentSnapshot? endAtDocument,
+    PlantDTODocumentSnapshot? endBeforeDocument,
+    PlantDTODocumentSnapshot? startAfterDocument,
   });
 
-  PlantQuery orderByCalibrationDry({
+  PlantDTOQuery orderByAvatarAccessories1({
     bool descending = false,
     int startAt,
     int startAfter,
     int endAt,
     int endBefore,
-    PlantDocumentSnapshot? startAtDocument,
-    PlantDocumentSnapshot? endAtDocument,
-    PlantDocumentSnapshot? endBeforeDocument,
-    PlantDocumentSnapshot? startAfterDocument,
+    PlantDTODocumentSnapshot? startAtDocument,
+    PlantDTODocumentSnapshot? endAtDocument,
+    PlantDTODocumentSnapshot? endBeforeDocument,
+    PlantDTODocumentSnapshot? startAfterDocument,
   });
 
-  PlantQuery orderByCalibrationWet({
+  PlantDTOQuery orderByAvatarAccessories2({
     bool descending = false,
     int startAt,
     int startAfter,
     int endAt,
     int endBefore,
-    PlantDocumentSnapshot? startAtDocument,
-    PlantDocumentSnapshot? endAtDocument,
-    PlantDocumentSnapshot? endBeforeDocument,
-    PlantDocumentSnapshot? startAfterDocument,
+    PlantDTODocumentSnapshot? startAtDocument,
+    PlantDTODocumentSnapshot? endAtDocument,
+    PlantDTODocumentSnapshot? endBeforeDocument,
+    PlantDTODocumentSnapshot? startAfterDocument,
   });
 }
 
-class _$PlantQuery extends QueryReference<PlantDTO, PlantQuerySnapshot>
-    implements PlantQuery {
-  _$PlantQuery(
+class _$PlantDTOQuery extends QueryReference<PlantDTO, PlantDTOQuerySnapshot>
+    implements PlantDTOQuery {
+  _$PlantDTOQuery(
     this._collection, {
     required Query<PlantDTO> $referenceWithoutCursor,
     $QueryCursor $queryCursor = const $QueryCursor(),
@@ -580,18 +960,20 @@ class _$PlantQuery extends QueryReference<PlantDTO, PlantQuerySnapshot>
   final CollectionReference<Object?> _collection;
 
   @override
-  Stream<PlantQuerySnapshot> snapshots([SnapshotOptions? options]) {
-    return reference.snapshots().map(PlantQuerySnapshot._fromQuerySnapshot);
+  Stream<PlantDTOQuerySnapshot> snapshots([SnapshotOptions? options]) {
+    return reference.snapshots().map(PlantDTOQuerySnapshot._fromQuerySnapshot);
   }
 
   @override
-  Future<PlantQuerySnapshot> get([GetOptions? options]) {
-    return reference.get(options).then(PlantQuerySnapshot._fromQuerySnapshot);
+  Future<PlantDTOQuerySnapshot> get([GetOptions? options]) {
+    return reference
+        .get(options)
+        .then(PlantDTOQuerySnapshot._fromQuerySnapshot);
   }
 
   @override
-  PlantQuery limit(int limit) {
-    return _$PlantQuery(
+  PlantDTOQuery limit(int limit) {
+    return _$PlantDTOQuery(
       _collection,
       $referenceWithoutCursor: $referenceWithoutCursor.limit(limit),
       $queryCursor: $queryCursor,
@@ -599,25 +981,25 @@ class _$PlantQuery extends QueryReference<PlantDTO, PlantQuerySnapshot>
   }
 
   @override
-  PlantQuery limitToLast(int limit) {
-    return _$PlantQuery(
+  PlantDTOQuery limitToLast(int limit) {
+    return _$PlantDTOQuery(
       _collection,
       $referenceWithoutCursor: $referenceWithoutCursor.limitToLast(limit),
       $queryCursor: $queryCursor,
     );
   }
 
-  PlantQuery orderByFieldPath(
+  PlantDTOQuery orderByFieldPath(
     FieldPath fieldPath, {
     bool descending = false,
     Object? startAt = _sentinel,
     Object? startAfter = _sentinel,
     Object? endAt = _sentinel,
     Object? endBefore = _sentinel,
-    PlantDocumentSnapshot? startAtDocument,
-    PlantDocumentSnapshot? endAtDocument,
-    PlantDocumentSnapshot? endBeforeDocument,
-    PlantDocumentSnapshot? startAfterDocument,
+    PlantDTODocumentSnapshot? startAtDocument,
+    PlantDTODocumentSnapshot? endAtDocument,
+    PlantDTODocumentSnapshot? endBeforeDocument,
+    PlantDTODocumentSnapshot? startAfterDocument,
   }) {
     final query =
         $referenceWithoutCursor.orderBy(fieldPath, descending: descending);
@@ -672,14 +1054,14 @@ class _$PlantQuery extends QueryReference<PlantDTO, PlantQuerySnapshot>
         endBeforeDocumentSnapshot: null,
       );
     }
-    return _$PlantQuery(
+    return _$PlantDTOQuery(
       _collection,
       $referenceWithoutCursor: query,
       $queryCursor: queryCursor,
     );
   }
 
-  PlantQuery whereFieldPath(
+  PlantDTOQuery whereFieldPath(
     FieldPath fieldPath, {
     Object? isEqualTo,
     Object? isNotEqualTo,
@@ -693,7 +1075,7 @@ class _$PlantQuery extends QueryReference<PlantDTO, PlantQuerySnapshot>
     List<Object?>? whereNotIn,
     bool? isNull,
   }) {
-    return _$PlantQuery(
+    return _$PlantDTOQuery(
       _collection,
       $referenceWithoutCursor: $referenceWithoutCursor.where(
         fieldPath,
@@ -713,7 +1095,7 @@ class _$PlantQuery extends QueryReference<PlantDTO, PlantQuerySnapshot>
     );
   }
 
-  PlantQuery whereDocumentId({
+  PlantDTOQuery whereDocumentId({
     String? isEqualTo,
     String? isNotEqualTo,
     String? isLessThan,
@@ -724,7 +1106,7 @@ class _$PlantQuery extends QueryReference<PlantDTO, PlantQuerySnapshot>
     List<String>? whereIn,
     List<String>? whereNotIn,
   }) {
-    return _$PlantQuery(
+    return _$PlantDTOQuery(
       _collection,
       $referenceWithoutCursor: $referenceWithoutCursor.where(
         FieldPath.documentId,
@@ -742,7 +1124,239 @@ class _$PlantQuery extends QueryReference<PlantDTO, PlantQuerySnapshot>
     );
   }
 
-  PlantQuery whereName({
+  PlantDTOQuery whereCalibrationDry({
+    int? isEqualTo,
+    int? isNotEqualTo,
+    int? isLessThan,
+    int? isLessThanOrEqualTo,
+    int? isGreaterThan,
+    int? isGreaterThanOrEqualTo,
+    bool? isNull,
+    List<int>? whereIn,
+    List<int>? whereNotIn,
+  }) {
+    return _$PlantDTOQuery(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.where(
+        _$PlantDTOFieldMap['calibrationDry']!,
+        isEqualTo: isEqualTo,
+        isNotEqualTo: isNotEqualTo,
+        isLessThan: isLessThan,
+        isLessThanOrEqualTo: isLessThanOrEqualTo,
+        isGreaterThan: isGreaterThan,
+        isGreaterThanOrEqualTo: isGreaterThanOrEqualTo,
+        isNull: isNull,
+        whereIn: whereIn,
+        whereNotIn: whereNotIn,
+      ),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  PlantDTOQuery whereCalibrationWet({
+    int? isEqualTo,
+    int? isNotEqualTo,
+    int? isLessThan,
+    int? isLessThanOrEqualTo,
+    int? isGreaterThan,
+    int? isGreaterThanOrEqualTo,
+    bool? isNull,
+    List<int>? whereIn,
+    List<int>? whereNotIn,
+  }) {
+    return _$PlantDTOQuery(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.where(
+        _$PlantDTOFieldMap['calibrationWet']!,
+        isEqualTo: isEqualTo,
+        isNotEqualTo: isNotEqualTo,
+        isLessThan: isLessThan,
+        isLessThanOrEqualTo: isLessThanOrEqualTo,
+        isGreaterThan: isGreaterThan,
+        isGreaterThanOrEqualTo: isGreaterThanOrEqualTo,
+        isNull: isNull,
+        whereIn: whereIn,
+        whereNotIn: whereNotIn,
+      ),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  PlantDTOQuery whereIllumination({
+    double? isEqualTo,
+    double? isNotEqualTo,
+    double? isLessThan,
+    double? isLessThanOrEqualTo,
+    double? isGreaterThan,
+    double? isGreaterThanOrEqualTo,
+    bool? isNull,
+    List<double>? whereIn,
+    List<double>? whereNotIn,
+  }) {
+    return _$PlantDTOQuery(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.where(
+        _$PlantDTOFieldMap['illumination']!,
+        isEqualTo: isEqualTo,
+        isNotEqualTo: isNotEqualTo,
+        isLessThan: isLessThan,
+        isLessThanOrEqualTo: isLessThanOrEqualTo,
+        isGreaterThan: isGreaterThan,
+        isGreaterThanOrEqualTo: isGreaterThanOrEqualTo,
+        isNull: isNull,
+        whereIn: whereIn,
+        whereNotIn: whereNotIn,
+      ),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  PlantDTOQuery whereHumidity({
+    double? isEqualTo,
+    double? isNotEqualTo,
+    double? isLessThan,
+    double? isLessThanOrEqualTo,
+    double? isGreaterThan,
+    double? isGreaterThanOrEqualTo,
+    bool? isNull,
+    List<double>? whereIn,
+    List<double>? whereNotIn,
+  }) {
+    return _$PlantDTOQuery(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.where(
+        _$PlantDTOFieldMap['humidity']!,
+        isEqualTo: isEqualTo,
+        isNotEqualTo: isNotEqualTo,
+        isLessThan: isLessThan,
+        isLessThanOrEqualTo: isLessThanOrEqualTo,
+        isGreaterThan: isGreaterThan,
+        isGreaterThanOrEqualTo: isGreaterThanOrEqualTo,
+        isNull: isNull,
+        whereIn: whereIn,
+        whereNotIn: whereNotIn,
+      ),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  PlantDTOQuery whereTemperature({
+    double? isEqualTo,
+    double? isNotEqualTo,
+    double? isLessThan,
+    double? isLessThanOrEqualTo,
+    double? isGreaterThan,
+    double? isGreaterThanOrEqualTo,
+    bool? isNull,
+    List<double>? whereIn,
+    List<double>? whereNotIn,
+  }) {
+    return _$PlantDTOQuery(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.where(
+        _$PlantDTOFieldMap['temperature']!,
+        isEqualTo: isEqualTo,
+        isNotEqualTo: isNotEqualTo,
+        isLessThan: isLessThan,
+        isLessThanOrEqualTo: isLessThanOrEqualTo,
+        isGreaterThan: isGreaterThan,
+        isGreaterThanOrEqualTo: isGreaterThanOrEqualTo,
+        isNull: isNull,
+        whereIn: whereIn,
+        whereNotIn: whereNotIn,
+      ),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  PlantDTOQuery whereVoltage({
+    double? isEqualTo,
+    double? isNotEqualTo,
+    double? isLessThan,
+    double? isLessThanOrEqualTo,
+    double? isGreaterThan,
+    double? isGreaterThanOrEqualTo,
+    bool? isNull,
+    List<double>? whereIn,
+    List<double>? whereNotIn,
+  }) {
+    return _$PlantDTOQuery(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.where(
+        _$PlantDTOFieldMap['voltage']!,
+        isEqualTo: isEqualTo,
+        isNotEqualTo: isNotEqualTo,
+        isLessThan: isLessThan,
+        isLessThanOrEqualTo: isLessThanOrEqualTo,
+        isGreaterThan: isGreaterThan,
+        isGreaterThanOrEqualTo: isGreaterThanOrEqualTo,
+        isNull: isNull,
+        whereIn: whereIn,
+        whereNotIn: whereNotIn,
+      ),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  PlantDTOQuery whereSoilHumidity({
+    double? isEqualTo,
+    double? isNotEqualTo,
+    double? isLessThan,
+    double? isLessThanOrEqualTo,
+    double? isGreaterThan,
+    double? isGreaterThanOrEqualTo,
+    bool? isNull,
+    List<double>? whereIn,
+    List<double>? whereNotIn,
+  }) {
+    return _$PlantDTOQuery(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.where(
+        _$PlantDTOFieldMap['soilHumidity']!,
+        isEqualTo: isEqualTo,
+        isNotEqualTo: isNotEqualTo,
+        isLessThan: isLessThan,
+        isLessThanOrEqualTo: isLessThanOrEqualTo,
+        isGreaterThan: isGreaterThan,
+        isGreaterThanOrEqualTo: isGreaterThanOrEqualTo,
+        isNull: isNull,
+        whereIn: whereIn,
+        whereNotIn: whereNotIn,
+      ),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  PlantDTOQuery whereSoilSalt({
+    double? isEqualTo,
+    double? isNotEqualTo,
+    double? isLessThan,
+    double? isLessThanOrEqualTo,
+    double? isGreaterThan,
+    double? isGreaterThanOrEqualTo,
+    bool? isNull,
+    List<double>? whereIn,
+    List<double>? whereNotIn,
+  }) {
+    return _$PlantDTOQuery(
+      _collection,
+      $referenceWithoutCursor: $referenceWithoutCursor.where(
+        _$PlantDTOFieldMap['soilSalt']!,
+        isEqualTo: isEqualTo,
+        isNotEqualTo: isNotEqualTo,
+        isLessThan: isLessThan,
+        isLessThanOrEqualTo: isLessThanOrEqualTo,
+        isGreaterThan: isGreaterThan,
+        isGreaterThanOrEqualTo: isGreaterThanOrEqualTo,
+        isNull: isNull,
+        whereIn: whereIn,
+        whereNotIn: whereNotIn,
+      ),
+      $queryCursor: $queryCursor,
+    );
+  }
+
+  PlantDTOQuery whereName({
     String? isEqualTo,
     String? isNotEqualTo,
     String? isLessThan,
@@ -753,10 +1367,10 @@ class _$PlantQuery extends QueryReference<PlantDTO, PlantQuerySnapshot>
     List<String>? whereIn,
     List<String>? whereNotIn,
   }) {
-    return _$PlantQuery(
+    return _$PlantDTOQuery(
       _collection,
       $referenceWithoutCursor: $referenceWithoutCursor.where(
-        _$PlantFieldMap['name']!,
+        _$PlantDTOFieldMap['name']!,
         isEqualTo: isEqualTo,
         isNotEqualTo: isNotEqualTo,
         isLessThan: isLessThan,
@@ -771,7 +1385,7 @@ class _$PlantQuery extends QueryReference<PlantDTO, PlantQuerySnapshot>
     );
   }
 
-  PlantQuery whereAvatarPot({
+  PlantDTOQuery whereAvatarPot({
     int? isEqualTo,
     int? isNotEqualTo,
     int? isLessThan,
@@ -782,10 +1396,10 @@ class _$PlantQuery extends QueryReference<PlantDTO, PlantQuerySnapshot>
     List<int>? whereIn,
     List<int>? whereNotIn,
   }) {
-    return _$PlantQuery(
+    return _$PlantDTOQuery(
       _collection,
       $referenceWithoutCursor: $referenceWithoutCursor.where(
-        _$PlantFieldMap['avatarPot']!,
+        _$PlantDTOFieldMap['avatarPot']!,
         isEqualTo: isEqualTo,
         isNotEqualTo: isNotEqualTo,
         isLessThan: isLessThan,
@@ -800,7 +1414,7 @@ class _$PlantQuery extends QueryReference<PlantDTO, PlantQuerySnapshot>
     );
   }
 
-  PlantQuery wherePlantPot({
+  PlantDTOQuery whereAvatarPlant({
     int? isEqualTo,
     int? isNotEqualTo,
     int? isLessThan,
@@ -811,10 +1425,10 @@ class _$PlantQuery extends QueryReference<PlantDTO, PlantQuerySnapshot>
     List<int>? whereIn,
     List<int>? whereNotIn,
   }) {
-    return _$PlantQuery(
+    return _$PlantDTOQuery(
       _collection,
       $referenceWithoutCursor: $referenceWithoutCursor.where(
-        _$PlantFieldMap['plantPot']!,
+        _$PlantDTOFieldMap['avatarPlant']!,
         isEqualTo: isEqualTo,
         isNotEqualTo: isNotEqualTo,
         isLessThan: isLessThan,
@@ -829,7 +1443,7 @@ class _$PlantQuery extends QueryReference<PlantDTO, PlantQuerySnapshot>
     );
   }
 
-  PlantQuery whereFacePot({
+  PlantDTOQuery whereAvatarFace({
     int? isEqualTo,
     int? isNotEqualTo,
     int? isLessThan,
@@ -840,10 +1454,10 @@ class _$PlantQuery extends QueryReference<PlantDTO, PlantQuerySnapshot>
     List<int>? whereIn,
     List<int>? whereNotIn,
   }) {
-    return _$PlantQuery(
+    return _$PlantDTOQuery(
       _collection,
       $referenceWithoutCursor: $referenceWithoutCursor.where(
-        _$PlantFieldMap['facePot']!,
+        _$PlantDTOFieldMap['avatarFace']!,
         isEqualTo: isEqualTo,
         isNotEqualTo: isNotEqualTo,
         isLessThan: isLessThan,
@@ -858,7 +1472,7 @@ class _$PlantQuery extends QueryReference<PlantDTO, PlantQuerySnapshot>
     );
   }
 
-  PlantQuery whereCalibrationDry({
+  PlantDTOQuery whereAvatarAccessories1({
     int? isEqualTo,
     int? isNotEqualTo,
     int? isLessThan,
@@ -869,10 +1483,10 @@ class _$PlantQuery extends QueryReference<PlantDTO, PlantQuerySnapshot>
     List<int>? whereIn,
     List<int>? whereNotIn,
   }) {
-    return _$PlantQuery(
+    return _$PlantDTOQuery(
       _collection,
       $referenceWithoutCursor: $referenceWithoutCursor.where(
-        _$PlantFieldMap['calibrationDry']!,
+        _$PlantDTOFieldMap['avatarAccessories1']!,
         isEqualTo: isEqualTo,
         isNotEqualTo: isNotEqualTo,
         isLessThan: isLessThan,
@@ -887,7 +1501,7 @@ class _$PlantQuery extends QueryReference<PlantDTO, PlantQuerySnapshot>
     );
   }
 
-  PlantQuery whereCalibrationWet({
+  PlantDTOQuery whereAvatarAccessories2({
     int? isEqualTo,
     int? isNotEqualTo,
     int? isLessThan,
@@ -898,10 +1512,10 @@ class _$PlantQuery extends QueryReference<PlantDTO, PlantQuerySnapshot>
     List<int>? whereIn,
     List<int>? whereNotIn,
   }) {
-    return _$PlantQuery(
+    return _$PlantDTOQuery(
       _collection,
       $referenceWithoutCursor: $referenceWithoutCursor.where(
-        _$PlantFieldMap['calibrationWet']!,
+        _$PlantDTOFieldMap['avatarAccessories2']!,
         isEqualTo: isEqualTo,
         isNotEqualTo: isNotEqualTo,
         isLessThan: isLessThan,
@@ -916,16 +1530,16 @@ class _$PlantQuery extends QueryReference<PlantDTO, PlantQuerySnapshot>
     );
   }
 
-  PlantQuery orderByDocumentId({
+  PlantDTOQuery orderByDocumentId({
     bool descending = false,
     Object? startAt = _sentinel,
     Object? startAfter = _sentinel,
     Object? endAt = _sentinel,
     Object? endBefore = _sentinel,
-    PlantDocumentSnapshot? startAtDocument,
-    PlantDocumentSnapshot? endAtDocument,
-    PlantDocumentSnapshot? endBeforeDocument,
-    PlantDocumentSnapshot? startAfterDocument,
+    PlantDTODocumentSnapshot? startAtDocument,
+    PlantDTODocumentSnapshot? endAtDocument,
+    PlantDTODocumentSnapshot? endBeforeDocument,
+    PlantDTODocumentSnapshot? startAfterDocument,
   }) {
     final query = $referenceWithoutCursor.orderBy(FieldPath.documentId,
         descending: descending);
@@ -981,314 +1595,26 @@ class _$PlantQuery extends QueryReference<PlantDTO, PlantQuerySnapshot>
       );
     }
 
-    return _$PlantQuery(
+    return _$PlantDTOQuery(
       _collection,
       $referenceWithoutCursor: query,
       $queryCursor: queryCursor,
     );
   }
 
-  PlantQuery orderByName({
+  PlantDTOQuery orderByCalibrationDry({
     bool descending = false,
     Object? startAt = _sentinel,
     Object? startAfter = _sentinel,
     Object? endAt = _sentinel,
     Object? endBefore = _sentinel,
-    PlantDocumentSnapshot? startAtDocument,
-    PlantDocumentSnapshot? endAtDocument,
-    PlantDocumentSnapshot? endBeforeDocument,
-    PlantDocumentSnapshot? startAfterDocument,
-  }) {
-    final query = $referenceWithoutCursor.orderBy(_$PlantFieldMap['name']!,
-        descending: descending);
-    var queryCursor = $queryCursor;
-
-    if (startAtDocument != null) {
-      queryCursor = queryCursor.copyWith(
-        startAt: const [],
-        startAtDocumentSnapshot: startAtDocument.snapshot,
-      );
-    }
-    if (startAfterDocument != null) {
-      queryCursor = queryCursor.copyWith(
-        startAfter: const [],
-        startAfterDocumentSnapshot: startAfterDocument.snapshot,
-      );
-    }
-    if (endAtDocument != null) {
-      queryCursor = queryCursor.copyWith(
-        endAt: const [],
-        endAtDocumentSnapshot: endAtDocument.snapshot,
-      );
-    }
-    if (endBeforeDocument != null) {
-      queryCursor = queryCursor.copyWith(
-        endBefore: const [],
-        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
-      );
-    }
-
-    if (startAt != _sentinel) {
-      queryCursor = queryCursor.copyWith(
-        startAt: [...queryCursor.startAt, startAt],
-        startAtDocumentSnapshot: null,
-      );
-    }
-    if (startAfter != _sentinel) {
-      queryCursor = queryCursor.copyWith(
-        startAfter: [...queryCursor.startAfter, startAfter],
-        startAfterDocumentSnapshot: null,
-      );
-    }
-    if (endAt != _sentinel) {
-      queryCursor = queryCursor.copyWith(
-        endAt: [...queryCursor.endAt, endAt],
-        endAtDocumentSnapshot: null,
-      );
-    }
-    if (endBefore != _sentinel) {
-      queryCursor = queryCursor.copyWith(
-        endBefore: [...queryCursor.endBefore, endBefore],
-        endBeforeDocumentSnapshot: null,
-      );
-    }
-
-    return _$PlantQuery(
-      _collection,
-      $referenceWithoutCursor: query,
-      $queryCursor: queryCursor,
-    );
-  }
-
-  PlantQuery orderByAvatarPot({
-    bool descending = false,
-    Object? startAt = _sentinel,
-    Object? startAfter = _sentinel,
-    Object? endAt = _sentinel,
-    Object? endBefore = _sentinel,
-    PlantDocumentSnapshot? startAtDocument,
-    PlantDocumentSnapshot? endAtDocument,
-    PlantDocumentSnapshot? endBeforeDocument,
-    PlantDocumentSnapshot? startAfterDocument,
-  }) {
-    final query = $referenceWithoutCursor.orderBy(_$PlantFieldMap['avatarPot']!,
-        descending: descending);
-    var queryCursor = $queryCursor;
-
-    if (startAtDocument != null) {
-      queryCursor = queryCursor.copyWith(
-        startAt: const [],
-        startAtDocumentSnapshot: startAtDocument.snapshot,
-      );
-    }
-    if (startAfterDocument != null) {
-      queryCursor = queryCursor.copyWith(
-        startAfter: const [],
-        startAfterDocumentSnapshot: startAfterDocument.snapshot,
-      );
-    }
-    if (endAtDocument != null) {
-      queryCursor = queryCursor.copyWith(
-        endAt: const [],
-        endAtDocumentSnapshot: endAtDocument.snapshot,
-      );
-    }
-    if (endBeforeDocument != null) {
-      queryCursor = queryCursor.copyWith(
-        endBefore: const [],
-        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
-      );
-    }
-
-    if (startAt != _sentinel) {
-      queryCursor = queryCursor.copyWith(
-        startAt: [...queryCursor.startAt, startAt],
-        startAtDocumentSnapshot: null,
-      );
-    }
-    if (startAfter != _sentinel) {
-      queryCursor = queryCursor.copyWith(
-        startAfter: [...queryCursor.startAfter, startAfter],
-        startAfterDocumentSnapshot: null,
-      );
-    }
-    if (endAt != _sentinel) {
-      queryCursor = queryCursor.copyWith(
-        endAt: [...queryCursor.endAt, endAt],
-        endAtDocumentSnapshot: null,
-      );
-    }
-    if (endBefore != _sentinel) {
-      queryCursor = queryCursor.copyWith(
-        endBefore: [...queryCursor.endBefore, endBefore],
-        endBeforeDocumentSnapshot: null,
-      );
-    }
-
-    return _$PlantQuery(
-      _collection,
-      $referenceWithoutCursor: query,
-      $queryCursor: queryCursor,
-    );
-  }
-
-  PlantQuery orderByPlantPot({
-    bool descending = false,
-    Object? startAt = _sentinel,
-    Object? startAfter = _sentinel,
-    Object? endAt = _sentinel,
-    Object? endBefore = _sentinel,
-    PlantDocumentSnapshot? startAtDocument,
-    PlantDocumentSnapshot? endAtDocument,
-    PlantDocumentSnapshot? endBeforeDocument,
-    PlantDocumentSnapshot? startAfterDocument,
-  }) {
-    final query = $referenceWithoutCursor.orderBy(_$PlantFieldMap['plantPot']!,
-        descending: descending);
-    var queryCursor = $queryCursor;
-
-    if (startAtDocument != null) {
-      queryCursor = queryCursor.copyWith(
-        startAt: const [],
-        startAtDocumentSnapshot: startAtDocument.snapshot,
-      );
-    }
-    if (startAfterDocument != null) {
-      queryCursor = queryCursor.copyWith(
-        startAfter: const [],
-        startAfterDocumentSnapshot: startAfterDocument.snapshot,
-      );
-    }
-    if (endAtDocument != null) {
-      queryCursor = queryCursor.copyWith(
-        endAt: const [],
-        endAtDocumentSnapshot: endAtDocument.snapshot,
-      );
-    }
-    if (endBeforeDocument != null) {
-      queryCursor = queryCursor.copyWith(
-        endBefore: const [],
-        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
-      );
-    }
-
-    if (startAt != _sentinel) {
-      queryCursor = queryCursor.copyWith(
-        startAt: [...queryCursor.startAt, startAt],
-        startAtDocumentSnapshot: null,
-      );
-    }
-    if (startAfter != _sentinel) {
-      queryCursor = queryCursor.copyWith(
-        startAfter: [...queryCursor.startAfter, startAfter],
-        startAfterDocumentSnapshot: null,
-      );
-    }
-    if (endAt != _sentinel) {
-      queryCursor = queryCursor.copyWith(
-        endAt: [...queryCursor.endAt, endAt],
-        endAtDocumentSnapshot: null,
-      );
-    }
-    if (endBefore != _sentinel) {
-      queryCursor = queryCursor.copyWith(
-        endBefore: [...queryCursor.endBefore, endBefore],
-        endBeforeDocumentSnapshot: null,
-      );
-    }
-
-    return _$PlantQuery(
-      _collection,
-      $referenceWithoutCursor: query,
-      $queryCursor: queryCursor,
-    );
-  }
-
-  PlantQuery orderByFacePot({
-    bool descending = false,
-    Object? startAt = _sentinel,
-    Object? startAfter = _sentinel,
-    Object? endAt = _sentinel,
-    Object? endBefore = _sentinel,
-    PlantDocumentSnapshot? startAtDocument,
-    PlantDocumentSnapshot? endAtDocument,
-    PlantDocumentSnapshot? endBeforeDocument,
-    PlantDocumentSnapshot? startAfterDocument,
-  }) {
-    final query = $referenceWithoutCursor.orderBy(_$PlantFieldMap['facePot']!,
-        descending: descending);
-    var queryCursor = $queryCursor;
-
-    if (startAtDocument != null) {
-      queryCursor = queryCursor.copyWith(
-        startAt: const [],
-        startAtDocumentSnapshot: startAtDocument.snapshot,
-      );
-    }
-    if (startAfterDocument != null) {
-      queryCursor = queryCursor.copyWith(
-        startAfter: const [],
-        startAfterDocumentSnapshot: startAfterDocument.snapshot,
-      );
-    }
-    if (endAtDocument != null) {
-      queryCursor = queryCursor.copyWith(
-        endAt: const [],
-        endAtDocumentSnapshot: endAtDocument.snapshot,
-      );
-    }
-    if (endBeforeDocument != null) {
-      queryCursor = queryCursor.copyWith(
-        endBefore: const [],
-        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
-      );
-    }
-
-    if (startAt != _sentinel) {
-      queryCursor = queryCursor.copyWith(
-        startAt: [...queryCursor.startAt, startAt],
-        startAtDocumentSnapshot: null,
-      );
-    }
-    if (startAfter != _sentinel) {
-      queryCursor = queryCursor.copyWith(
-        startAfter: [...queryCursor.startAfter, startAfter],
-        startAfterDocumentSnapshot: null,
-      );
-    }
-    if (endAt != _sentinel) {
-      queryCursor = queryCursor.copyWith(
-        endAt: [...queryCursor.endAt, endAt],
-        endAtDocumentSnapshot: null,
-      );
-    }
-    if (endBefore != _sentinel) {
-      queryCursor = queryCursor.copyWith(
-        endBefore: [...queryCursor.endBefore, endBefore],
-        endBeforeDocumentSnapshot: null,
-      );
-    }
-
-    return _$PlantQuery(
-      _collection,
-      $referenceWithoutCursor: query,
-      $queryCursor: queryCursor,
-    );
-  }
-
-  PlantQuery orderByCalibrationDry({
-    bool descending = false,
-    Object? startAt = _sentinel,
-    Object? startAfter = _sentinel,
-    Object? endAt = _sentinel,
-    Object? endBefore = _sentinel,
-    PlantDocumentSnapshot? startAtDocument,
-    PlantDocumentSnapshot? endAtDocument,
-    PlantDocumentSnapshot? endBeforeDocument,
-    PlantDocumentSnapshot? startAfterDocument,
+    PlantDTODocumentSnapshot? startAtDocument,
+    PlantDTODocumentSnapshot? endAtDocument,
+    PlantDTODocumentSnapshot? endBeforeDocument,
+    PlantDTODocumentSnapshot? startAfterDocument,
   }) {
     final query = $referenceWithoutCursor
-        .orderBy(_$PlantFieldMap['calibrationDry']!, descending: descending);
+        .orderBy(_$PlantDTOFieldMap['calibrationDry']!, descending: descending);
     var queryCursor = $queryCursor;
 
     if (startAtDocument != null) {
@@ -1341,26 +1667,26 @@ class _$PlantQuery extends QueryReference<PlantDTO, PlantQuerySnapshot>
       );
     }
 
-    return _$PlantQuery(
+    return _$PlantDTOQuery(
       _collection,
       $referenceWithoutCursor: query,
       $queryCursor: queryCursor,
     );
   }
 
-  PlantQuery orderByCalibrationWet({
+  PlantDTOQuery orderByCalibrationWet({
     bool descending = false,
     Object? startAt = _sentinel,
     Object? startAfter = _sentinel,
     Object? endAt = _sentinel,
     Object? endBefore = _sentinel,
-    PlantDocumentSnapshot? startAtDocument,
-    PlantDocumentSnapshot? endAtDocument,
-    PlantDocumentSnapshot? endBeforeDocument,
-    PlantDocumentSnapshot? startAfterDocument,
+    PlantDTODocumentSnapshot? startAtDocument,
+    PlantDTODocumentSnapshot? endAtDocument,
+    PlantDTODocumentSnapshot? endBeforeDocument,
+    PlantDTODocumentSnapshot? startAfterDocument,
   }) {
     final query = $referenceWithoutCursor
-        .orderBy(_$PlantFieldMap['calibrationWet']!, descending: descending);
+        .orderBy(_$PlantDTOFieldMap['calibrationWet']!, descending: descending);
     var queryCursor = $queryCursor;
 
     if (startAtDocument != null) {
@@ -1413,7 +1739,873 @@ class _$PlantQuery extends QueryReference<PlantDTO, PlantQuerySnapshot>
       );
     }
 
-    return _$PlantQuery(
+    return _$PlantDTOQuery(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  PlantDTOQuery orderByIllumination({
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    PlantDTODocumentSnapshot? startAtDocument,
+    PlantDTODocumentSnapshot? endAtDocument,
+    PlantDTODocumentSnapshot? endBeforeDocument,
+    PlantDTODocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor
+        .orderBy(_$PlantDTOFieldMap['illumination']!, descending: descending);
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$PlantDTOQuery(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  PlantDTOQuery orderByHumidity({
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    PlantDTODocumentSnapshot? startAtDocument,
+    PlantDTODocumentSnapshot? endAtDocument,
+    PlantDTODocumentSnapshot? endBeforeDocument,
+    PlantDTODocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor
+        .orderBy(_$PlantDTOFieldMap['humidity']!, descending: descending);
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$PlantDTOQuery(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  PlantDTOQuery orderByTemperature({
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    PlantDTODocumentSnapshot? startAtDocument,
+    PlantDTODocumentSnapshot? endAtDocument,
+    PlantDTODocumentSnapshot? endBeforeDocument,
+    PlantDTODocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor
+        .orderBy(_$PlantDTOFieldMap['temperature']!, descending: descending);
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$PlantDTOQuery(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  PlantDTOQuery orderByVoltage({
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    PlantDTODocumentSnapshot? startAtDocument,
+    PlantDTODocumentSnapshot? endAtDocument,
+    PlantDTODocumentSnapshot? endBeforeDocument,
+    PlantDTODocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor
+        .orderBy(_$PlantDTOFieldMap['voltage']!, descending: descending);
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$PlantDTOQuery(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  PlantDTOQuery orderBySoilHumidity({
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    PlantDTODocumentSnapshot? startAtDocument,
+    PlantDTODocumentSnapshot? endAtDocument,
+    PlantDTODocumentSnapshot? endBeforeDocument,
+    PlantDTODocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor
+        .orderBy(_$PlantDTOFieldMap['soilHumidity']!, descending: descending);
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$PlantDTOQuery(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  PlantDTOQuery orderBySoilSalt({
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    PlantDTODocumentSnapshot? startAtDocument,
+    PlantDTODocumentSnapshot? endAtDocument,
+    PlantDTODocumentSnapshot? endBeforeDocument,
+    PlantDTODocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor
+        .orderBy(_$PlantDTOFieldMap['soilSalt']!, descending: descending);
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$PlantDTOQuery(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  PlantDTOQuery orderByName({
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    PlantDTODocumentSnapshot? startAtDocument,
+    PlantDTODocumentSnapshot? endAtDocument,
+    PlantDTODocumentSnapshot? endBeforeDocument,
+    PlantDTODocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor.orderBy(_$PlantDTOFieldMap['name']!,
+        descending: descending);
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$PlantDTOQuery(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  PlantDTOQuery orderByAvatarPot({
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    PlantDTODocumentSnapshot? startAtDocument,
+    PlantDTODocumentSnapshot? endAtDocument,
+    PlantDTODocumentSnapshot? endBeforeDocument,
+    PlantDTODocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor
+        .orderBy(_$PlantDTOFieldMap['avatarPot']!, descending: descending);
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$PlantDTOQuery(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  PlantDTOQuery orderByAvatarPlant({
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    PlantDTODocumentSnapshot? startAtDocument,
+    PlantDTODocumentSnapshot? endAtDocument,
+    PlantDTODocumentSnapshot? endBeforeDocument,
+    PlantDTODocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor
+        .orderBy(_$PlantDTOFieldMap['avatarPlant']!, descending: descending);
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$PlantDTOQuery(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  PlantDTOQuery orderByAvatarFace({
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    PlantDTODocumentSnapshot? startAtDocument,
+    PlantDTODocumentSnapshot? endAtDocument,
+    PlantDTODocumentSnapshot? endBeforeDocument,
+    PlantDTODocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor
+        .orderBy(_$PlantDTOFieldMap['avatarFace']!, descending: descending);
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$PlantDTOQuery(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  PlantDTOQuery orderByAvatarAccessories1({
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    PlantDTODocumentSnapshot? startAtDocument,
+    PlantDTODocumentSnapshot? endAtDocument,
+    PlantDTODocumentSnapshot? endBeforeDocument,
+    PlantDTODocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor.orderBy(
+        _$PlantDTOFieldMap['avatarAccessories1']!,
+        descending: descending);
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$PlantDTOQuery(
+      _collection,
+      $referenceWithoutCursor: query,
+      $queryCursor: queryCursor,
+    );
+  }
+
+  PlantDTOQuery orderByAvatarAccessories2({
+    bool descending = false,
+    Object? startAt = _sentinel,
+    Object? startAfter = _sentinel,
+    Object? endAt = _sentinel,
+    Object? endBefore = _sentinel,
+    PlantDTODocumentSnapshot? startAtDocument,
+    PlantDTODocumentSnapshot? endAtDocument,
+    PlantDTODocumentSnapshot? endBeforeDocument,
+    PlantDTODocumentSnapshot? startAfterDocument,
+  }) {
+    final query = $referenceWithoutCursor.orderBy(
+        _$PlantDTOFieldMap['avatarAccessories2']!,
+        descending: descending);
+    var queryCursor = $queryCursor;
+
+    if (startAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAt: const [],
+        startAtDocumentSnapshot: startAtDocument.snapshot,
+      );
+    }
+    if (startAfterDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: const [],
+        startAfterDocumentSnapshot: startAfterDocument.snapshot,
+      );
+    }
+    if (endAtDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endAt: const [],
+        endAtDocumentSnapshot: endAtDocument.snapshot,
+      );
+    }
+    if (endBeforeDocument != null) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: const [],
+        endBeforeDocumentSnapshot: endBeforeDocument.snapshot,
+      );
+    }
+
+    if (startAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAt: [...queryCursor.startAt, startAt],
+        startAtDocumentSnapshot: null,
+      );
+    }
+    if (startAfter != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        startAfter: [...queryCursor.startAfter, startAfter],
+        startAfterDocumentSnapshot: null,
+      );
+    }
+    if (endAt != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endAt: [...queryCursor.endAt, endAt],
+        endAtDocumentSnapshot: null,
+      );
+    }
+    if (endBefore != _sentinel) {
+      queryCursor = queryCursor.copyWith(
+        endBefore: [...queryCursor.endBefore, endBefore],
+        endBeforeDocumentSnapshot: null,
+      );
+    }
+
+    return _$PlantDTOQuery(
       _collection,
       $referenceWithoutCursor: query,
       $queryCursor: queryCursor,
@@ -1422,7 +2614,7 @@ class _$PlantQuery extends QueryReference<PlantDTO, PlantQuerySnapshot>
 
   @override
   bool operator ==(Object other) {
-    return other is _$PlantQuery &&
+    return other is _$PlantDTOQuery &&
         other.runtimeType == runtimeType &&
         other.reference == reference;
   }
@@ -1431,15 +2623,15 @@ class _$PlantQuery extends QueryReference<PlantDTO, PlantQuerySnapshot>
   int get hashCode => Object.hash(runtimeType, reference);
 }
 
-class PlantDocumentSnapshot extends FirestoreDocumentSnapshot<PlantDTO> {
-  PlantDocumentSnapshot._(this.snapshot) : data = snapshot.data();
+class PlantDTODocumentSnapshot extends FirestoreDocumentSnapshot<PlantDTO> {
+  PlantDTODocumentSnapshot._(this.snapshot) : data = snapshot.data();
 
   @override
   final DocumentSnapshot<PlantDTO> snapshot;
 
   @override
-  PlantDocumentReference get reference {
-    return PlantDocumentReference(
+  PlantDTODocumentReference get reference {
+    return PlantDTODocumentReference(
       snapshot.reference,
     );
   }
@@ -1448,39 +2640,39 @@ class PlantDocumentSnapshot extends FirestoreDocumentSnapshot<PlantDTO> {
   final PlantDTO? data;
 }
 
-class PlantQuerySnapshot
-    extends FirestoreQuerySnapshot<PlantDTO, PlantQueryDocumentSnapshot> {
-  PlantQuerySnapshot._(
+class PlantDTOQuerySnapshot
+    extends FirestoreQuerySnapshot<PlantDTO, PlantDTOQueryDocumentSnapshot> {
+  PlantDTOQuerySnapshot._(
     this.snapshot,
     this.docs,
     this.docChanges,
   );
 
-  factory PlantQuerySnapshot._fromQuerySnapshot(
+  factory PlantDTOQuerySnapshot._fromQuerySnapshot(
     QuerySnapshot<PlantDTO> snapshot,
   ) {
-    final docs = snapshot.docs.map(PlantQueryDocumentSnapshot._).toList();
+    final docs = snapshot.docs.map(PlantDTOQueryDocumentSnapshot._).toList();
 
     final docChanges = snapshot.docChanges.map((change) {
       return _decodeDocumentChange(
         change,
-        PlantDocumentSnapshot._,
+        PlantDTODocumentSnapshot._,
       );
     }).toList();
 
-    return PlantQuerySnapshot._(
+    return PlantDTOQuerySnapshot._(
       snapshot,
       docs,
       docChanges,
     );
   }
 
-  static FirestoreDocumentChange<PlantDocumentSnapshot>
+  static FirestoreDocumentChange<PlantDTODocumentSnapshot>
       _decodeDocumentChange<T>(
     DocumentChange<T> docChange,
-    PlantDocumentSnapshot Function(DocumentSnapshot<T> doc) decodeDoc,
+    PlantDTODocumentSnapshot Function(DocumentSnapshot<T> doc) decodeDoc,
   ) {
-    return FirestoreDocumentChange<PlantDocumentSnapshot>(
+    return FirestoreDocumentChange<PlantDTODocumentSnapshot>(
       type: docChange.type,
       oldIndex: docChange.oldIndex,
       newIndex: docChange.newIndex,
@@ -1491,16 +2683,16 @@ class PlantQuerySnapshot
   final QuerySnapshot<PlantDTO> snapshot;
 
   @override
-  final List<PlantQueryDocumentSnapshot> docs;
+  final List<PlantDTOQueryDocumentSnapshot> docs;
 
   @override
-  final List<FirestoreDocumentChange<PlantDocumentSnapshot>> docChanges;
+  final List<FirestoreDocumentChange<PlantDTODocumentSnapshot>> docChanges;
 }
 
-class PlantQueryDocumentSnapshot
+class PlantDTOQueryDocumentSnapshot
     extends FirestoreQueryDocumentSnapshot<PlantDTO>
-    implements PlantDocumentSnapshot {
-  PlantQueryDocumentSnapshot._(this.snapshot) : data = snapshot.data();
+    implements PlantDTODocumentSnapshot {
+  PlantDTOQueryDocumentSnapshot._(this.snapshot) : data = snapshot.data();
 
   @override
   final QueryDocumentSnapshot<PlantDTO> snapshot;
@@ -1509,8 +2701,8 @@ class PlantQueryDocumentSnapshot
   final PlantDTO data;
 
   @override
-  PlantDocumentReference get reference {
-    return PlantDocumentReference(snapshot.reference);
+  PlantDTODocumentReference get reference {
+    return PlantDTODocumentReference(snapshot.reference);
   }
 }
 
@@ -1518,32 +2710,56 @@ class PlantQueryDocumentSnapshot
 // JsonSerializableGenerator
 // **************************************************************************
 
-PlantDTO _$PlantFromJson(Map<String, dynamic> json) => PlantDTO(
+PlantDTO _$PlantDTOFromJson(Map<String, dynamic> json) => PlantDTO(
       id: json['id'] as String,
-      name: json['name'] as String,
-      avatarPot: json['avatarPot'] as int,
-      plantPot: json['plantPot'] as int,
-      facePot: json['facePot'] as int,
       calibrationDry: json['calibrationDry'] as int,
       calibrationWet: json['calibrationWet'] as int,
+      illumination: (json['illumination'] as num).toDouble(),
+      humidity: (json['humidity'] as num).toDouble(),
+      soilHumidity: (json['soilHumidity'] as num).toDouble(),
+      soilSalt: (json['soilSalt'] as num).toDouble(),
+      temperature: (json['temperature'] as num).toDouble(),
+      voltage: (json['voltage'] as num).toDouble(),
+      name: json['name'] as String,
+      avatarPot: json['avatarPot'] as int,
+      avatarPlant: json['avatarPlant'] as int,
+      avatarFace: json['avatarFace'] as int,
+      avatarAccessories1: json['avatarAccessories1'] as int,
+      avatarAccessories2: json['avatarAccessories2'] as int,
     );
 
-const _$PlantFieldMap = <String, String>{
+const _$PlantDTOFieldMap = <String, String>{
   'id': 'id',
-  'name': 'name',
-  'avatarPot': 'avatarPot',
-  'plantPot': 'plantPot',
-  'facePot': 'facePot',
   'calibrationDry': 'calibrationDry',
   'calibrationWet': 'calibrationWet',
+  'illumination': 'illumination',
+  'humidity': 'humidity',
+  'temperature': 'temperature',
+  'voltage': 'voltage',
+  'soilHumidity': 'soilHumidity',
+  'soilSalt': 'soilSalt',
+  'name': 'name',
+  'avatarPot': 'avatarPot',
+  'avatarPlant': 'avatarPlant',
+  'avatarFace': 'avatarFace',
+  'avatarAccessories1': 'avatarAccessories1',
+  'avatarAccessories2': 'avatarAccessories2',
 };
 
-Map<String, dynamic> _$PlantToJson(PlantDTO instance) => <String, dynamic>{
+Map<String, dynamic> _$PlantDTOToJson(PlantDTO instance) => <String, dynamic>{
       'id': instance.id,
-      'name': instance.name,
-      'avatarPot': instance.avatarPot,
-      'plantPot': instance.plantPot,
-      'facePot': instance.facePot,
       'calibrationDry': instance.calibrationDry,
       'calibrationWet': instance.calibrationWet,
+      'illumination': instance.illumination,
+      'humidity': instance.humidity,
+      'temperature': instance.temperature,
+      'voltage': instance.voltage,
+      'soilHumidity': instance.soilHumidity,
+      'soilSalt': instance.soilSalt,
+      'name': instance.name,
+      'avatarPot': instance.avatarPot,
+      'avatarPlant': instance.avatarPlant,
+      'avatarFace': instance.avatarFace,
+      'avatarAccessories1': instance.avatarAccessories1,
+      'avatarAccessories2': instance.avatarAccessories2,
     };

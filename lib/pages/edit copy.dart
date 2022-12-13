@@ -105,10 +105,17 @@ extension EditPageTabExtention on EditPageTab {
 }
 
 class _InnerEditPageState extends State<InnerEditPage> {
-  int pot = 0, plant = 0, face = 0, assessories1 = 0, assessories2 = 0;
+  late int pot, plant, face, assessories1, assessories2;
   var active = EditPageTab.plant;
   var currentTabHeight = 0.0;
-  bool hasSet = false;
+
+  _InnerEditPageState() {
+    pot = widget.plant.avatarPot;
+    face = widget.plant.avatarFace;
+    plant = widget.plant.avatarPlant;
+    assessories1 = widget.plant.avatarAccessories1;
+    assessories2 = widget.plant.avatarAccessories2;
+  }
 
   @override
   void didChangeDependencies() {
@@ -122,15 +129,6 @@ class _InnerEditPageState extends State<InnerEditPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (!hasSet) {
-      pot = widget.plant.avatarPot;
-      face = widget.plant.avatarFace;
-      plant = widget.plant.avatarPlant;
-      assessories1 = widget.plant.avatarAccessories1;
-      assessories2 = widget.plant.avatarAccessories2;
-      hasSet = true;
-    }
-
     double height = MediaQuery.of(context).size.height;
 
     var percOfScreen = (currentTabHeight + 180) / height;
