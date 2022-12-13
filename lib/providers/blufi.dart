@@ -25,7 +25,6 @@ class Blufi extends ChangeNotifier {
   String? connectedDeviceId;
   String? connectedSsid;
   void Function()? _onWifiError;
-  int _ignoredPacketCount = 0;
 
   Map<String, String> foundDevices = {};
   Map<String, String> foundNetworks = {};
@@ -98,26 +97,44 @@ class Blufi extends ChangeNotifier {
     connectedDeviceId = deviceId;
     notifyListeners();
 
-    try {
-      await BlufiPlugin.instance
-          .connectPeripheral(peripheralAddress: deviceId)
-          .then((_) {
-        print("Connect to $deviceId");
+    void handleError() {
+      print('Connection failed!');
+      connectionState = BlufiConnectionState.idle;
+      connectedDeviceId = null;
+      scan();
+      notifyListeners();
+    }
 
-        // We add a 2s delay here to make the connection feel more "real".
-        Future.delayed(const Duration(seconds: 2), () {
-          print('Connection successful!');
-          connectionState = BlufiConnectionState.connectedBluetooth;
-          onSuccess?.call();
-          notifyListeners();
-        });
-      }).catchError((e) {
-        print('Connection failed! $e');
-        connectionState = BlufiConnectionState.idle;
-        connectedDeviceId = null;
-        scan();
-        notifyListeners();
-      });
+    print("Replace on message recieved callback");
+    BlufiPlugin.instance.onMessageReceived(
+      successCallback: (String? data) {
+        Map<String, dynamic> mapData = json.decode(data ?? "{}");
+        if (mapData.containsKey('key')) {
+          String key = mapData['key'];
+          if (key == 'peripheral_connect') {
+            if (mapData['value'] == "0") {
+              handleError();
+              return;
+            }
+
+            print('Connection successful!');
+            connectionState = BlufiConnectionState.connectedBluetooth;
+            onSuccess?.call();
+            notifyListeners();
+          } else if (key == 'receive_error_code') {
+            handleError();
+          }
+        }
+      },
+      errorCallback: (String? error) {
+        print(
+            "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! errorCallback $error");
+        handleError();
+      },
+    );
+
+    try {
+      await BlufiPlugin.instance.connectPeripheral(peripheralAddress: deviceId);
     } on PlatformException catch (e) {
       print('Something went wrong: $e');
       onError?.call(e);

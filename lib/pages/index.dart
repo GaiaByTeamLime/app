@@ -21,33 +21,26 @@ class IndexPage extends StatefulWidget {
 
 class _IndexPageState extends State<IndexPage> {
   Future<Widget> calulation() async {
-    print('a');
     final user = UserController();
-    print('b');
     final plant = PlantController();
-    print('c');
 
     // If we're not logged in, go to login page.
     if (FirebaseAuth.instance.currentUser == null) {
-      print('d');
       return const LoginPage();
     }
 
     // If no device is stored, go to the connecting page
     else if (await user.getPlant() == null) {
-      print('e');
-      return const ConnectBluetoothPage();
+      return const ConnectPage();
     }
 
     // If no calibration settings are stored, go to the positioning/calibration page
     else if (isNullOrEmpty(await plant.getCalibrationDry())) {
-      print('f');
       return const CalibratePage();
     }
 
     // Otherwise, go home
     else {
-      print('g');
       return const HomePage();
     }
   }

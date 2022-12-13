@@ -41,6 +41,7 @@ dependencies:
   blufi_plugin: ^1.0.4
   http: ^0.13.5
   cloud_functions: ^4.0.6
+  permission_handler: ^10.2.0
 
 dev_dependencies:
   flutter_test:

@@ -68,6 +68,11 @@ class SensorPositioningCalibratePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    PlantController().setCalibrationDry(0);
+    PlantController().setCalibrationWet(0);
+    PlantController().setCalibrating(false);
+    FirebaseFunctions.instance.httpsCallable('updateFirestore').call();
+
     return ScrollableHeaderPage("Sensor Setup", <Widget>[
       const SizedBox(height: 20),
       const Typography.Title("Follow the steps", textAlign: TextAlign.center),
@@ -105,7 +110,7 @@ class InitialReadCalibratePage extends StatefulWidget {
 }
 
 class InitialReadCalibratePageState extends State<InitialReadCalibratePage> {
-  var loading = false;
+  var loading = true;
   Timer? timer;
   DateTime? lastDate;
 
@@ -116,7 +121,7 @@ class InitialReadCalibratePageState extends State<InitialReadCalibratePage> {
   }
 
   void timerStart() {
-    timer = Timer.periodic(const Duration(seconds: 2), (timer) async {
+    timer ??= Timer.periodic(const Duration(seconds: 2), (timer) async {
       var reading = await PlantController().getSoilHumidity();
       var updatedOn = await PlantController().getLastUpdated();
 
@@ -130,7 +135,9 @@ class InitialReadCalibratePageState extends State<InitialReadCalibratePage> {
         await PlantController().setCalibrationDry(reading!.floor());
         await PlantController().setCalibrating(true);
 
-        widget.nextStage();
+        setState(() {
+          loading = false;
+        });
       } else {
         // Update firebase values with cloud function
         FirebaseFunctions.instance.httpsCallable('updateFirestore').call();
@@ -138,50 +145,47 @@ class InitialReadCalibratePageState extends State<InitialReadCalibratePage> {
     });
   }
 
-  Widget page(BuildContext context) =>
-      ScrollableHeaderPage("Sensor Setup", <Widget>[
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30),
-          child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const SizedBox(height: 80),
-                Center(
-                    child: Image.asset("assets/images/sensor_thing.png",
-                        width: 200)),
-                const SizedBox(height: 80),
-                const Text(
-                    'To connect the sensor with your plant, follow these steps',
-                    style: TextStyle(fontWeight: FontWeight.w600)),
-                const SizedBox(height: 20),
-                const Text(
-                    'Step 1: Press the top button on your sensor and click continue afterwards.'),
-                const SizedBox(height: 30),
-                Center(
+  Widget page(BuildContext context) {
+    timerStart();
+
+    return ScrollableHeaderPage("Sensor Setup", <Widget>[
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 30),
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              const SizedBox(height: 80),
+              Center(
+                  child: Image.asset("assets/images/sensor_thing.png",
+                      width: 200)),
+              const SizedBox(height: 80),
+              const Text(
+                  'To connect the sensor with your plant, follow these steps',
+                  style: TextStyle(fontWeight: FontWeight.w600)),
+              const SizedBox(height: 20),
+              const Text('Step 1: Press the top button on your sensor'),
+              const SizedBox(height: 30),
+              if (loading)
+                const Center(
                   child: SizedBox(
-                      width: 50,
-                      height: 50,
-                      child: loading
-                          ? const CircularProgressIndicator()
-                          : const Text('')),
-                ),
-                const SizedBox(height: 30),
+                    width: 50,
+                    height: 50,
+                    child: CircularProgressIndicator(),
+                  ),
+                )
+              else
                 Center(
                   child: ElevatedButton(
-                    onPressed: loading
-                        ? null
-                        : () {
-                            setState(() {
-                              loading = true;
-                            });
-                            timerStart();
-                          },
+                    onPressed: () {
+                      widget.nextStage();
+                    },
                     child: const Text('Continue'),
                   ),
                 ),
-              ]),
-        ),
-      ]);
+            ]),
+      ),
+    ]);
+  }
 
   @override
   Widget build(BuildContext context) {

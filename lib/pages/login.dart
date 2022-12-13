@@ -159,11 +159,9 @@ class AuthThingy {
   }
 
   void _codeSent(String verificationId, int? resendToken) {
-    if (Platform.isIOS) {
-      // Instantly time out the verification since this will not be
-      // done on iOS devices (you can't auto read sms messages).
-      _codeAutoRetrievalTimeout(verificationId);
-    }
+    // Instantly time out the verification since this will not be
+    // done on iOS devices (you can't auto read sms messages).
+    _codeAutoRetrievalTimeout(verificationId);
   }
 
   // Something calls this when the value is ready.

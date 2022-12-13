@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../controller/auth.dart';
 import '../controller/user.dart';
 import '../providers/blufi.dart';
@@ -10,6 +11,75 @@ import '../components/device_card.dart';
 import 'package:provider/provider.dart';
 // ignore: library_prefixes
 import '../components/typography.dart' as Typography;
+
+class ConnectPage extends StatefulWidget {
+  const ConnectPage({super.key});
+
+  @override
+  State<ConnectPage> createState() => _ConnectPageState();
+}
+
+class _ConnectPageState extends State<ConnectPage> {
+  var shownMessage = false;
+
+  Future<bool> _askForPermissions() async {
+    var bluetoothScan = await Permission.bluetoothScan.request().isGranted;
+    var bluetooth = await Permission.bluetooth.request().isGranted;
+    var bluetoothConnect =
+        await Permission.bluetoothConnect.request().isGranted;
+    var location = await Permission.location.request().isGranted;
+
+    return bluetoothScan && bluetooth && bluetoothConnect && location;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (shownMessage) {
+      return FutureBuilder(
+        future: _askForPermissions(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return const ConnectBluetoothPage();
+          } else if (snapshot.hasError) {
+            return ScrollableHeaderPage("", [
+              const Text('You denied some permissions'),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/');
+                },
+                child: const Text('Try again'),
+              ),
+            ]);
+          } else {
+            return ScrollableHeaderPage("", const [
+              Text('Loading permissions...'),
+            ]);
+          }
+        },
+      );
+    } else {
+      return ScrollableHeaderPage("Permissions", [
+        const SizedBox(height: 40),
+        const Text('Please accept the following permissions:'),
+        const SizedBox(height: 10),
+        const Text('- Location'),
+        const SizedBox(height: 10),
+        const Text('- Bluetooth'),
+        const SizedBox(height: 20),
+        Center(
+          child: ElevatedButton(
+            onPressed: () {
+              setState(() {
+                shownMessage = true;
+              });
+            },
+            child: const Text('Continue'),
+          ),
+        ),
+      ]);
+    }
+  }
+}
 
 class ConnectBluetoothPage extends StatefulWidget {
   const ConnectBluetoothPage({super.key});
@@ -106,30 +176,12 @@ class ConnectWifiPage extends StatefulWidget {
 class _ConnectWifiPageState extends State<ConnectWifiPage> {
   var promptingPassword = false;
 
-  Timer? _reloadPageTimer;
   int timePassed = 0;
   String? _deviceId;
 
-  void startTimer() {
-    _reloadPageTimer ??= Timer.periodic(const Duration(seconds: 1), (timer) {
-      var blufi = Blufi();
-      timePassed++;
-
-      if (timePassed > 60 && blufi.foundNetworks.isEmpty) {
-        // Haven't found any networks after 45 seconds, reload the page.
-        blufi.stopWifiScanning();
-        Navigator.pushNamed(context, '/connect/wifi');
-      }
-    });
-  }
-
   @override
   void dispose() {
-    var blufi = Blufi();
-
-    blufi.disconnect();
-    _reloadPageTimer?.cancel();
-    _reloadPageTimer = null;
+    Blufi().disconnect();
     super.dispose();
   }
 
@@ -293,16 +345,12 @@ class _ConnectWifiPageState extends State<ConnectWifiPage> {
                             print(
                                 "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE3 $e");
                             promptingPassword = false;
-                            _reloadPageTimer?.cancel();
-                            _reloadPageTimer = null;
                             _showReconnect(context);
                           },
                         );
                       } else {
                         print("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE2");
                         promptingPassword = false;
-                        _reloadPageTimer?.cancel();
-                        _reloadPageTimer = null;
                         // ignore: use_build_context_synchronously
                         _showReconnect(context);
                       }
@@ -310,8 +358,6 @@ class _ConnectWifiPageState extends State<ConnectWifiPage> {
                     onError: (e) async {
                       print("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE $e");
                       promptingPassword = false;
-                      _reloadPageTimer?.cancel();
-                      _reloadPageTimer = null;
                       _showReconnect(context);
                     },
                     onTimeout: () async {
