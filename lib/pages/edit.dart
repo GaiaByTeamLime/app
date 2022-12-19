@@ -19,7 +19,7 @@ class EditPage extends StatelessWidget {
         if (snapshot.hasData) {
           return InnerEditPage(snapshot.data!);
         } else {
-          return ScrollableHeaderPage("Bobbie", const []);
+          return ScrollableHeaderPage("", const []);
         }
       },
     );
@@ -296,7 +296,7 @@ class _InnerEditPageState extends State<InnerEditPage> {
         ),
       ],
       backButton: () {
-        Navigator.pushNamed(context, '/');
+        Navigator.pop(context);
       },
     );
   }

@@ -115,7 +115,7 @@ class SensorPositioningCalibratePage extends StatelessWidget {
             Text('Something went wrong: ${snapshot.error}'),
           ]);
         } else {
-          return ScrollableHeaderPage("setting initial state", const []);
+          return ScrollableHeaderPage("", const []);
         }
       },
     );
@@ -215,7 +215,16 @@ class InitialReadCalibratePageState extends State<InitialReadCalibratePage> {
               Text('error: ${snapshot.error}'),
             ]);
           } else {
-            return ScrollableHeaderPage("waiting for last updated", const []);
+            return ScrollableHeaderPage("", const [
+              SizedBox(height: 30),
+              Center(
+                child: SizedBox(
+                  width: 50,
+                  height: 50,
+                  child: CircularProgressIndicator(),
+                ),
+              )
+            ]);
           }
         });
   }

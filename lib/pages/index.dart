@@ -24,9 +24,6 @@ class _IndexPageState extends State<IndexPage> {
     final user = UserController();
     final plant = PlantController();
 
-    print(
-        'Current user token: ${await FirebaseAuth.instance.currentUser?.getIdToken()}');
-
     // If we're not logged in, go to login page.
     if (FirebaseAuth.instance.currentUser == null) {
       return const LoginPage();
@@ -58,11 +55,11 @@ class _IndexPageState extends State<IndexPage> {
           if (snapshot.hasData) {
             return snapshot.data!;
           } else if (snapshot.hasError) {
-            return ScrollableHeaderPage("Something went wrong", [
+            return ScrollableHeaderPage("Oh no!", [
               Text('Error: ${snapshot.error}'),
             ]);
           } else {
-            return ScrollableHeaderPage("loading user data", const []);
+            return ScrollableHeaderPage("", const []);
           }
         },
       ),

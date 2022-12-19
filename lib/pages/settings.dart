@@ -17,13 +17,15 @@ class SettingsPage extends StatelessWidget {
       "Settings",
       <Widget>[
         const SizedBox(height: 20),
+        const Text('Avatar'),
+        const SizedBox(height: 10),
         ElevatedButton(
           onPressed: () async {
             Navigator.pushNamed(context, '/edit');
           },
           child: Row(
             children: const [
-              Expanded(child: Text('edit avatar', textAlign: TextAlign.center)),
+              Expanded(child: Text('Customize', textAlign: TextAlign.center)),
               Icon(Icons.arrow_right_alt),
             ],
           ),
@@ -35,33 +37,19 @@ class SettingsPage extends StatelessWidget {
           },
           child: Row(
             children: const [
-              Expanded(child: Text('edit plant name', textAlign: TextAlign.center)),
+              Expanded(child: Text('Change name', textAlign: TextAlign.center)),
               Icon(Icons.arrow_right_alt),
             ],
           ),
         ),
+        const SizedBox(height: 30),
+        const Text('Sensor'),
         const SizedBox(height: 10),
         ElevatedButton(
           onPressed: () async {
-            UserController().setPlant(null);
-            // ignore: use_build_context_synchronously
-            Navigator.pushNamed(context, '/');
-          },
-          child: Row(
-            children: const [
-              Expanded(
-                  child: Text('delete stored connection',
-                      textAlign: TextAlign.center)),
-              Icon(Icons.arrow_right_alt),
-            ],
-          ),
-        ),
-        const SizedBox(height: 10),
-        ElevatedButton(
-          onPressed: () async {
-            PlantController().setCalibrationWet(0);
-            PlantController().setCalibrationDry(0);
-            PlantController().setCalibrating(false);
+            await PlantController().setCalibrationWet(0);
+            await PlantController().setCalibrationDry(0);
+            await PlantController().setCalibrating(false);
             // ignore: use_build_context_synchronously
             Navigator.pushNamed(context, '/');
           },
@@ -69,7 +57,7 @@ class SettingsPage extends StatelessWidget {
             children: const [
               Expanded(
                   child:
-                      Text('delete calibration', textAlign: TextAlign.center)),
+                      Text('Reset calibration', textAlign: TextAlign.center)),
               Icon(Icons.arrow_right_alt),
             ],
           ),
@@ -77,20 +65,22 @@ class SettingsPage extends StatelessWidget {
         const SizedBox(height: 10),
         ElevatedButton(
           onPressed: () async {
-            PlantController().setCalibrationWet(0);
-            PlantController().setCalibrationDry(0);
-            PlantController().setCalibrating(false);
-            UserController().setPlant(null);
+            await PlantController().setCalibrationWet(0);
+            await PlantController().setCalibrationDry(0);
+            await PlantController().setCalibrating(false);
+            await UserController().setPlant(null);
             // ignore: use_build_context_synchronously
             Navigator.pushNamed(context, '/');
           },
           child: Row(
             children: const [
-              Expanded(child: Text('delete both', textAlign: TextAlign.center)),
+              Expanded(child: Text('Disconnect', textAlign: TextAlign.center)),
               Icon(Icons.arrow_right_alt),
             ],
           ),
         ),
+        const SizedBox(height: 30),
+        const Text('Account'),
         const SizedBox(height: 10),
         ElevatedButton(
           onPressed: () async {
@@ -100,45 +90,15 @@ class SettingsPage extends StatelessWidget {
           },
           child: Row(
             children: const [
-              Expanded(child: Text('sign out', textAlign: TextAlign.center)),
+              Expanded(child: Text('Sign Out', textAlign: TextAlign.center)),
               Icon(Icons.arrow_right_alt),
             ],
           ),
         ),
         const SizedBox(height: 10),
-        ElevatedButton(
-          onPressed: () async {
-            PlantController().setCalibrationWet(0);
-            PlantController().setCalibrationDry(0);
-            PlantController().setCalibrating(false);
-            UserController().setPlant(null);
-            await FirebaseAuth.instance.signOut();
-            // ignore: use_build_context_synchronously
-            Navigator.pushNamed(context, '/');
-          },
-          child: Row(
-            children: const [
-              Expanded(
-                  child: Text('reset everything', textAlign: TextAlign.center)),
-              Icon(Icons.arrow_right_alt),
-            ],
-          ),
-        ),
-        const SizedBox(height: 10),
-        ElevatedButton(
-          onPressed: () async {
-            Navigator.pushNamed(context, '/');
-          },
-          child: Row(
-            children: const [
-              Expanded(child: Text('reload app', textAlign: TextAlign.center)),
-              Icon(Icons.arrow_right_alt),
-            ],
-          ),
-        ),
       ],
       backButton: () {
-        Navigator.pushNamed(context, '/');
+        Navigator.pop(context);
       },
     );
   }

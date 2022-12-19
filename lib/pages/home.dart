@@ -16,7 +16,7 @@ class HomePage extends StatelessWidget {
         if (snapshot.hasData) {
           return InnerHomePage(snapshot.data!);
         } else {
-          return ScrollableHeaderPage("Bobbie", const []);
+          return ScrollableHeaderPage("", const []);
         }
       },
     );
@@ -36,10 +36,10 @@ class InnerHomePage extends StatelessWidget {
     var sunLevel = plant.illumination;
 
     return ScrollableHeaderPage(
-      "Bobbie",
+      plant.name,
       <Widget>[
         GestureDetector(
-          onTap: () {
+          onLongPress: () {
             Navigator.pushNamed(context, '/edit');
           },
           child: BobbieBuilder(
