@@ -40,6 +40,7 @@ class InnerEditNamePage extends StatelessWidget {
               TextField(
                 decoration: const InputDecoration(
                   labelText: 'Plant Name',
+                  fillColor: Colors.white,
                 ),
                 controller: controller,
               ),

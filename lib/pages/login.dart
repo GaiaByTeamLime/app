@@ -265,7 +265,7 @@ class _InputVerificationCodeLoginPageState
             const Center(child: CircularProgressIndicator()),
             Platform.isIOS
                 ? const Text('')
-                : const Text('Waiting for text message...'),
+                : const Center(child: Text('Waiting for verification...')),
           ],
         );
       }),

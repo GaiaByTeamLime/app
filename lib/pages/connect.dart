@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_print
-
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -321,11 +319,9 @@ class _ConnectWifiPageState extends State<ConnectWifiPage> {
             blufi.connectionState == BlufiConnectionState.connected,
         onPressed: blufi.connectionState == BlufiConnectionState.scanningWifi
             ? () async {
-                print("COnnecting,.......");
                 promptingPassword = true;
                 var password = await _promptPassword(context, device.key);
                 if (password != null) {
-                  print("connect to wifi,.......");
                   blufi.connectToWifiNetwork(
                     device.key,
                     password,
@@ -345,21 +341,17 @@ class _ConnectWifiPageState extends State<ConnectWifiPage> {
                             Navigator.pushNamed(context, '/');
                           },
                           onError: (Object? e) async {
-                            print(
-                                "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE3 $e");
                             promptingPassword = false;
                             _showReconnect(context);
                           },
                         );
                       } else {
-                        print("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE2");
                         promptingPassword = false;
                         // ignore: use_build_context_synchronously
                         _showReconnect(context);
                       }
                     },
                     onError: (e) async {
-                      print("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE $e");
                       promptingPassword = false;
                       _showReconnect(context);
                     },
@@ -369,7 +361,6 @@ class _ConnectWifiPageState extends State<ConnectWifiPage> {
                     },
                   );
                 } else {
-                  print("nahhhhhh,.......");
                   promptingPassword = false;
                 }
               }

@@ -1,4 +1,3 @@
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:gaia/pages/edit_name.dart';
 import 'package:gaia/providers/blufi.dart';
@@ -35,7 +34,6 @@ class Gaia extends StatelessWidget {
     return MultiProvider(
         providers: [
           ChangeNotifierProvider.value(value: Blufi()),
-          // ChangeNotifierProvider.value(value: Storage()),
         ],
         child: MaterialApp(
           title: 'Gaia',

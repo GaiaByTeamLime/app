@@ -29,9 +29,10 @@ class InnerHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var waterLevel = ((plant.soilHumidity - plant.calibrationWet) /
-        (plant.calibrationDry - plant.calibrationWet + 0.000000001) *
-        100);
+    var waterLevel = 100 -
+        ((plant.soilHumidity - plant.calibrationWet) /
+            (plant.calibrationDry - plant.calibrationWet + 0.0001) *
+            100);
 
     var sunLevel = plant.illumination;
 

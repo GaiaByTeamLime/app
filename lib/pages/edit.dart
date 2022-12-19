@@ -296,7 +296,7 @@ class _InnerEditPageState extends State<InnerEditPage> {
         ),
       ],
       backButton: () {
-        Navigator.pop(context);
+        Navigator.pushNamed(context, '/');
       },
     );
   }

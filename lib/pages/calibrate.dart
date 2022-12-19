@@ -15,10 +15,16 @@ class CalibratePage extends StatefulWidget {
   State<CalibratePage> createState() => _CalibratePageState();
 }
 
-enum CalibratePageStage { sensorPositioning, initialRead, waterYourPlant, done }
+enum CalibratePageStage {
+  sensorPositioning,
+  initialRead,
+  waterYourPlant,
+  done,
+  initialInstructions
+}
 
 class _CalibratePageState extends State<CalibratePage> {
-  var stage = CalibratePageStage.sensorPositioning;
+  var stage = CalibratePageStage.initialInstructions;
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +36,13 @@ class _CalibratePageState extends State<CalibratePage> {
 
   Widget _getPage() {
     switch (stage) {
+      case CalibratePageStage.initialInstructions:
+        return InitialInstructionsCalibratePage(() {
+          setState(() {
+            stage = CalibratePageStage.sensorPositioning;
+          });
+        });
+
       case CalibratePageStage.sensorPositioning:
         return SensorPositioningCalibratePage(() {
           setState(() {
@@ -60,6 +73,38 @@ class _CalibratePageState extends State<CalibratePage> {
   }
 }
 
+class InitialInstructionsCalibratePage extends StatelessWidget {
+  final void Function() nextStage;
+
+  const InitialInstructionsCalibratePage(this.nextStage, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ScrollableHeaderPage(
+      "Sensor Setup",
+      <Widget>[
+        const SizedBox(height: 80),
+        Center(
+          child: Image.asset(
+            "assets/images/step_1.png",
+            width: 250,
+          ),
+        ),
+        const SizedBox(height: 50),
+        const Text(
+            'Stick your sensor in the dry  soil of your plant. The logo should be facing towards you.'),
+        const SizedBox(height: 50),
+        Center(
+          child: ElevatedButton(
+            onPressed: nextStage,
+            child: const Text('Continue'),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class SensorPositioningCalibratePage extends StatelessWidget {
   final void Function() nextStage;
   const SensorPositioningCalibratePage(this.nextStage, {super.key});
@@ -77,30 +122,34 @@ class SensorPositioningCalibratePage extends StatelessWidget {
     return true;
   }
 
-  Widget _page(BuildContext context) =>
+  Widget _page(BuildContext context, bool loaded) =>
       ScrollableHeaderPage("Sensor Setup", <Widget>[
-        const SizedBox(height: 20),
-        const Typography.Title("Follow the steps", textAlign: TextAlign.center),
-        const SizedBox(height: 30),
+        const SizedBox(height: 80),
         Center(
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: Image.asset("assets/images/sensor_setup.png"),
+          child: Image.asset(
+            "assets/images/step_2.png",
+            width: 250,
           ),
         ),
-        const SizedBox(height: 30),
+        const SizedBox(height: 50),
         const Text(
-            'Stick your sensor in the dry soil of your plant. The Gaia logo should be facing towards you.'),
-        const SizedBox(height: 10),
-        const Text(
-            'Make sure to push in the sensor all the way. Until the white part touches the dirt.'),
-        const SizedBox(height: 30),
-        Center(
-          child: ElevatedButton(
-            onPressed: nextStage,
-            child: const Text("Continue"),
+            'Make sure to push the sensor all the way in, until the white part touches the dirt. '),
+        const SizedBox(height: 50),
+        if (loaded)
+          Center(
+            child: ElevatedButton(
+              onPressed: nextStage,
+              child: const Text("Continue"),
+            ),
+          )
+        else
+          const Center(
+            child: SizedBox(
+              width: 50,
+              height: 50,
+              child: CircularProgressIndicator(),
+            ),
           ),
-        ),
       ]);
 
   @override
@@ -108,14 +157,12 @@ class SensorPositioningCalibratePage extends StatelessWidget {
     return FutureBuilder(
       future: _calculation(),
       builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return _page(context);
-        } else if (snapshot.hasError) {
+        if (snapshot.hasError) {
           return ScrollableHeaderPage("Oh no!", [
             Text('Something went wrong: ${snapshot.error}'),
           ]);
         } else {
-          return ScrollableHeaderPage("", const []);
+          return _page(context, snapshot.hasData);
         }
       },
     );
@@ -145,23 +192,22 @@ class InitialReadCalibratePageState extends State<InitialReadCalibratePage> {
 
   void timerStart() {
     timer ??= Timer.periodic(const Duration(seconds: 15), (timer) async {
+      final plant = PlantController();
+
       await FirebaseFunctions.instanceFor(
         app: Firebase.app(),
         region: 'europe-west1',
       ).httpsCallable('updateFirestore').call();
 
-      var reading = await PlantController().getSoilHumidity();
-      var updatedOn = await PlantController().getLastUpdated();
-
-      print('old update: $lastDate, new update: $updatedOn, reading: $reading');
+      var reading = await plant.getSoilHumidity();
+      var updatedOn = await plant.getLastUpdated();
 
       if (updatedOn != lastDate && reading != 0 && updatedOn != null) {
         timer.cancel();
         if (kDebugMode) {
           print('Dry value: $reading');
         }
-        await PlantController().setCalibrationDry(reading!.floor());
-        await PlantController().setCalibrating(true);
+        await plant.setCalibrationDry(reading!.floor());
 
         widget.nextStage();
       } else if (tries-- <= 0) {
@@ -181,14 +227,13 @@ class InitialReadCalibratePageState extends State<InitialReadCalibratePage> {
             children: <Widget>[
               const SizedBox(height: 80),
               Center(
-                  child: Image.asset("assets/images/sensor_thing.png",
-                      width: 200)),
+                child: Image.asset(
+                  "assets/images/step_2b.png",
+                  width: 250,
+                ),
+              ),
               const SizedBox(height: 80),
-              const Text(
-                  'To connect the sensor with your plant, follow these steps',
-                  style: TextStyle(fontWeight: FontWeight.w600)),
-              const SizedBox(height: 20),
-              const Text('Step 1: Press the top button on your sensor'),
+              const Text('Press the upper button on your sensor'),
               const SizedBox(height: 30),
               const Center(
                 child: SizedBox(
@@ -246,13 +291,12 @@ class WaterYourPlantCalibratePage extends StatelessWidget {
             const SizedBox(height: 80),
             Center(
               child: Image.asset(
-                "assets/images/sensor_thing.png",
-                width: 200,
+                "assets/images/step_3.png",
+                width: 250,
               ),
             ),
             const SizedBox(height: 80),
-            const Text(
-                'Step 2: Water the plant generously and click continue.'),
+            const Text('Water your plant generously.'),
             const SizedBox(height: 30),
             const Center(
               child: SizedBox(width: 50, height: 50),
@@ -260,7 +304,11 @@ class WaterYourPlantCalibratePage extends StatelessWidget {
             const SizedBox(height: 30),
             Center(
               child: ElevatedButton(
-                onPressed: nextStage,
+                onPressed: () async {
+                  final plant = PlantController();
+                  await plant.setCalibrating(true);
+                  nextStage();
+                },
                 child: const Text('Continue'),
               ),
             ),
@@ -288,7 +336,7 @@ class DoneCalibratePage extends StatelessWidget {
             Center(
               child: Image.asset(
                 "assets/images/sensor_thing.png",
-                width: 200,
+                width: 250,
               ),
             ),
             const SizedBox(height: 80),

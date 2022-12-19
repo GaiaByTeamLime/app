@@ -20,6 +20,15 @@ exports.updateFirestore = region.https.onRequest((request, response) => {
             let d = new Date(item.created);
             let timestamp = new admin.firestore.Timestamp(Math.round(d.getTime() / 1000), 0);
 
+            doc.get('isCalibrating').then(isCalibrating => {
+                if (isCalibrating) {
+                    doc.update({
+                        isCalibrating: false,
+                        calibrationWet: item.soil_humidity,
+                    });
+                }
+            });
+
             doc.update({
                 illumination: item.illumination,
                 humidity: item.humidity,
