@@ -1,4 +1,4 @@
-package com.example.gaia
+package app.gaiaplant
 
 import android.os.Build
 import android.os.Bundle

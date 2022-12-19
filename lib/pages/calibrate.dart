@@ -1,9 +1,7 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gaia/controller/plant.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../providers/bluetooth.dart';
 import '../components/page.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 // ignore: library_prefixes
@@ -66,37 +64,61 @@ class SensorPositioningCalibratePage extends StatelessWidget {
   final void Function() nextStage;
   const SensorPositioningCalibratePage(this.nextStage, {super.key});
 
+  Future<bool> _calculation() async {
+    await PlantController().setCalibrationDry(0);
+    await PlantController().setCalibrationWet(0);
+    await PlantController().setCalibrating(false);
+
+    await FirebaseFunctions.instanceFor(
+      app: Firebase.app(),
+      region: 'europe-west1',
+    ).httpsCallable('updateFirestore').call();
+
+    return true;
+  }
+
+  Widget _page(BuildContext context) =>
+      ScrollableHeaderPage("Sensor Setup", <Widget>[
+        const SizedBox(height: 20),
+        const Typography.Title("Follow the steps", textAlign: TextAlign.center),
+        const SizedBox(height: 30),
+        Center(
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Image.asset("assets/images/sensor_setup.png"),
+          ),
+        ),
+        const SizedBox(height: 30),
+        const Text(
+            'Stick your sensor in the dry soil of your plant. The Gaia logo should be facing towards you.'),
+        const SizedBox(height: 10),
+        const Text(
+            'Make sure to push in the sensor all the way. Until the white part touches the dirt.'),
+        const SizedBox(height: 30),
+        Center(
+          child: ElevatedButton(
+            onPressed: nextStage,
+            child: const Text("Continue"),
+          ),
+        ),
+      ]);
+
   @override
   Widget build(BuildContext context) {
-    PlantController().setCalibrationDry(0);
-    PlantController().setCalibrationWet(0);
-    PlantController().setCalibrating(false);
-    FirebaseFunctions.instance.httpsCallable('updateFirestore').call();
-
-    return ScrollableHeaderPage("Sensor Setup", <Widget>[
-      const SizedBox(height: 20),
-      const Typography.Title("Follow the steps", textAlign: TextAlign.center),
-      const SizedBox(height: 30),
-      Center(
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
-          child: Image.asset("assets/images/sensor_setup.png"),
-        ),
-      ),
-      const SizedBox(height: 30),
-      const Text(
-          'Stick your sensor in the dry soil of your plant. The Gaia logo should be facing towards you.'),
-      const SizedBox(height: 10),
-      const Text(
-          'Make sure to push in the sensor all the way. Until the white part touches the dirt.'),
-      const SizedBox(height: 30),
-      Center(
-        child: ElevatedButton(
-          onPressed: nextStage,
-          child: const Text("Continue"),
-        ),
-      ),
-    ]);
+    return FutureBuilder(
+      future: _calculation(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return _page(context);
+        } else if (snapshot.hasError) {
+          return ScrollableHeaderPage("Oh no!", [
+            Text('Something went wrong: ${snapshot.error}'),
+          ]);
+        } else {
+          return ScrollableHeaderPage("setting initial state", const []);
+        }
+      },
+    );
   }
 }
 
@@ -111,6 +133,7 @@ class InitialReadCalibratePage extends StatefulWidget {
 
 class InitialReadCalibratePageState extends State<InitialReadCalibratePage> {
   var loading = true;
+  var tries = 50;
   Timer? timer;
   DateTime? lastDate;
 
@@ -121,7 +144,12 @@ class InitialReadCalibratePageState extends State<InitialReadCalibratePage> {
   }
 
   void timerStart() {
-    timer ??= Timer.periodic(const Duration(seconds: 2), (timer) async {
+    timer ??= Timer.periodic(const Duration(seconds: 15), (timer) async {
+      await FirebaseFunctions.instanceFor(
+        app: Firebase.app(),
+        region: 'europe-west1',
+      ).httpsCallable('updateFirestore').call();
+
       var reading = await PlantController().getSoilHumidity();
       var updatedOn = await PlantController().getLastUpdated();
 
@@ -135,12 +163,9 @@ class InitialReadCalibratePageState extends State<InitialReadCalibratePage> {
         await PlantController().setCalibrationDry(reading!.floor());
         await PlantController().setCalibrating(true);
 
-        setState(() {
-          loading = false;
-        });
-      } else {
-        // Update firebase values with cloud function
-        FirebaseFunctions.instance.httpsCallable('updateFirestore').call();
+        widget.nextStage();
+      } else if (tries-- <= 0) {
+        timer.cancel();
       }
     });
   }
@@ -165,23 +190,13 @@ class InitialReadCalibratePageState extends State<InitialReadCalibratePage> {
               const SizedBox(height: 20),
               const Text('Step 1: Press the top button on your sensor'),
               const SizedBox(height: 30),
-              if (loading)
-                const Center(
-                  child: SizedBox(
-                    width: 50,
-                    height: 50,
-                    child: CircularProgressIndicator(),
-                  ),
-                )
-              else
-                Center(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      widget.nextStage();
-                    },
-                    child: const Text('Continue'),
-                  ),
+              const Center(
+                child: SizedBox(
+                  width: 50,
+                  height: 50,
+                  child: CircularProgressIndicator(),
                 ),
+              )
             ]),
       ),
     ]);

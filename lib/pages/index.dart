@@ -24,6 +24,9 @@ class _IndexPageState extends State<IndexPage> {
     final user = UserController();
     final plant = PlantController();
 
+    print(
+        'Current user token: ${await FirebaseAuth.instance.currentUser?.getIdToken()}');
+
     // If we're not logged in, go to login page.
     if (FirebaseAuth.instance.currentUser == null) {
       return const LoginPage();

@@ -72,10 +72,12 @@ class Blufi extends ChangeNotifier {
 
     try {
       print('scan device info');
-      await BlufiPlugin.instance.scanDeviceInfo();
+      await BlufiPlugin.instance.scanDeviceInfo(filterString: 'BLUFI_DEVICE');
     } on PlatformException catch (e) {
       print("Scanning failed: $e");
       await BlufiPlugin.instance.stopScan();
+    } catch (e) {
+      print("Caught exeption $e!");
     }
   }
 
@@ -275,7 +277,7 @@ class Blufi extends ChangeNotifier {
     );
 
     print('Starting timeout timer');
-    _wifiConnectTimeout ??= Timer(const Duration(seconds: 15), () {
+    _wifiConnectTimeout ??= Timer(const Duration(seconds: 60), () {
       _wifiConnectTimeout = null;
       print('timeout');
       connectionState = BlufiConnectionState.connectedBluetooth;
@@ -290,7 +292,8 @@ class Blufi extends ChangeNotifier {
   }
 
   void registerAuthToken(
-    String token, {
+    String token,
+    String uid, {
     required Future<void> Function() onSuccess,
     required Future<void> Function(Object?) onError,
   }) async {
@@ -322,6 +325,6 @@ class Blufi extends ChangeNotifier {
       },
     );
 
-    BlufiPlugin.instance.postCustomData(token);
+    BlufiPlugin.instance.postCustomData(token + uid);
   }
 }

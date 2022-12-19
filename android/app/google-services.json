@@ -7,18 +7,18 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1086165243324:android:fad1eb0ed5af0f717407b9",
+        "mobilesdk_app_id": "1:1086165243324:android:967da00db0b6ab4e7407b9",
         "android_client_info": {
-          "package_name": "com.example.gaia"
+          "package_name": "app.gaiaplant"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1086165243324-421nt9a7dkdd9224dak1pjpquj9om0mo.apps.googleusercontent.com",
+          "client_id": "1086165243324-tvquoo05t2ba89ttvl3mnqr6n95r240a.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.gaia",
-            "certificate_hash": "47bdfaaf93aa706ef39e0d3f49f74b376d13141e"
+            "package_name": "app.gaiaplant",
+            "certificate_hash": "84a790be1e2e42a0ba5acf02dd38bde68aa76775"
           }
         },
         {
@@ -39,10 +39,10 @@
               "client_type": 3
             },
             {
-              "client_id": "1086165243324-a9oqc8p4b3nq3savumpkkibi64qa6mno.apps.googleusercontent.com",
+              "client_id": "1086165243324-40vqgoj05502ro934bvu8pgehbc219ej.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.gaia"
+                "bundle_id": "app.gaiaplant"
               }
             }
           ]

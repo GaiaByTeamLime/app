@@ -1,5 +1,6 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:gaia/pages/edit_name.dart';
 import 'package:gaia/providers/blufi.dart';
 import 'pages/index.dart';
 import 'pages/login.dart';
@@ -73,6 +74,7 @@ class Gaia extends StatelessWidget {
             '/connect/wifi': (context) => const ConnectWifiPage(),
             '/calibrate': (context) => const CalibratePage(),
             '/edit': (context) => const EditPage(),
+            '/edit_name': (context) => const EditNamePage(),
             '/login': (context) => const LoginPage(),
           },
         ));

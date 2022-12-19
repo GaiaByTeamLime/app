@@ -24,32 +24,33 @@ class _ConnectPageState extends State<ConnectPage> {
 
   Future<bool> _askForPermissions() async {
     var bluetoothScan = await Permission.bluetoothScan.request().isGranted;
-    var bluetooth = await Permission.bluetooth.request().isGranted;
     var bluetoothConnect =
         await Permission.bluetoothConnect.request().isGranted;
     var location = await Permission.location.request().isGranted;
 
-    return bluetoothScan && bluetooth && bluetoothConnect && location;
+    return bluetoothConnect && bluetoothScan && location;
   }
 
   @override
   Widget build(BuildContext context) {
     if (shownMessage) {
-      return FutureBuilder(
+      return FutureBuilder<bool?>(
         future: _askForPermissions(),
         builder: (context, snapshot) {
+          var errorPage = ScrollableHeaderPage("", [
+            const Text('You denied some permissions'),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/');
+              },
+              child: const Text('Try again'),
+            ),
+          ]);
+
           if (snapshot.hasData) {
-            return const ConnectBluetoothPage();
+            return snapshot.data! ? const ConnectBluetoothPage() : errorPage;
           } else if (snapshot.hasError) {
-            return ScrollableHeaderPage("", [
-              const Text('You denied some permissions'),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/');
-                },
-                child: const Text('Try again'),
-              ),
-            ]);
+            return errorPage;
           } else {
             return ScrollableHeaderPage("", const [
               Text('Loading permissions...'),
@@ -149,16 +150,19 @@ class _ConnectBluetoothPageState extends State<ConnectBluetoothPage> {
         const Typography.Title("Nearby devices"),
         const SizedBox(height: 15),
         ...devices,
-        const Padding(
-            padding: EdgeInsets.all(20), child: LinearProgressIndicator()),
-        const Text('Scanning for sensors...', textAlign: TextAlign.center),
-        if (_timePassed > 20)
-          Column(children: const [
-            SizedBox(height: 10),
-            Text(
-              'Sensor not showing up? Press the top button on your sensor once to restart it.',
-              textAlign: TextAlign.center,
-            ),
+        if (devices.isEmpty)
+          Column(children: [
+            const Padding(
+                padding: EdgeInsets.all(20), child: LinearProgressIndicator()),
+            const Text('Scanning for sensors...', textAlign: TextAlign.center),
+            if (_timePassed > 20)
+              Column(children: const [
+                SizedBox(height: 10),
+                Text(
+                  'Sensor not showing up? Press the top button on your sensor once to restart it.',
+                  textAlign: TextAlign.center,
+                ),
+              ]),
           ]),
         const SizedBox(height: 20),
       ]),
@@ -326,15 +330,14 @@ class _ConnectWifiPageState extends State<ConnectWifiPage> {
                     device.key,
                     password,
                     onSuccess: () async {
-                      // FIXME: Device ID is NOT equal to device MAC on iOS!
-                      var token =
-                          await AuthController().registerNewToken(_deviceId!);
+                      var token = await AuthController().registerNewSensor();
                       if (token != null) {
-                        print('token: $token');
+                        print('token: ${token.token} with uid ${token.uid}');
                         blufi.registerAuthToken(
-                          token,
+                          token.token,
+                          token.uid,
                           onSuccess: () async {
-                            await UserController().setPlant(_deviceId!);
+                            await UserController().setPlant(token.uid);
 
                             // ignore: use_build_context_synchronously
                             await _showConnectionSuccess(context);

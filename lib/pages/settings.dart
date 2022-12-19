@@ -31,6 +31,18 @@ class SettingsPage extends StatelessWidget {
         const SizedBox(height: 10),
         ElevatedButton(
           onPressed: () async {
+            Navigator.pushNamed(context, '/edit_name');
+          },
+          child: Row(
+            children: const [
+              Expanded(child: Text('edit plant name', textAlign: TextAlign.center)),
+              Icon(Icons.arrow_right_alt),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10),
+        ElevatedButton(
+          onPressed: () async {
             UserController().setPlant(null);
             // ignore: use_build_context_synchronously
             Navigator.pushNamed(context, '/');
