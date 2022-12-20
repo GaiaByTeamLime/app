@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:gaia/controller/plant.dart';
 import '../components/page.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-// ignore: library_prefixes
-import '../components/typography.dart' as Typography;
 import 'dart:async';
 
 class CalibratePage extends StatefulWidget {
@@ -92,7 +90,7 @@ class InitialInstructionsCalibratePage extends StatelessWidget {
         ),
         const SizedBox(height: 50),
         const Text(
-            'Stick your sensor in the dry  soil of your plant. The logo should be facing towards you.'),
+            'Stick your sensor in the dry soil of your plant. The logo should be facing outwards.'),
         const SizedBox(height: 50),
         Center(
           child: ElevatedButton(
@@ -127,7 +125,7 @@ class SensorPositioningCalibratePage extends StatelessWidget {
         const SizedBox(height: 80),
         Center(
           child: Image.asset(
-            "assets/images/step_2.png",
+            "assets/images/step_1.png",
             width: 250,
           ),
         ),
@@ -228,7 +226,7 @@ class InitialReadCalibratePageState extends State<InitialReadCalibratePage> {
               const SizedBox(height: 80),
               Center(
                 child: Image.asset(
-                  "assets/images/step_2b.png",
+                  "assets/images/step_1.png",
                   width: 250,
                 ),
               ),
@@ -335,7 +333,7 @@ class DoneCalibratePage extends StatelessWidget {
             const SizedBox(height: 80),
             Center(
               child: Image.asset(
-                "assets/images/sensor_thing.png",
+                "assets/images/step_2.png",
                 width: 250,
               ),
             ),

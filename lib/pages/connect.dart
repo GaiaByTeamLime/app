@@ -149,18 +149,23 @@ class _ConnectBluetoothPageState extends State<ConnectBluetoothPage> {
         const SizedBox(height: 15),
         ...devices,
         if (devices.isEmpty)
-          Column(children: [
-            const Padding(
+          Column(children: const [
+            Padding(
                 padding: EdgeInsets.all(20), child: LinearProgressIndicator()),
-            const Text('Scanning for sensors...', textAlign: TextAlign.center),
-            if (_timePassed > 20)
-              Column(children: const [
-                SizedBox(height: 10),
-                Text(
-                  'Sensor not showing up? Press the top button on your sensor once to restart it.',
-                  textAlign: TextAlign.center,
-                ),
-              ]),
+            Text('Scanning for sensors...', textAlign: TextAlign.center),
+            SizedBox(height: 10),
+            Text(
+              'Press the upper button on your sensor to start it.',
+              textAlign: TextAlign.center,
+            ),
+          ]),
+        if (_timePassed > 20)
+          Column(children: const [
+            SizedBox(height: 20),
+            Text(
+              'Sensor not showing up and connected it before? Factory reset your sensor. Read how to on support.gaiaplant.app.',
+              textAlign: TextAlign.center,
+            ),
           ]),
         const SizedBox(height: 20),
       ]),

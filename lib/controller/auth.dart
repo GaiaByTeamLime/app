@@ -25,7 +25,7 @@ class AuthController {
   Future<NewSensorResponse?> registerNewSensor() async {
     var jwt = await FirebaseAuth.instance.currentUser?.getIdToken() ?? "";
     var res = await get(
-      Uri.https("auth.dev.gaiaplant.app", "/create"),
+      Uri.https("auth.prod.gaiaplant.app", "/create"),
       headers: {"Authorization": "Bearer $jwt"},
     );
 
