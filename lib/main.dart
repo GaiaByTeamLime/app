@@ -18,6 +18,7 @@ import 'firebase_options.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
+    name: "Gaia Dev",
     options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(const Gaia());
